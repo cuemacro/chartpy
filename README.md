@@ -23,7 +23,9 @@ documented
 
 # Gallery
 
-To appear here.
+Doing plots in multiple libraries by simply changing a keyword, from the Jupyter notebook.
+
+<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy/examples/screenshot.png?raw=true" width="543"/>
 
 # Requirements
 

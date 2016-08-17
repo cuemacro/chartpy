@@ -25,6 +25,7 @@ At present ChartPy supports several types of plots
 * map plots (plotly)
 * looking to add more
 
+Other points to note
 * Please bear in mind at present chartpy is currently a highly experimental alpha project and isn't yet fully 
 documented
 * Uses Apache 2.0 licence

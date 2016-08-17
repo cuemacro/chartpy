@@ -995,7 +995,7 @@ class ColorMaster:
 
     def get_color_code(self, code):
         # redefine color names
-        dict = cc.plotfactory_color_overwrites
+        dict = cc.chartfactory_color_overwrites
 
         if code in dict: return dict[code]
 

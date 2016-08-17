@@ -14,8 +14,9 @@ chart.plot(engine='bokeh')
 chart.plot(engine='plotly')
 ```
 
-I had previously written the open source PyThalesians library. This new chartpy library has similar functionality to the chart
-part of that library. However, I've totally rewritten the API to make it much cleaner and easier to use.
+I had previously written the open source PyThalesians financial library. This new chartpy library has similar functionality to the chart
+part of that library. However, I've totally rewritten the API to make it much cleaner and easier to use. It is also now a fully
+standalone package.
 
 * Please bear in mind at present chartpy is currently a highly experimental alpha project and isn't yet fully 
 documented

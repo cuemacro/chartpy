@@ -41,10 +41,10 @@ class ChartConstants(object):
 
     chartfactory_default_engine = "matplotlib"
     chartfactory_source = "Web"
-    chartfactory_brand_label = "ChartPy"
-    chartfactory_display_source_label = False
+    chartfactory_brand_label = "chartpy"
+    chartfactory_display_source_label = True
     chartfactory_display_brand_label = True
-    chartfactory_brand_color = "#F2F2F2"
+    chartfactory_brand_color = "#C0C0C0"
 
     chartfactory_default_stylesheet = "chartpy"
 

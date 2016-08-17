@@ -7,7 +7,7 @@ except:
 
 from chartpy import Chart, Style
 
-# get your own free bQuandl API key from https://www.quandl.com/
+# get your own free Quandl API key from https://www.quandl.com/
 quandl_api_key = "xxx"
 
 # choose run_example = 0 for everything

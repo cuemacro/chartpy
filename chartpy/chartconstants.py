@@ -81,11 +81,11 @@ class ChartConstants(object):
     ########## API KEYS
 
     # Plotly default username
-    plotly_default_username = 'argonautae'
+    plotly_default_username = 'abc'
 
     # Plotly settings (username : api_key)
-    plotly_creds = {"argonautae" : "x",
-                    "thalesians" : "x"
+    plotly_creds = {"abc" : "x",
+                    "xyz" : "x"
                     }
 
     plotly_streaming_key = "x"

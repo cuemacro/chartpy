@@ -27,10 +27,10 @@ class ChartConstants(object):
     root_chartpy = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('\\', '/') + "/chartpy/"
 
     # Twitter settings (you need to set these up on Twitter)
-    TWIITER_APP_KEY                 = "x"
-    TWIITER_APP_SECRET              = "x"
-    TWIITER_OAUTH_TOKEN	            = "x"
-    TWIITER_OAUTH_TOKEN_SECRET	    = "x"
+    TWITTER_APP_KEY                 = "x"
+    TWITTER_APP_SECRET              = "x"
+    TWITTER_OAUTH_TOKEN	            = "x"
+    TWITTER_OAUTH_TOKEN_SECRET	    = "x"
 
     # for plots
     chartfactory_silent_display = False

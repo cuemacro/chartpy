@@ -3,7 +3,7 @@
 chartpy creates a simple easy to use API to plot in a number of great Python chart libraries like Plotly, Bokeh and matplotlib,
 with a unified interface. You simply need to change a single keyword to change which chart engine to use (see below), rather than having
 to learn the low level details of each library. I've also created new stylesheets and formating to ensure that the default matplotlib
-styling looks more modern.
+styling looks more modern. Contributors for the project are very much welcome!
 
 ```
 chart = Chart(df=df, chart_type='line', style=style)
@@ -17,6 +17,13 @@ chart.plot(engine='plotly')
 I had previously written the open source PyThalesians financial library. This new chartpy library has similar functionality to the chart
 part of that library. However, I've totally rewritten the API to make it much cleaner and easier to use. It is also now a fully
 standalone package, so it'll be easier to use for both non-financial and financial applications.
+
+At present ChartPy supports several types of plots
+* line (bokeh, plotly and matplotlib)
+* scatter (bokeh, plotly and matplotlib)
+* surface (plotly)
+* map plots (plotly)
+* looking to add more
 
 * Please bear in mind at present chartpy is currently a highly experimental alpha project and isn't yet fully 
 documented

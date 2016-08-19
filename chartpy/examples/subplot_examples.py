@@ -19,7 +19,7 @@ if run_example == 1 or run_example == 0:
     df.columns = ["Real QoQ", "Nominal QoQ"]
 
     # set the style of the plot
-    style = Style(title="US GDP", source="Quandl/Fred", subplots="True")
+    style = Style(title="US GDP", source="Quandl/Fred", subplots=True)
 
     # Chart object is initialised with the dataframe and our chart style
     chart = Chart(df=df, chart_type='line', style=style)

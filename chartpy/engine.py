@@ -88,9 +88,25 @@ class EngineTemplate(object):
     def round_to_1(self, x):
         return round(x, -int(floor(log10(x))))
 
+    def split_data_frame_to_list(self, data_frame, style):
+        data_frame_list = []
+
+        if isinstance(data_frame, list):
+            data_frame_list = data_frame
+        else:
+            if style.subplots == True:
+
+                for col in data_frame.columns:
+                    data_frame_list.append(
+                        pandas.DataFrame(index=data_frame.index, columns=[col], data=data_frame[col]))
+            else:
+                data_frame_list.append(data_frame)
+
+        return data_frame_list
+
 #######################################################################################################################
 
-from bokeh.plotting import figure, output_file, show
+from bokeh.plotting import figure, output_file, show, gridplot
 
 class EngineBokeh(EngineTemplate):
 
@@ -118,153 +134,158 @@ class EngineBokeh(EngineTemplate):
             output_file(html)
         except: pass
 
-        bar_ind = numpy.arange(1, len(data_frame.index) + 1)
-
-        xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame, style, chart_type, bar_ind)
-
         plot_width = int(style.width * scale_factor)
         plot_height = int(style.height * scale_factor)
 
-        if type(data_frame.index) == pandas.tslib.Timestamp:
-            p1 = figure(
-                x_axis_type = "datetime",
-                plot_width = plot_width,
-                plot_height = plot_height,
-                x_range=(xd[0], xd[-1])
-                )
+        data_frame_list = self.split_data_frame_to_list(data_frame, style)
 
-        # if has a bar than categorical axis
-        elif has_bar == True:
-            p1 = figure(
-                plot_width = plot_width,
-                plot_height = plot_height,
-                x_range=[str(x) for x in data_frame.index]
-                )
+        plot_list = []
 
-            from math import pi
-            p1.xaxis.major_label_orientation = pi/2
+        for data_frame in data_frame_list:
+            bar_ind = numpy.arange(1, len(data_frame.index) + 1)
 
-        # otherwise numerical axis
-        else:
-            p1 = figure(
-                plot_width = plot_width,
-                plot_height = plot_height,
-                x_range=(xd[0], xd[-1])
-                )
+            xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame, style, chart_type, bar_ind)
 
-        # set the fonts
-        p1.axis.major_label_text_font_size = str(10) + "pt"
-        p1.axis.major_label_text_font = cc.bokeh_font
-        p1.axis.major_label_text_font_style = cc.bokeh_font_style
-
-        p1.xaxis.axis_label_text_font_size = str(10) + "pt"
-        p1.xaxis.axis_label_text_font = cc.bokeh_font
-        p1.xaxis.axis_label_text_font_style = cc.bokeh_font_style
-        p1.xaxis.axis_label = style.x_title
-
-        p1.yaxis.axis_label_text_font_size = str(10) + "pt"
-        p1.yaxis.axis_label_text_font = cc.bokeh_font
-        p1.yaxis.axis_label_text_font_style = cc.bokeh_font_style
-        p1.yaxis.axis_label = style.y_title
-
-        p1.legend.location = "top_left"
-        p1.legend.label_text_font_size = str(10) + "pt"
-        p1.legend.label_text_font = cc.bokeh_font
-        p1.legend.label_text_font_style = cc.bokeh_font_style
-        p1.legend.background_fill_alpha = 0.75
-        p1.legend.border_line_width = 0
-
-
-        # set chart outline
-        p1.outline_line_width = 0
-
-        # Plot.title.text
-        p1.title.text_font_size = str(14) + "pt"
-        p1.title.text_font = cc.bokeh_font
-
-        # TODO fix label
-        # if style.display_source_label:
-        #     p1.text([30 * scale_factor, 30 * scale_factor], [0, 0], text = [style.brand_label],
-        #         text_font_size = str(10 * scale_factor) + "pt", text_align = "left",
-        #         text_font = GraphistyleConstants().bokeh_font)
-
-        color_spec = cm.create_color_list(style, data_frame)
-        import matplotlib
-
-        bar_space = 0.2
-        bar_width = (1 - bar_space) / (no_of_bars)
-        bar_index = 0
-
-        has_bar = False
-
-        # plot each series in the dataframe separately
-        for i in range(0, len(data_frame.columns)):
-            label = str(data_frame.columns[i])
-            glyph_name = 'glpyh' + str(i)
-
-            # set chart type which can differ for each time series
-            if isinstance(chart_type, list): chart_type_ord = chart_type[i]
-            else: chart_type_ord = chart_type
-
-            # get the color
-            if color_spec[i] is None:
-                color_spec[i] = self.get_color_list(i)
-
-            try:
-                color_spec[i] = matplotlib.colors.rgb2hex(color_spec[i])
-            except: pass
-
-            yd = data_frame.ix[:,i]
-
-            # plot each time series as appropriate line, scatter etc.
-            if chart_type_ord == 'line':
-                linewidth_t = self.get_linewidth(label,
-                    style.linewidth, style.linewidth_2, style.linewidth_2_series)
-
-                if linewidth_t is None: linewidth_t = 1
-
-                if style.display_legend:
-                    p1.line(xd, yd, color = color_spec[i], line_width=linewidth_t, name = glyph_name,
-                            legend = label,
+            if type(data_frame.index) == pandas.tslib.Timestamp:
+                p1 = figure(
+                    x_axis_type = "datetime",
+                    plot_width = plot_width,
+                    plot_height = plot_height,
+                    x_range=(xd[0], xd[-1])
                     )
-                else:
-                    p1.line(xd, data_frame.ix[:,i], color = color_spec[i], line_width=linewidth_t, name = glyph_name)
 
-            elif(chart_type_ord == 'bar'):
-                bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(1,len(bar_ind) + 1)]
-                bar_pos_right = [x + bar_width for x in bar_pos]
-
-                if style.display_legend:
-                    p1.quad(top=yd, bottom=0 * yd, left=bar_pos, right=bar_pos_right, color=color_spec[i], legend=label)
-                else:
-                    p1.quad(top=yd, bottom=0 * yd, left=bar_pos, right=bar_pos_right, color=color_spec[i])
-
-                bar_index = bar_index + 1
-                bar_ind = bar_ind + bar_width
-
-            elif chart_type_ord == 'scatter':
-                linewidth_t = self.get_linewidth(label,
-                    style.linewidth, style.linewidth_2, style.linewidth_2_series)
-
-                if linewidth_t is None: linewidth_t = 1
-
-                if style.display_legend:
-                    p1.circle(xd, yd, color = color_spec[i], line_width=linewidth_t, name = glyph_name,
-                            legend = label,
+            # if has a bar than categorical axis
+            elif has_bar == True:
+                p1 = figure(
+                    plot_width = plot_width,
+                    plot_height = plot_height,
+                    x_range=[str(x) for x in data_frame.index]
                     )
-                else:
-                    p1.circle(xd, yd, color = color_spec[i], line_width=linewidth_t, name = glyph_name)
 
-            # set common properties
-            # glyph = p1.select(name=glyph_name)[0].glyph
+                from math import pi
+                p1.xaxis.major_label_orientation = pi/2
+
+            # otherwise numerical axis
+            else:
+                p1 = figure(
+                    plot_width = plot_width,
+                    plot_height = plot_height,
+                    x_range=(xd[0], xd[-1])
+                    )
+
+            # set the fonts
+            p1.axis.major_label_text_font_size = str(10) + "pt"
+            p1.axis.major_label_text_font = cc.bokeh_font
+            p1.axis.major_label_text_font_style = cc.bokeh_font_style
+
+            p1.xaxis.axis_label_text_font_size = str(10) + "pt"
+            p1.xaxis.axis_label_text_font = cc.bokeh_font
+            p1.xaxis.axis_label_text_font_style = cc.bokeh_font_style
+            p1.xaxis.axis_label = style.x_title
+
+            p1.yaxis.axis_label_text_font_size = str(10) + "pt"
+            p1.yaxis.axis_label_text_font = cc.bokeh_font
+            p1.yaxis.axis_label_text_font_style = cc.bokeh_font_style
+            p1.yaxis.axis_label = style.y_title
+
+            p1.legend.location = "top_left"
+            p1.legend.label_text_font_size = str(10) + "pt"
+            p1.legend.label_text_font = cc.bokeh_font
+            p1.legend.label_text_font_style = cc.bokeh_font_style
+            p1.legend.background_fill_alpha = 0.75
+            p1.legend.border_line_width = 0
+
+            # set chart outline
+            p1.outline_line_width = 0
+
+            # Plot.title.text
+            p1.title.text_font_size = str(14) + "pt"
+            p1.title.text_font = cc.bokeh_font
+
+            # TODO fix label
+            # if style.display_source_label:
+            #     p1.text([30 * scale_factor, 30 * scale_factor], [0, 0], text = [style.brand_label],
+            #         text_font_size = str(10 * scale_factor) + "pt", text_align = "left",
+            #         text_font = GraphistyleConstants().bokeh_font)
+
+            color_spec = cm.create_color_list(style, data_frame)
+            import matplotlib
+
+            bar_space = 0.2
+            bar_width = (1 - bar_space) / (no_of_bars)
+            bar_index = 0
+
+            has_bar = False
+
+            # plot each series in the dataframe separately
+            for i in range(0, len(data_frame.columns)):
+                label = str(data_frame.columns[i])
+                glyph_name = 'glpyh' + str(i)
+
+                # set chart type which can differ for each time series
+                if isinstance(chart_type, list): chart_type_ord = chart_type[i]
+                else: chart_type_ord = chart_type
+
+                # get the color
+                if color_spec[i] is None:
+                    color_spec[i] = self.get_color_list(i)
+
+                try:
+                    color_spec[i] = matplotlib.colors.rgb2hex(color_spec[i])
+                except: pass
+
+                yd = data_frame.ix[:,i]
+
+                # plot each time series as appropriate line, scatter etc.
+                if chart_type_ord == 'line':
+                    linewidth_t = self.get_linewidth(label,
+                        style.linewidth, style.linewidth_2, style.linewidth_2_series)
+
+                    if linewidth_t is None: linewidth_t = 1
+
+                    if style.display_legend:
+                        p1.line(xd, yd, color = color_spec[i], line_width=linewidth_t, name = glyph_name,
+                                legend = label,
+                        )
+                    else:
+                        p1.line(xd, data_frame.ix[:,i], color = color_spec[i], line_width=linewidth_t, name = glyph_name)
+
+                elif(chart_type_ord == 'bar'):
+                    bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(1,len(bar_ind) + 1)]
+                    bar_pos_right = [x + bar_width for x in bar_pos]
+
+                    if style.display_legend:
+                        p1.quad(top=yd, bottom=0 * yd, left=bar_pos, right=bar_pos_right, color=color_spec[i], legend=label)
+                    else:
+                        p1.quad(top=yd, bottom=0 * yd, left=bar_pos, right=bar_pos_right, color=color_spec[i])
+
+                    bar_index = bar_index + 1
+                    bar_ind = bar_ind + bar_width
+
+                elif chart_type_ord == 'scatter':
+                    linewidth_t = self.get_linewidth(label,
+                        style.linewidth, style.linewidth_2, style.linewidth_2_series)
+
+                    if linewidth_t is None: linewidth_t = 1
+
+                    if style.display_legend:
+                        p1.circle(xd, yd, color = color_spec[i], line_width=linewidth_t, name = glyph_name,
+                                legend = label,
+                        )
+                    else:
+                        p1.circle(xd, yd, color = color_spec[i], line_width=linewidth_t, name = glyph_name)
+
+                p1.grid.grid_line_alpha = 0.3
+
+            plot_list.append(p1)
+
+        p_final = gridplot(plot_list, ncols=1)
 
         try:
-            p1.title.text = style.title
+            p_final.title.text = style.title
         except: pass
 
-        p1.grid.grid_line_alpha = 0.3
-
-        show(p1)  # open a browser
+        show(p_final)  # open a browser
 
     def get_color_list(self, i):
         color_palette = cc.bokeh_palette
@@ -296,29 +317,7 @@ class EngineMatplotlib(EngineTemplate):
         fig = plt.figure(figsize = ((style.width * style.scale_factor)/style.dpi,
                                     (style.height * style.scale_factor)/style.dpi), dpi = style.dpi)
 
-        ax = fig.add_subplot(111)
-
-        if style.x_title != '': ax.set_xlabel(style.x_title)
-        if style.y_title != '': ax.set_ylabel(style.y_title)
-
-        plt.xlabel(style.x_title)
-        plt.ylabel(style.y_title)
-
         fig.suptitle(style.title, fontsize = 14 * style.scale_factor)
-
-        # format Y axis
-        y_formatter = matplotlib.ticker.ScalarFormatter(useOffset = False)
-        ax.yaxis.set_major_formatter(y_formatter)
-
-        # create a second y axis if necessary
-        ax2 = []
-
-        if style.y_axis_2_series != []:
-            ax2 = ax.twinx()
-
-            # do not use a grid with multiple y axes
-            ax.yaxis.grid(False)
-            ax2.yaxis.grid(False)
 
         # matplotlib 1.5
         try:
@@ -329,128 +328,159 @@ class EngineMatplotlib(EngineTemplate):
             pass
             # color_cycle =  matplotlib.rcParams['axes.color_cycle']
 
-        bar_ind = np.arange(0, len(data_frame.index))
-
-        # for bar charts, create a proxy x-axis (then relabel)
-        xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame, style, chart_type, bar_ind)
-
         cm = ColorMaster()
 
-        # plot the lines (using custom palettes as appropriate)
-        color_spec = cm.create_color_list(style, data_frame)
-        try:
-            # get all the correct colors (and construct gradients if necessary eg. from 'blues')
+        data_frame_list = self.split_data_frame_to_list(data_frame, style)
+
+        subplot_no = 1
+
+        for data_frame in data_frame_list:
+
+            bar_ind = np.arange(0, len(data_frame.index))
+
+            # for bar charts, create a proxy x-axis (then relabel)
+            xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame, style, chart_type, bar_ind)
+
+            # plot the lines (using custom palettes as appropriate)
+            color_spec = cm.create_color_list(style, data_frame)
+
+            ax = fig.add_subplot(2,1,subplot_no)
+
+            subplot_no = subplot_no + 1
+
+            if style.x_title != '': ax.set_xlabel(style.x_title)
+            if style.y_title != '': ax.set_ylabel(style.y_title)
+
+            plt.xlabel(style.x_title)
+            plt.ylabel(style.y_title)
+
+            # format Y axis
+            y_formatter = matplotlib.ticker.ScalarFormatter(useOffset = False)
+            ax.yaxis.set_major_formatter(y_formatter)
+
+            # create a second y axis if necessary
+            ax2 = []
+
+            if style.y_axis_2_series != []:
+                ax2 = ax.twinx()
+
+                # do not use a grid with multiple y axes
+                ax.yaxis.grid(False)
+                ax2.yaxis.grid(False)
+
+            try:
+                # get all the correct colors (and construct gradients if necessary eg. from 'blues')
 
 
-            # for stacked bar
-            yoff_pos = np.zeros(len(data_frame.index.values)) # the bottom values for stacked bar chart
-            yoff_neg = np.zeros(len(data_frame.index.values)) # the bottom values for stacked bar chart
+                # for stacked bar
+                yoff_pos = np.zeros(len(data_frame.index.values)) # the bottom values for stacked bar chart
+                yoff_neg = np.zeros(len(data_frame.index.values)) # the bottom values for stacked bar chart
 
-            zeros = np.zeros(len(data_frame.index.values))
+                zeros = np.zeros(len(data_frame.index.values))
 
-            # for bar chart
-            bar_space = 0.2
-            bar_width = (1 - bar_space) / (no_of_bars)
-            bar_index = 0
+                # for bar chart
+                bar_space = 0.2
+                bar_width = (1 - bar_space) / (no_of_bars)
+                bar_index = 0
 
-            has_matrix = False
+                has_matrix = False
 
-            # some lines we should exclude from the color and use the default palette
-            for i in range(0, len(data_frame.columns.values)):
+                # some lines we should exclude from the color and use the default palette
+                for i in range(0, len(data_frame.columns.values)):
 
-                if isinstance(chart_type, list): chart_type_ord = chart_type[i]
-                else: chart_type_ord = chart_type
+                    if isinstance(chart_type, list): chart_type_ord = chart_type[i]
+                    else: chart_type_ord = chart_type
 
-                if chart_type == 'heatmap':
-                    # TODO experimental!
-                    # ax.set_frame_on(False)
-                    ax.pcolor(data_frame, cmap=plt.cm.Blues, alpha=0.8)
-                    # plt.colorbar()
-                    has_matrix = True
-                    break
+                    if chart_type == 'heatmap':
+                        # TODO experimental!
+                        # ax.set_frame_on(False)
+                        ax.pcolor(data_frame, cmap=plt.cm.Blues, alpha=0.8)
+                        # plt.colorbar()
+                        has_matrix = True
+                        break
 
-                label = str(data_frame.columns[i])
+                    label = str(data_frame.columns[i])
 
-                ax_temp = self.get_axis(ax, ax2, label, style.y_axis_2_series)
+                    ax_temp = self.get_axis(ax, ax2, label, style.y_axis_2_series)
 
-                yd = data_frame.ix[:,i]
+                    yd = data_frame.ix[:,i]
 
-                if color_spec[i] is None:
-                    color_spec[i] = color_cycle[i % len(color_cycle)]
+                    if color_spec[i] is None:
+                        color_spec[i] = color_cycle[i % len(color_cycle)]
 
-                if (chart_type_ord == 'line'):
-                    linewidth_t = self.get_linewidth(label,
-                                                     style.linewidth, style.linewidth_2, style.linewidth_2_series)
+                    if (chart_type_ord == 'line'):
+                        linewidth_t = self.get_linewidth(label,
+                                                         style.linewidth, style.linewidth_2, style.linewidth_2_series)
 
-                    if linewidth_t is None: linewidth_t = matplotlib.rcParams['axes.linewidth']
+                        if linewidth_t is None: linewidth_t = matplotlib.rcParams['axes.linewidth']
 
-                    ax_temp.plot(xd, yd, label = label, color = color_spec[i],
-                                     linewidth = linewidth_t)
+                        ax_temp.plot(xd, yd, label = label, color = color_spec[i],
+                                         linewidth = linewidth_t)
 
-                elif(chart_type_ord == 'bar'):
-                    # for multiple bars we need to allocate space properly
-                    bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0,len(bar_ind))]
+                    elif(chart_type_ord == 'bar'):
+                        # for multiple bars we need to allocate space properly
+                        bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0,len(bar_ind))]
 
-                    ax_temp.bar(bar_pos, yd, bar_width, label = label, color = color_spec[i])
+                        ax_temp.bar(bar_pos, yd, bar_width, label = label, color = color_spec[i])
 
-                    bar_index = bar_index + 1
+                        bar_index = bar_index + 1
 
-                elif(chart_type_ord == 'stacked'):
-                    bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0,len(bar_ind))]
+                    elif(chart_type_ord == 'stacked'):
+                        bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0,len(bar_ind))]
 
-                    yoff = np.where(yd > 0, yoff_pos, yoff_neg)
+                        yoff = np.where(yd > 0, yoff_pos, yoff_neg)
 
-                    ax_temp.bar(bar_pos, yd, label = label, color = color_spec[i], bottom = yoff)
+                        ax_temp.bar(bar_pos, yd, label = label, color = color_spec[i], bottom = yoff)
 
-                    yoff_pos = yoff_pos + np.maximum(yd, zeros)
-                    yoff_neg = yoff_neg + np.minimum(yd, zeros)
+                        yoff_pos = yoff_pos + np.maximum(yd, zeros)
+                        yoff_neg = yoff_neg + np.minimum(yd, zeros)
 
-                    # bar_index = bar_index + 1
+                        # bar_index = bar_index + 1
 
-                elif(chart_type_ord == 'scatter'):
-                    ax_temp.scatter(xd, yd, label = label, color = color_spec[i])
+                    elif(chart_type_ord == 'scatter'):
+                        ax_temp.scatter(xd, yd, label = label, color = color_spec[i])
 
-                    if style.line_of_best_fit is True:
-                        self.trendline(ax_temp, xd.values, yd.values, order=1, color= color_spec[i], alpha=1,
-                                           scale_factor = style.scale_factor)
+                        if style.line_of_best_fit is True:
+                            self.trendline(ax_temp, xd.values, yd.values, order=1, color= color_spec[i], alpha=1,
+                                               scale_factor = style.scale_factor)
 
-            # format X axis
-            self.format_x_axis(ax, data_frame, style, has_bar, bar_ind, has_matrix)
+                # format X axis
+                self.format_x_axis(ax, data_frame, style, has_bar, bar_ind, has_matrix)
 
-        except: pass
+            except: pass
 
-        if style.display_source_label == True:
-            ax.annotate('Source: ' + style.source, xy = (1, 0), xycoords='axes fraction', fontsize=7 * style.scale_factor,
-                        xytext=(-5 * style.scale_factor, 10 * style.scale_factor), textcoords='offset points',
-                        ha='right', va='top', color = style.source_color)
+            if style.display_source_label == True:
+                ax.annotate('Source: ' + style.source, xy = (1, 0), xycoords='axes fraction', fontsize=7 * style.scale_factor,
+                            xytext=(-5 * style.scale_factor, 10 * style.scale_factor), textcoords='offset points',
+                            ha='right', va='top', color = style.source_color)
 
-        if style.display_brand_label == True:
-            self.create_brand_label(ax, anno = style.brand_label, scale_factor = style.scale_factor)
+            if style.display_brand_label == True:
+                self.create_brand_label(ax, anno = style.brand_label, scale_factor = style.scale_factor)
 
-        leg = []
-        leg2 = []
+            leg = []
+            leg2 = []
 
-        loc = 'best'
+            loc = 'best'
 
-        # if we have two y-axis then make sure legends are in opposite corners
-        if ax2 != []: loc = 2
+            # if we have two y-axis then make sure legends are in opposite corners
+            if ax2 != []: loc = 2
 
-        try:
-            leg = ax.legend(loc = loc, prop={'size':10 * style.scale_factor})
-            leg.get_frame().set_linewidth(0.0)
-            leg.get_frame().set_alpha(0)
+            try:
+                leg = ax.legend(loc = loc, prop={'size':10 * style.scale_factor})
+                leg.get_frame().set_linewidth(0.0)
+                leg.get_frame().set_alpha(0)
 
-            if ax2 != []:
-                leg2 = ax2.legend(loc = 1, prop={'size':10 * style.scale_factor})
-                leg2.get_frame().set_linewidth(0.0)
-                leg2.get_frame().set_alpha(0)
-        except: pass
+                if ax2 != []:
+                    leg2 = ax2.legend(loc = 1, prop={'size':10 * style.scale_factor})
+                    leg2.get_frame().set_linewidth(0.0)
+                    leg2.get_frame().set_alpha(0)
+            except: pass
 
-        try:
-            if style.display_legend is False:
-                if leg != []: leg.remove()
-                if leg2 != []: leg.remove()
-        except: pass
+            try:
+                if style.display_legend is False:
+                    if leg != []: leg.remove()
+                    if leg2 != []: leg.remove()
+            except: pass
 
         try:
             plt.savefig(style.file_output, transparent=False)

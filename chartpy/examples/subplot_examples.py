@@ -43,5 +43,5 @@ if run_example == 2 or run_example == 0:
 
     chart.plot(engine='bokeh')
     chart.plot(engine='matplotlib')
-    # chart.plot(engine='plotly') TODO!
+    chart.plot(engine='plotly') # TODO fix legends though
 

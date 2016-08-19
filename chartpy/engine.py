@@ -882,44 +882,64 @@ class EnginePlotly(EngineTemplate):
             else:
                 cm = ColorMaster()
 
-                # get all the correct colors (and construct gradients if necessary eg. from 'Blues')
-                # need to change to strings for cufflinks
-                color_spec = []
-                color_list = cm.create_color_list(style, data_frame)
-
-                # if no colors are specified strip the list
-                if color_list == [None] * len(color_list):
-                    color_spec = None
-
-                else:
-                    # otherwise assume all the colors are rgba
-                    for color in color_list:
-                        color = 'rgba' + str(color)
-                        color_spec.append(color)
-
                 # create figure
-                fig = data_frame.iplot(kind=chart_type,
-                    title=style.title,
-                    xTitle=style.x_title,
-                    yTitle=style.y_title,
-                    x=x, y=y, z=z,
-                    subplots=style.subplots,
-                    mode=mode,
-                    size=marker_size,
-                    theme=style.plotly_theme,
-                    bestfit=style.line_of_best_fit,
-                    legend=style.display_legend,
-                    color=color_spec,
-                    dimensions=(style.width * style.scale_factor * scale, style.height * style.scale_factor * scale),
-                    asFigure=True)
+                data_frame_list = self.split_data_frame_to_list(data_frame, style)
+                fig_list = []
+                cols = []
 
-                fig.update(dict(layout=dict(legend=dict(
-                        x=0.05,
-                        y=1
-                    ))))
+                # for data_frame in data_frame_list:
+                #    cols.append(data_frame.columns)
 
-                fig.update(dict(layout=dict(paper_bgcolor='rgba(0,0,0,0)')))
-                fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))
+                # cols = list(np.array(cols).flat)
+
+                for data_frame in data_frame_list:
+                    end = len(data_frame.columns)
+
+                    # get all the correct colors (and construct gradients if necessary eg. from 'Blues')
+                    # need to change to strings for cufflinks
+                    color_spec = []
+                    color_list = cm.create_color_list(style, [], cols=data_frame.columns)
+
+                    # if no colors are specified strip the list
+                    if color_list == [None] * len(color_list):
+                        color_spec = None
+
+                    else:
+                        # otherwise assume all the colors are rgba
+                        for color in color_list:
+                            color = 'rgba' + str(color)
+                            color_spec.append(color)
+
+                    fig = data_frame.iplot(kind=chart_type,
+                        title=style.title,
+                        xTitle=style.x_title,
+                        yTitle=style.y_title,
+                        x=x, y=y, z=z,
+                        subplots=False,
+                        mode=mode,
+                        size=marker_size,
+                        theme=style.plotly_theme,
+                        bestfit=style.line_of_best_fit,
+                        legend=style.display_legend,
+                        color=color_spec,
+                        dimensions=(style.width * style.scale_factor * scale, style.height * style.scale_factor * scale),
+                        asFigure=True)
+
+                    fig.update(dict(layout=dict(legend=dict(
+                            x=0.05,
+                            y=1
+                        ))))
+
+                    fig.update(dict(layout=dict(paper_bgcolor='rgba(0,0,0,0)')))
+                    fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))
+
+                    fig_list.append(fig)
+
+                if len(fig_list) > 1:
+                    import cufflinks
+                    fig = cufflinks.subplots(fig_list)
+                else:
+                    fig = fig_list[0]
 
         self.publish_plot(fig, style)
 
@@ -958,12 +978,15 @@ class EnginePlotly(EngineTemplate):
 
 class ColorMaster:
 
-    def create_color_list(self, style, data_frame):
+    def create_color_list(self, style, data_frame, cols = None):
+        if cols is None:
+            cols = data_frame.columns
+
         # get all the correct colors (and construct gradients if necessary eg. from 'blues')
-        color = self.construct_color(style, 'color', len(data_frame.columns.values) - len(style.color_2_series))
+        color = self.construct_color(style, 'color', len(cols) - len(style.color_2_series))
         color_2 = self.construct_color(style, 'color_2', len(style.color_2_series))
 
-        return self.assign_color(data_frame.columns, color, color_2,
+        return self.assign_color(cols, color, color_2,
                                  style.exclude_from_color, style.color_2_series)
 
     def construct_color(self, style, color_field_name, no_of_entries):

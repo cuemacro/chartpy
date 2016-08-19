@@ -337,9 +337,10 @@ class EngineMatplotlib(EngineTemplate):
         cm = ColorMaster()
 
         # plot the lines (using custom palettes as appropriate)
+        color_spec = cm.create_color_list(style, data_frame)
         try:
             # get all the correct colors (and construct gradients if necessary eg. from 'blues')
-            color_spec = cm.create_color_list(style, data_frame)
+
 
             # for stacked bar
             yoff_pos = np.zeros(len(data_frame.index.values)) # the bottom values for stacked bar chart
@@ -872,6 +873,7 @@ class EnginePlotly(EngineTemplate):
                     xTitle=style.x_title,
                     yTitle=style.y_title,
                     x=x, y=y, z=z,
+                    subplots=style.subplots,
                     mode=mode,
                     size=marker_size,
                     theme=style.plotly_theme,

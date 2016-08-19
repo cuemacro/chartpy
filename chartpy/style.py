@@ -43,6 +43,9 @@ class Style(object):
                  color_2_series=[],
                  exclude_from_color=[],
 
+                 # subplot
+                 subplots=False,
+
                  # display sizes
                  scale_factor=cc.chartfactory_scale_factor,
                  dpi=cc.chartfactory_dpi,
@@ -111,6 +114,9 @@ class Style(object):
         self.color_2 = color_2
         self.color_2_series = color_2_series
         self.exclude_from_color = exclude_from_color
+
+        # subplots
+        self.subplots = subplots
 
         # display sizes
         self.scale_factor = scale_factor
@@ -266,6 +272,15 @@ class Style(object):
     @exclude_from_color.setter
     def exclude_from_color(self, exclude_from_color):
         self.__exclude_from_color = self.str_list(exclude_from_color)
+
+    ###### subplots
+    @property
+    def subplots(self):
+        return self.__subplots
+
+    @subplots.setter
+    def subplots(self, subplots):
+        self.__subplots = subplots
 
     ###### chart size
     @property

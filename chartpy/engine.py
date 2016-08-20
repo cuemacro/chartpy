@@ -344,7 +344,10 @@ class EngineMatplotlib(EngineTemplate):
             # plot the lines (using custom palettes as appropriate)
             color_spec = cm.create_color_list(style, data_frame)
 
-            ax = fig.add_subplot(2,1,subplot_no)
+            if style.subplots == False and len(data_frame_list) == 1:
+                ax = fig.add_subplot(111)
+            else:
+                ax = fig.add_subplot(2,1,subplot_no)
 
             subplot_no = subplot_no + 1
 
@@ -391,7 +394,7 @@ class EngineMatplotlib(EngineTemplate):
                     if isinstance(chart_type, list): chart_type_ord = chart_type[i]
                     else: chart_type_ord = chart_type
 
-                    if chart_type == 'heatmap':
+                    if chart_type_ord == 'heatmap':
                         # TODO experimental!
                         # ax.set_frame_on(False)
                         ax.pcolor(data_frame, cmap=plt.cm.Blues, alpha=0.8)
@@ -443,6 +446,7 @@ class EngineMatplotlib(EngineTemplate):
                         if style.line_of_best_fit is True:
                             self.trendline(ax_temp, xd.values, yd.values, order=1, color= color_spec[i], alpha=1,
                                                scale_factor = style.scale_factor)
+
 
                 # format X axis
                 self.format_x_axis(ax, data_frame, style, has_bar, bar_ind, has_matrix)
@@ -789,69 +793,6 @@ class EnginePlotly(EngineTemplate):
         x = ''; y = ''; z = ''
         fig = None
 
-        if chart_type == 'line':
-            chart_type = 'scatter'
-        elif chart_type == 'scatter':
-            mode = 'markers'
-            marker_size = 5
-        elif chart_type == 'bubble':
-            x = data_frame.columns[0]
-            y = data_frame.columns[1]
-            z = data_frame.columns[2]
-
-        # special case for choropleth which has yet to be implemented in Cufflinks
-        # will likely remove this in the future
-        elif chart_type == 'choropleth':
-
-            for col in data_frame.columns:
-                try:
-                    data_frame[col] = data_frame[col].astype(str)
-                except:
-                    pass
-
-            if style.color != []:
-                color = style.color
-            else:
-                color = [[0.0, 'rgb(242,240,247)'],[0.2, 'rgb(218,218,235)'],[0.4, 'rgb(188,189,220)'],\
-                [0.6, 'rgb(158,154,200)'],[0.8, 'rgb(117,107,177)'],[1.0, 'rgb(84,39,143)']]
-
-            text = ''
-
-            if 'text' in data_frame.columns:
-                text = data_frame['Text']
-
-            data = [ dict(
-                    type='choropleth',
-                    colorscale = color,
-                    autocolorscale = False,
-                    locations = data_frame['Code'],
-                    z = data_frame[style.plotly_choropleth_field].astype(float),
-                    locationmode = style.plotly_location_mode,
-                    text = text,
-                    marker = dict(
-                        line = dict (
-                            color = 'rgb(255,255,255)',
-                            width = 1
-                        )
-                    ),
-                    colorbar = dict(
-                        title = style.units
-                    )
-                ) ]
-
-            layout = dict(
-                    title = style.title,
-                    geo = dict(
-                        scope=style.plotly_scope,
-                        projection=dict( type=style.plotly_projection ),
-                        showlakes = True,
-                        lakecolor = 'rgb(255, 255, 255)',
-                    ),
-                )
-
-            fig = dict( data=data, layout=layout )
-
-
         scale = 1
 
         try:
@@ -863,102 +804,175 @@ class EnginePlotly(EngineTemplate):
         # check other plots implemented by Cufflinks
         if fig is None:
 
-            # special case for surface (given coloring)
-            if chart_type == 'surface':
-                # create figure
-                fig = data_frame.iplot(kind=chart_type,
-                    title=style.title,
-                    xTitle=style.x_title,
-                    yTitle=style.y_title,
-                    x=x, y=y, z=z,
-                    mode=mode,
-                    size=marker_size,
-                    theme=style.plotly_theme,
-                    bestfit=style.line_of_best_fit,
-                    legend=style.display_legend,
-                    colorscale=style.color,
-                    dimensions=(style.width * style.scale_factor * scale, style.height * style.scale_factor * scale),
-                    asFigure=True)
+            cm = ColorMaster()
+
+            # create figure
+            data_frame_list = self.split_data_frame_to_list(data_frame, style)
+            fig_list = []
+            cols = []
+
+            for data_frame in data_frame_list:
+                cols.append(data_frame.columns)
+
+            cols = list(np.array(cols).flat)
+
+            # get all the correct colors (and construct gradients if necessary eg. from 'Blues')
+            # need to change to strings for cufflinks
+
+            color_list = cm.create_color_list(style, [], cols=cols)
+            color_spec = []
+
+            # if no colors are specified then just use our default color set from chart constants
+            if color_list == [None] * len(color_list):
+                color_spec = [None] * len(color_list)
+
+                for i in range(0, len(color_list)):
+                    # get the color
+                    if color_spec[i] is None:
+                        color_spec[i] = self.get_color_list(i)
+
+                    try:
+                        color_spec[i] = matplotlib.colors.rgb2hex(color_spec[i])
+                    except:
+                        pass
+
             else:
-                cm = ColorMaster()
+                # otherwise assume all the colors are rgba
+                for color in color_list:
+                    color = 'rgba' + str(color)
+                    color_spec.append(color)
 
-                # create figure
-                data_frame_list = self.split_data_frame_to_list(data_frame, style)
-                fig_list = []
-                cols = []
+            start = 0
 
-                for data_frame in data_frame_list:
-                    cols.append(data_frame.columns)
+            for i in range(0, len(data_frame_list)):
+                data_frame = data_frame_list[i]
 
-                cols = list(np.array(cols).flat)
+                if isinstance(chart_type, list):
+                    chart_type_ord = chart_type[i]
+                else:
+                    chart_type_ord = chart_type
 
-                # get all the correct colors (and construct gradients if necessary eg. from 'Blues')
-                # need to change to strings for cufflinks
+                end = start + len(data_frame.columns)
+                color_spec1 = color_spec[start:start + end]
+                start = end
 
-                color_list = cm.create_color_list(style, [], cols=cols)
-                color_spec = []
+                if chart_type_ord == 'surface':
+                    fig = data_frame.iplot(kind=chart_type,
+                                           title=style.title,
+                                           xTitle=style.x_title,
+                                           yTitle=style.y_title,
+                                           x=x, y=y, z=z,
+                                           mode=mode,
+                                           size=marker_size,
+                                           theme=style.plotly_theme,
+                                           bestfit=style.line_of_best_fit,
+                                           legend=style.display_legend,
+                                           colorscale=style.color,
+                                           dimensions=(style.width * style.scale_factor * scale,
+                                                       style.height * style.scale_factor * scale),
+                                           asFigure=True)
 
-                # if no colors are specified then just use our default color set from chart constants
-                if color_list == [None] * len(color_list):
-                    color_spec = [None] * len(color_list)
+                elif chart_type_ord == 'line':
+                    chart_type_ord = 'scatter'
+                elif chart_type_ord == 'scatter':
+                    mode = 'markers'
+                    marker_size = 5
+                elif chart_type_ord == 'bubble':
+                    x = data_frame.columns[0]
+                    y = data_frame.columns[1]
+                    z = data_frame.columns[2]
 
-                    for i in range(0, len(color_list)):
-                        # get the color
-                        if color_spec[i] is None:
-                            color_spec[i] = self.get_color_list(i)
+                # special case for choropleth which has yet to be implemented in Cufflinks
+                # will likely remove this in the future
+                elif chart_type_ord == 'choropleth':
 
+                    for col in data_frame.columns:
                         try:
-                            color_spec[i] = matplotlib.colors.rgb2hex(color_spec[i])
+                            data_frame[col] = data_frame[col].astype(str)
                         except:
                             pass
 
-                else:
-                    # otherwise assume all the colors are rgba
-                    for color in color_list:
-                        color = 'rgba' + str(color)
-                        color_spec.append(color)
+                    if style.color != []:
+                        color = style.color
+                    else:
+                        color = [[0.0, 'rgb(242,240,247)'], [0.2, 'rgb(218,218,235)'], [0.4, 'rgb(188,189,220)'], \
+                                 [0.6, 'rgb(158,154,200)'], [0.8, 'rgb(117,107,177)'], [1.0, 'rgb(84,39,143)']]
 
-                start = 0
+                    text = ''
 
-                for data_frame in data_frame_list:
-                    end = start + len(data_frame.columns)
-                    color_spec1 = color_spec[start:start+end]
-                    start = end
+                    if 'text' in data_frame.columns:
+                        text = data_frame['Text']
 
-                    fig = data_frame.iplot(kind=chart_type,
+                    data = [dict(
+                        type='choropleth',
+                        colorscale=color,
+                        autocolorscale=False,
+                        locations=data_frame['Code'],
+                        z=data_frame[style.plotly_choropleth_field].astype(float),
+                        locationmode=style.plotly_location_mode,
+                        text=text,
+                        marker=dict(
+                            line=dict(
+                                color='rgb(255,255,255)',
+                                width=1
+                            )
+                        ),
+                        colorbar=dict(
+                            title=style.units
+                        )
+                    )]
+
+                    layout = dict(
                         title=style.title,
-                        xTitle=style.x_title,
-                        yTitle=style.y_title,
-                        x=x, y=y, z=z,
-                        subplots=False,
-                        mode=mode,
-                        size=marker_size,
-                        theme=style.plotly_theme,
-                        bestfit=style.line_of_best_fit,
-                        legend=style.display_legend,
-                        color=color_spec1,
-                        dimensions=(style.width * style.scale_factor * scale, style.height * style.scale_factor * scale),
-                        asFigure=True)
+                        geo=dict(
+                            scope=style.plotly_scope,
+                            projection=dict(type=style.plotly_projection),
+                            showlakes=True,
+                            lakecolor='rgb(255, 255, 255)',
+                        ),
+                    )
 
-                    fig.update(dict(layout=dict(legend=dict(
-                            x=0.05,
-                            y=1
-                        ))))
+                    fig = dict(data=data, layout=layout)
 
-                    fig.update(dict(layout=dict(paper_bgcolor='rgba(0,0,0,0)')))
-                    fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))
+                if chart_type_ord not in ['surface', 'choropleth']:
 
-                    fig_list.append(fig)
+                    fig = data_frame.iplot(kind=chart_type_ord,
+                                           title=style.title,
+                                           xTitle=style.x_title,
+                                           yTitle=style.y_title,
+                                           x=x, y=y, z=z,
+                                           subplots=False,
+                                           mode=mode,
+                                           size=marker_size,
+                                           theme=style.plotly_theme,
+                                           bestfit=style.line_of_best_fit,
+                                           legend=style.display_legend,
+                                           color=color_spec1,
+                                           dimensions=(style.width * style.scale_factor * scale,
+                                                       style.height * style.scale_factor * scale),
+                                           asFigure=True)
 
-                if len(fig_list) > 1:
-                    import cufflinks
-                    fig = cufflinks.subplots(fig_list)
-                else:
-                    fig = fig_list[0]
+                fig.update(dict(layout=dict(legend=dict(
+                    x=0.05,
+                    y=1
+                ))))
+
+                fig.update(dict(layout=dict(paper_bgcolor='rgba(0,0,0,0)')))
+                fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))
+
+                fig_list.append(fig)
+
+            if len(fig_list) > 1:
+                import cufflinks
+                fig = cufflinks.subplots(fig_list)
+            else:
+                fig = fig_list[0]
 
         self.publish_plot(fig, style)
 
     def publish_plot(self, fig, style):
+        fig.update(dict(layout=dict(paper_bgcolor='rgba(0,0,0,0)')))
+        fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))
 
         if style.plotly_plot_mode == 'online':
             plotly.tools.set_credentials_file(username=style.plotly_username, api_key=style.plotly_api_key)

@@ -8,12 +8,12 @@ except:
 from chartpy import Chart, Style
 
 # get your own free Quandl API key from https://www.quandl.com/
-quandl_api_key = "xxx"
+quandl_api_key = "x"
 
 # choose run_example = 0 for everything
 # run_example = 1 - plot US GDP with multiple libraries
 # run_example = 2 - plot US and UK unemployment demonstrating multiple line types
-run_example = 0
+run_example = 2
 
 if run_example == 1 or run_example == 0:
     df = Quandl.get("FRED/GDP", authtoken=quandl_api_key)
@@ -45,4 +45,7 @@ if run_example == 2 or run_example == 0:
     # we can also specify the engine within the Style object if we choose
     style = Style(title="US & Texas unemployment rate", chart_type=['bar', 'line'], engine='matplotlib')
 
+    Chart(df, style=style).plot()
+
+    style.engine = 'bokeh'
     Chart(df, style=style).plot()

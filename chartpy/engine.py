@@ -887,28 +887,43 @@ class EnginePlotly(EngineTemplate):
                 fig_list = []
                 cols = []
 
-                # for data_frame in data_frame_list:
-                #    cols.append(data_frame.columns)
+                for data_frame in data_frame_list:
+                    cols.append(data_frame.columns)
 
-                # cols = list(np.array(cols).flat)
+                cols = list(np.array(cols).flat)
+
+                # get all the correct colors (and construct gradients if necessary eg. from 'Blues')
+                # need to change to strings for cufflinks
+
+                color_list = cm.create_color_list(style, [], cols=cols)
+                color_spec = []
+
+                # if no colors are specified then just use our default color set from chart constants
+                if color_list == [None] * len(color_list):
+                    color_spec = [None] * len(color_list)
+
+                    for i in range(0, len(color_list)):
+                        # get the color
+                        if color_spec[i] is None:
+                            color_spec[i] = self.get_color_list(i)
+
+                        try:
+                            color_spec[i] = matplotlib.colors.rgb2hex(color_spec[i])
+                        except:
+                            pass
+
+                else:
+                    # otherwise assume all the colors are rgba
+                    for color in color_list:
+                        color = 'rgba' + str(color)
+                        color_spec.append(color)
+
+                start = 0
 
                 for data_frame in data_frame_list:
-                    end = len(data_frame.columns)
-
-                    # get all the correct colors (and construct gradients if necessary eg. from 'Blues')
-                    # need to change to strings for cufflinks
-                    color_spec = []
-                    color_list = cm.create_color_list(style, [], cols=data_frame.columns)
-
-                    # if no colors are specified strip the list
-                    if color_list == [None] * len(color_list):
-                        color_spec = None
-
-                    else:
-                        # otherwise assume all the colors are rgba
-                        for color in color_list:
-                            color = 'rgba' + str(color)
-                            color_spec.append(color)
+                    end = start + len(data_frame.columns)
+                    color_spec1 = color_spec[start:start+end]
+                    start = end
 
                     fig = data_frame.iplot(kind=chart_type,
                         title=style.title,
@@ -921,7 +936,7 @@ class EnginePlotly(EngineTemplate):
                         theme=style.plotly_theme,
                         bestfit=style.line_of_best_fit,
                         legend=style.display_legend,
-                        color=color_spec,
+                        color=color_spec1,
                         dimensions=(style.width * style.scale_factor * scale, style.height * style.scale_factor * scale),
                         asFigure=True)
 
@@ -973,7 +988,12 @@ class EnginePlotly(EngineTemplate):
             plotly.plotly.image.save_as(fig, filename=style.file_output, format='png',
                                 width=style.width * style.scale_factor, height=style.height * style.scale_factor)
         except: pass
-        
+
+    def get_color_list(self, i):
+        color_palette = cc.plotly_palette
+
+        return color_palette[i % len(color_palette)]
+
 #######################################################################################################################
 
 class ColorMaster:

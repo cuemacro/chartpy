@@ -76,6 +76,13 @@ class ChartConstants(object):
     ########## PLOTLY SETTINGS
     plotly_world_readable = False
     plotly_plot_mode = 'offline_html' # 'online', 'offline_jupyter'
+    plotly_palette = ['#E24A33',
+                       '#348ABD',
+                       '#988ED5',
+                       '#777777',
+                       '#FBC15E',
+                       '#8EBA42',
+                       '#FFB5B8']
 
 
     ########## API KEYS

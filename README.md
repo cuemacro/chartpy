@@ -61,6 +61,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 20 Aug 2016 - Added Plotly default palette
 * 19 Aug 2016 - Added HTML examples for bokeh & plotly, subplotting for bokeh, plotly & matplotlib (with subplot_examples)
 * 17 Aug 2016 - Uploaded first code
 

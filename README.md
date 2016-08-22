@@ -14,30 +14,22 @@ chart.plot(engine='bokeh')
 chart.plot(engine='plotly')
 ```
 
-I had previously written the open source PyThalesians financial library. This new chartpy library has similar functionality to the chart
+I had previously written the open source PyThalesians financial library. This new chartpy library has some similar functionality to the chart
 part of that library. However, I've totally rewritten the API to make it much cleaner and easier to use. It is also now a fully
-standalone package, so it'll be easier to use for both non-financial and financial applications.
+standalone package, so it'll be easier to use for both non-financial and financial applications. It also has many more features including subplots 
+and much more.
 
 At present ChartPy supports several types of plots
 * line (bokeh, plotly and matplotlib)
 * scatter (bokeh, plotly and matplotlib)
 * surface (plotly)
 * map plots (plotly)
-* looking to add more
+* looking to add more (any requests?)
 
 Other points to note
 * Please bear in mind at present chartpy is currently a highly experimental alpha project and isn't yet fully 
 documented
 * Uses Apache 2.0 licence
-
-# To install Open Sans font
-
-My chartpy stylesheet for matplotlib uses the free Open Sans font. For it to display properly you need to install Open Sans font
-on your computer
-* First download font from https://www.fontsquirrel.com/fonts/open-sans
-* Windows: Install font by dragging to Windows/fonts folder
-* Windows: Reset matplotlib font cache (delete file eg. c:/users/username/.matplotlib/fontList.py3k.cache
-* On Mac OS X/Linux procedure for installing fonts is different
 
 # Gallery
 
@@ -58,6 +50,16 @@ Do surface plots (plotly only at present - see examples/surface_examples.py)
 Major requirements
 * Required: Python 3.4, 3.5
 * Required: pandas, matplotlib, plotly, cufflinks, bokeh, numpy etc.
+
+# To install Open Sans font
+
+My chartpy stylesheet for matplotlib uses the free Open Sans font. For it to display properly you need to install Open Sans font
+on your computer
+* First download font from https://www.fontsquirrel.com/fonts/open-sans
+* Windows: Install font by dragging to Windows/fonts folder
+* Windows: Reset matplotlib font cache (delete file eg. c:/users/username/.matplotlib/fontList.py3k.cache
+* On Mac OS X/Linux procedure for installing fonts is different
+
 
 # Installation
 

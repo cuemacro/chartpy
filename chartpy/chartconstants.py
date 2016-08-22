@@ -91,11 +91,31 @@ class ChartConstants(object):
     plotly_default_username = 'abc'
 
     # Plotly settings (username : api_key)
-    plotly_creds = {"abc" : "x",
-                    "xyz" : "x"
+    plotly_creds = {"abc" : "pass",
+                    "xyz" : "pass"
                     }
 
     plotly_streaming_key = "x"
+
+    # or we can store credentials in a file "chartcred.py" in the same folder, which will overwrite the above
+    try:
+        from chartpy.chartcred import ChartCred
+
+        cred = ChartCred()
+
+        TWITTER_APP_KEY = cred.TWITTER_APP_KEY
+        TWITTER_APP_SECRET = cred.TWITTER_APP_SECRET
+        TWITTER_OAUTH_TOKEN = cred.TWITTER_OAUTH_TOKEN
+        TWITTER_OAUTH_TOKEN_SECRET = cred.TWITTER_OAUTH_TOKEN_SECRET
+
+        plotly_default_username = cred.plotly_default_username
+
+        plotly_creds = cred.plotly_creds
+
+        plotly_streaming_key = cred.plotly_creds
+
+    except:
+        pass
 
     ##### Colors for plotting
     # 'red'   :   '#E24A33',

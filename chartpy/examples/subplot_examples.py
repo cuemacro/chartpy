@@ -8,7 +8,13 @@ except:
 from chartpy import Chart, Style
 
 # get your own free bQuandl API key from https://www.quandl.com/
-quandl_api_key = "x"
+try:
+    from chartpy.chartcred import ChartCred
+
+    cred = ChartCred()
+    quandl_api_key = cred.quandl_api_key
+except:
+    quandl_api_key = "x"
 
 # choose run_example = 0 for everything
 # run_example = 1 - plot US GDP QoQ (real) and nominal with Plotly/Bokeh/Matplotlib with subplots for each line

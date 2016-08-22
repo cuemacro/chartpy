@@ -134,12 +134,14 @@ class EngineBokeh(EngineTemplate):
             output_file(html)
         except: pass
 
-        plot_width = int(style.width * scale_factor)
-        plot_height = int(style.height * scale_factor)
+
 
         data_frame_list = self.split_data_frame_to_list(data_frame, style)
 
         plot_list = []
+
+        plot_width = int((style.width * scale_factor))
+        plot_height = int((style.height * scale_factor) / len(data_frame_list))
 
         for data_frame in data_frame_list:
             bar_ind = numpy.arange(1, len(data_frame.index) + 1)

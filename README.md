@@ -78,7 +78,8 @@ concentrate on analysing data, rather than getting caught up in complex API visu
 having to totally edit my code each time, a single keyword is enough to switch between for example plotly and matplotlib.
 
 I've also tried to design the library so that adding a new plotting engine is fairly straightforward (extend EngineTemplate
-and edit the get_engine method in Chart).
+and edit the get_engine method in Chart), so it's basically future proof for whatever new chart libraries come along, with
+relatively small changes to your code.
 
 # chartpy examples
 

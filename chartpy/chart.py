@@ -84,6 +84,7 @@ class Chart(object):
 
         return None
 
+    # TODO fix this
     def _iplot(self, data_frame, engine=engine, chart_type=None, style=None):
         return Chart.get_engine(engine).plot_chart(data_frame, style, chart_type)
 

@@ -19,7 +19,7 @@ part of that library. However, I've totally rewritten the API to make it much cl
 standalone package, so it'll be easier to use for both non-financial and financial applications. It also has many more features including subplots 
 and much more.
 
-At present ChartPy supports several types of plots
+At present chartpy supports several types of plots
 * line (bokeh, plotly and matplotlib)
 * scatter (bokeh, plotly and matplotlib)
 * surface (plotly)
@@ -70,6 +70,16 @@ You can install the library using the below. After installation:
 pip install git+https://github.com/cuemacro/chartpy.git
 ```
 
+# Why did I write chartpy?
+
+There are many good charting libraries. However, they all have different APIs. It took me a lot of time to learn a new API,
+for each new plotting library I wanted to use. I ended up writing chartpy to abstract away all this complexity, so I could
+concentrate on analysing data, rather than getting caught up in complex API visualisation calls. Rather than
+having to totally edit my code each time, a single keyword is enough to switch between for example plotly and matplotlib.
+
+I've also tried to design the library so that adding a new plotting engine is fairly straightforward (extend EngineTemplate
+and edit the get_engine method in Chart).
+
 # chartpy examples
 
 In chartpy/examples you will find several demos
@@ -80,6 +90,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 28 Aug 2016 - Added explanation of why chartpy?
 * 20 Aug 2016 - Added Plotly default palette, surface examples
 * 19 Aug 2016 - Added HTML examples for bokeh & plotly, subplotting for bokeh, plotly & matplotlib (with subplot_examples)
 * 17 Aug 2016 - Uploaded first code

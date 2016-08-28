@@ -79,7 +79,7 @@ having to totally edit my code each time, a single keyword is enough to switch b
 
 I've also tried to design the library so that adding a new plotting engine is fairly straightforward (extend EngineTemplate
 and edit the get_engine method in Chart), so it's basically future proof for whatever new chart libraries come along, with
-relatively small changes to your code.
+relatively small changes to your code base.
 
 # chartpy examples
 

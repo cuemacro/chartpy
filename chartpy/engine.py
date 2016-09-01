@@ -41,7 +41,7 @@ class EngineTemplate(object):
 
 
     def get_bar_indices(self, data_frame, style, chart_type, bar_ind):
-        has_bar = False
+        has_bar = 'no-bar'
         xd = data_frame.index
         no_of_bars = len(data_frame.columns)
 
@@ -50,21 +50,21 @@ class EngineTemplate(object):
                 if 'bar' in style.chart_type:
                     xd = bar_ind
                     no_of_bars = style.chart_type.count('bar')
-                    has_bar = True
+                    has_bar = 'barv'
                 elif 'stacked' in style.chart_type:
                     xd = bar_ind
                     no_of_bars = 1
-                    has_bar = True
+                    has_bar = 'barv'
             elif 'bar' == style.chart_type:
                 xd = bar_ind
-                has_bar = True
+                has_bar = 'barv'
             elif 'stacked' == style.chart_type:
                 xd = bar_ind
-                has_bar = True
+                has_bar = 'barv'
         else:
             if chart_type == 'bar' or chart_type == 'stacked':
                 xd = bar_ind
-                has_bar = True
+                has_bar = 'barv'
 
         return xd, bar_ind, has_bar, no_of_bars
 
@@ -156,8 +156,8 @@ class EngineBokeh(EngineTemplate):
                     x_range=(xd[0], xd[-1])
                     )
 
-            # if has a bar than categorical axis
-            elif has_bar == True:
+            # if has a vertical bar than categorical x-axis
+            elif has_bar == 'barv':
                 p1 = figure(
                     plot_width = plot_width,
                     plot_height = plot_height,
@@ -217,7 +217,7 @@ class EngineBokeh(EngineTemplate):
             bar_width = (1 - bar_space) / (no_of_bars)
             bar_index = 0
 
-            has_bar = False
+            has_bar ='no-bar'
 
             # plot each series in the dataframe separately
             for i in range(0, len(data_frame.columns)):
@@ -375,7 +375,6 @@ class EngineMatplotlib(EngineTemplate):
 
             try:
                 # get all the correct colors (and construct gradients if necessary eg. from 'blues')
-
 
                 # for stacked bar
                 yoff_pos = np.zeros(len(data_frame.index.values)) # the bottom values for stacked bar chart
@@ -580,7 +579,7 @@ class EngineMatplotlib(EngineTemplate):
 
             return
 
-        if has_bar:
+        if has_bar == 'barv':
             ax.set_xticks(bar_ind)
             ax.set_xticklabels(data_frame.index)
             ax.set_xlim([-1, len(bar_ind)])
@@ -621,9 +620,8 @@ class EngineMatplotlib(EngineTemplate):
                 import matplotlib.dates as md
 
                 if style.date_formatter is not None:
-                    ax.xaxis.set_major_formatter(md.DateFormatter(style.date_formatter))
-                elif diff < timedelta(days = 4):
-
+                    # from matplotlib.ticker import Formatter
+                    #
                     # class MyFormatter(Formatter):
                     #     def __init__(self, dates, fmt='%H:%M'):
                     #         self.dates = dates
@@ -638,6 +636,11 @@ class EngineMatplotlib(EngineTemplate):
                     #
                     # formatter = MyFormatter(dates)
                     # ax.xaxis.set_major_formatter(formatter)
+
+                    ax.xaxis.set_major_formatter(md.DateFormatter(style.date_formatter))
+                elif diff < timedelta(days = 4):
+
+
 
                     date_formatter = '%H:%M'
                     xfmt = md.DateFormatter(date_formatter)

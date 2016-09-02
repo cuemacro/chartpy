@@ -93,6 +93,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 03 Sep 2016 - Added horizontal bars for matplotlib
 * 28 Aug 2016 - Added explanation of why chartpy?
 * 20 Aug 2016 - Added Plotly default palette, surface examples
 * 19 Aug 2016 - Added HTML examples for bokeh & plotly, subplotting for bokeh, plotly & matplotlib (with subplot_examples)

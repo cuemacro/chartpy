@@ -43,6 +43,10 @@ if run_example == 2 or run_example == 0:
     # download US and Texas unemployment rate
     df = Quandl.get(["FRED/UNRATE", "FRED/TXUR"], authtoken=quandl_api_key, trim_start="2015-12-01")
 
+    import pandas
+
+    df.index = pandas.to_datetime(df.index, format='%Y-%m-%d')
+
     # first plot without any parameters (will use defaults) - note how we can it assign the dataframe to either Chart
     # or the plot method
     Chart(df).plot()
@@ -51,7 +55,10 @@ if run_example == 2 or run_example == 0:
     # we can also specify the engine within the Style object if we choose
     style = Style(title="US & Texas unemployment rate", chart_type=['bar', 'line'], engine='matplotlib')
 
+    style.engine = 'bokeh'
     Chart(df, style=style).plot()
 
-    style.engine = 'bokeh'
+    # Bokeh wrapper doesn't yet support horizontal bars, but matplotlib wrapper does
+    style.engine = 'matplotlib'
+    style.chart_type = 'barh'
     Chart(df, style=style).plot()

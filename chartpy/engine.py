@@ -58,9 +58,12 @@ class EngineTemplate(object):
             elif 'bar' == style.chart_type:
                 xd = bar_ind
                 has_bar = 'barv'
+            elif 'barh' == style.chart_type:
+                xd = bar_ind
+                has_bar = 'barh'
             elif 'stacked' == style.chart_type:
                 xd = bar_ind
-                has_bar = 'barv'
+                has_bar = 'barh'
         else:
             if chart_type == 'bar' or chart_type == 'stacked':
                 xd = bar_ind
@@ -148,24 +151,23 @@ class EngineBokeh(EngineTemplate):
 
             xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame, style, chart_type, bar_ind)
 
-            if type(data_frame.index) == pandas.tslib.Timestamp:
-                p1 = figure(
-                    x_axis_type = "datetime",
-                    plot_width = plot_width,
-                    plot_height = plot_height,
-                    x_range=(xd[0], xd[-1])
-                    )
-
             # if has a vertical bar than categorical x-axis
-            elif has_bar == 'barv':
+            if has_bar == 'barv':
                 p1 = figure(
                     plot_width = plot_width,
                     plot_height = plot_height,
-                    x_range=[str(x) for x in data_frame.index]
+                    x_range=[str(x).replace(':','.') for x in data_frame.index]
                     )
 
                 from math import pi
                 p1.xaxis.major_label_orientation = pi/2
+            elif type(data_frame.index) == pandas.tslib.Timestamp:
+                p1 = figure(
+                    x_axis_type = "datetime",
+                    plot_width = plot_width,
+                    plot_height = plot_height,
+                    x_range = (xd[0], xd[-1])
+                )
 
             # otherwise numerical axis
             else:
@@ -263,6 +265,9 @@ class EngineBokeh(EngineTemplate):
 
                     bar_index = bar_index + 1
                     bar_ind = bar_ind + bar_width
+                elif (chart_type_ord == 'barh'):
+                    # TODO
+                    pass
 
                 elif chart_type_ord == 'scatter':
                     linewidth_t = self.get_linewidth(label,
@@ -426,6 +431,14 @@ class EngineMatplotlib(EngineTemplate):
                         bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0,len(bar_ind))]
 
                         ax_temp.bar(bar_pos, yd, bar_width, label = label, color = color_spec[i])
+
+                        bar_index = bar_index + 1
+
+                    elif (chart_type_ord == 'barh'):
+                        # for multiple bars we need to allocate space properly
+                        bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0, len(bar_ind))]
+
+                        ax_temp.barh(bar_pos, yd, bar_width, label=label, color=color_spec[i])
 
                         bar_index = bar_index + 1
 
@@ -598,6 +611,26 @@ class EngineMatplotlib(EngineTemplate):
                 plt.tight_layout()
                 # ax.tick_params(axis='x', labelsize=matplotlib.rcParams['font.size'] * 0.5)
             return
+        elif has_bar == 'barh':
+            ax.set_yticks(bar_ind)
+            ax.set_yticklabels(data_frame.index)
+            ax.set_ylim([-1, len(bar_ind)])
+
+            # if lots of labels make text smaller and rotate
+            if len(bar_ind) > 6:
+                #plt.setp(plt.yticks()[1])
+                # plt.gca().tight_layout()
+                # matplotlib.rcParams.update({'figure.autolayout': True})
+                # plt.gcf().subplots_adjust(bottom=5)
+                import matplotlib.dates as mdates
+
+                if style.date_formatter is not None:
+                    ax.format_ydata = mdates.DateFormatter(style.date_formatter)
+
+                plt.tight_layout()
+                # ax.tick_params(axis='x', labelsize=matplotlib.rcParams['font.size'] * 0.5)
+            return
+
 
         # format X axis
         dates = data_frame.index

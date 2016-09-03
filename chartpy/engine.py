@@ -110,6 +110,7 @@ class EngineTemplate(object):
 #######################################################################################################################
 
 from bokeh.plotting import figure, output_file, show, gridplot
+from bokeh.charts import HeatMap
 
 class EngineBokeh(EngineTemplate):
 
@@ -137,8 +138,6 @@ class EngineBokeh(EngineTemplate):
             output_file(html)
         except: pass
 
-
-
         data_frame_list = self.split_data_frame_to_list(data_frame, style)
 
         plot_list = []
@@ -151,8 +150,18 @@ class EngineBokeh(EngineTemplate):
 
             xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame, style, chart_type, bar_ind)
 
+            separate_chart = False
+
+            if chart_type == 'heatmap':
+                # TODO
+
+                p1 = HeatMap(data_frame,
+                             title='Random', plot_width = plot_width, plot_height = plot_height)
+
+                separate_chart = True
+
             # if has a vertical bar than categorical x-axis
-            if has_bar == 'barv':
+            elif has_bar == 'barv':
                 p1 = figure(
                     plot_width = plot_width,
                     plot_height = plot_height,
@@ -221,66 +230,68 @@ class EngineBokeh(EngineTemplate):
 
             has_bar ='no-bar'
 
-            # plot each series in the dataframe separately
-            for i in range(0, len(data_frame.columns)):
-                label = str(data_frame.columns[i])
-                glyph_name = 'glpyh' + str(i)
+            if not(separate_chart):
 
-                # set chart type which can differ for each time series
-                if isinstance(chart_type, list): chart_type_ord = chart_type[i]
-                else: chart_type_ord = chart_type
+                # plot each series in the dataframe separately
+                for i in range(0, len(data_frame.columns)):
+                    label = str(data_frame.columns[i])
+                    glyph_name = 'glpyh' + str(i)
 
-                # get the color
-                if color_spec[i] is None:
-                    color_spec[i] = self.get_color_list(i)
+                    # set chart type which can differ for each time series
+                    if isinstance(chart_type, list): chart_type_ord = chart_type[i]
+                    else: chart_type_ord = chart_type
 
-                try:
-                    color_spec[i] = matplotlib.colors.rgb2hex(color_spec[i])
-                except: pass
+                    # get the color
+                    if color_spec[i] is None:
+                        color_spec[i] = self.get_color_list(i)
 
-                yd = data_frame.ix[:,i]
+                    try:
+                        color_spec[i] = matplotlib.colors.rgb2hex(color_spec[i])
+                    except: pass
 
-                # plot each time series as appropriate line, scatter etc.
-                if chart_type_ord == 'line':
-                    linewidth_t = self.get_linewidth(label,
-                        style.linewidth, style.linewidth_2, style.linewidth_2_series)
+                    yd = data_frame.ix[:,i]
 
-                    if linewidth_t is None: linewidth_t = 1
+                    # plot each time series as appropriate line, scatter etc.
+                    if chart_type_ord == 'line':
+                        linewidth_t = self.get_linewidth(label,
+                            style.linewidth, style.linewidth_2, style.linewidth_2_series)
 
-                    if style.display_legend:
-                        p1.line(xd, yd, color = color_spec[i], line_width=linewidth_t, name = glyph_name,
-                                legend = label,
-                        )
-                    else:
-                        p1.line(xd, data_frame.ix[:,i], color = color_spec[i], line_width=linewidth_t, name = glyph_name)
+                        if linewidth_t is None: linewidth_t = 1
 
-                elif(chart_type_ord == 'bar'):
-                    bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(1,len(bar_ind) + 1)]
-                    bar_pos_right = [x + bar_width for x in bar_pos]
+                        if style.display_legend:
+                            p1.line(xd, yd, color = color_spec[i], line_width=linewidth_t, name = glyph_name,
+                                    legend = label,
+                            )
+                        else:
+                            p1.line(xd, data_frame.ix[:,i], color = color_spec[i], line_width=linewidth_t, name = glyph_name)
 
-                    if style.display_legend:
-                        p1.quad(top=yd, bottom=0 * yd, left=bar_pos, right=bar_pos_right, color=color_spec[i], legend=label)
-                    else:
-                        p1.quad(top=yd, bottom=0 * yd, left=bar_pos, right=bar_pos_right, color=color_spec[i])
+                    elif(chart_type_ord == 'bar'):
+                        bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(1,len(bar_ind) + 1)]
+                        bar_pos_right = [x + bar_width for x in bar_pos]
 
-                    bar_index = bar_index + 1
-                    bar_ind = bar_ind + bar_width
-                elif (chart_type_ord == 'barh'):
-                    # TODO
-                    pass
+                        if style.display_legend:
+                            p1.quad(top=yd, bottom=0 * yd, left=bar_pos, right=bar_pos_right, color=color_spec[i], legend=label)
+                        else:
+                            p1.quad(top=yd, bottom=0 * yd, left=bar_pos, right=bar_pos_right, color=color_spec[i])
 
-                elif chart_type_ord == 'scatter':
-                    linewidth_t = self.get_linewidth(label,
-                        style.linewidth, style.linewidth_2, style.linewidth_2_series)
+                        bar_index = bar_index + 1
+                        bar_ind = bar_ind + bar_width
+                    elif (chart_type_ord == 'barh'):
+                        # TODO
+                        pass
 
-                    if linewidth_t is None: linewidth_t = 1
+                    elif chart_type_ord == 'scatter':
+                        linewidth_t = self.get_linewidth(label,
+                            style.linewidth, style.linewidth_2, style.linewidth_2_series)
 
-                    if style.display_legend:
-                        p1.circle(xd, yd, color = color_spec[i], line_width=linewidth_t, name = glyph_name,
-                                legend = label,
-                        )
-                    else:
-                        p1.circle(xd, yd, color = color_spec[i], line_width=linewidth_t, name = glyph_name)
+                        if linewidth_t is None: linewidth_t = 1
+
+                        if style.display_legend:
+                            p1.circle(xd, yd, color = color_spec[i], line_width=linewidth_t, name = glyph_name,
+                                    legend = label,
+                            )
+                        else:
+                            p1.circle(xd, yd, color = color_spec[i], line_width=linewidth_t, name = glyph_name)
 
                 p1.grid.grid_line_alpha = 0.3
 
@@ -348,9 +359,6 @@ class EngineMatplotlib(EngineTemplate):
             # for bar charts, create a proxy x-axis (then relabel)
             xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame, style, chart_type, bar_ind)
 
-            # plot the lines (using custom palettes as appropriate)
-            color_spec = cm.create_color_list(style, data_frame)
-
             if style.subplots == False and len(data_frame_list) == 1:
                 ax = fig.add_subplot(111)
             else:
@@ -394,71 +402,86 @@ class EngineMatplotlib(EngineTemplate):
 
                 has_matrix = False
 
-                # some lines we should exclude from the color and use the default palette
-                for i in range(0, len(data_frame.columns.values)):
+                if not(isinstance(chart_type, list)):
+                    if chart_type == 'heatmap':
+                        ax.set_frame_on(False)
 
-                    if isinstance(chart_type, list): chart_type_ord = chart_type[i]
-                    else: chart_type_ord = chart_type
+                        # weird hack, otherwise comes out all inverted!
+                        data_frame = data_frame.iloc[::-1]
 
-                    if chart_type_ord == 'heatmap':
-                        # TODO experimental!
-                        # ax.set_frame_on(False)
-                        ax.pcolor(data_frame, cmap=plt.cm.Blues, alpha=0.8)
-                        # plt.colorbar()
+                        color = style.color
+
+                        if style.color == []:
+                            color = cc.chartfactory_default_colormap
+                        else:
+                            if isinstance(style.color, list):
+                                color = style.color[subplot_no - 1]
+
+                        ax.pcolor(data_frame.values, cmap=color, alpha=0.8)
+
                         has_matrix = True
-                        break
 
-                    label = str(data_frame.columns[i])
+                if (not(has_matrix)):
+                    # plot the lines (using custom palettes as appropriate)
+                    color_spec = cm.create_color_list(style, data_frame)
 
-                    ax_temp = self.get_axis(ax, ax2, label, style.y_axis_2_series)
+                    # some lines we should exclude from the color and use the default palette
+                    for i in range(0, len(data_frame.columns.values)):
 
-                    yd = data_frame.ix[:,i]
+                        if isinstance(chart_type, list): chart_type_ord = chart_type[i]
+                        else: chart_type_ord = chart_type
 
-                    if color_spec[i] is None:
-                        color_spec[i] = color_cycle[i % len(color_cycle)]
+                        label = str(data_frame.columns[i])
 
-                    if (chart_type_ord == 'line'):
-                        linewidth_t = self.get_linewidth(label,
-                                                         style.linewidth, style.linewidth_2, style.linewidth_2_series)
+                        ax_temp = self.get_axis(ax, ax2, label, style.y_axis_2_series)
 
-                        if linewidth_t is None: linewidth_t = matplotlib.rcParams['axes.linewidth']
+                        yd = data_frame.ix[:,i]
 
-                        ax_temp.plot(xd, yd, label = label, color = color_spec[i],
+                        if color_spec[i] is None:
+                            color_spec[i] = color_cycle[i % len(color_cycle)]
+
+                        if (chart_type_ord == 'line'):
+                            linewidth_t = self.get_linewidth(label,
+                                                             style.linewidth, style.linewidth_2, style.linewidth_2_series)
+
+                            if linewidth_t is None: linewidth_t = matplotlib.rcParams['axes.linewidth']
+
+                            ax_temp.plot(xd, yd, label = label, color = color_spec[i],
                                          linewidth = linewidth_t)
 
-                    elif(chart_type_ord == 'bar'):
-                        # for multiple bars we need to allocate space properly
-                        bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0,len(bar_ind))]
+                        elif(chart_type_ord == 'bar'):
+                            # for multiple bars we need to allocate space properly
+                            bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0,len(bar_ind))]
 
-                        ax_temp.bar(bar_pos, yd, bar_width, label = label, color = color_spec[i])
+                            ax_temp.bar(bar_pos, yd, bar_width, label = label, color = color_spec[i])
 
-                        bar_index = bar_index + 1
+                            bar_index = bar_index + 1
 
-                    elif (chart_type_ord == 'barh'):
-                        # for multiple bars we need to allocate space properly
-                        bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0, len(bar_ind))]
+                        elif (chart_type_ord == 'barh'):
+                            # for multiple bars we need to allocate space properly
+                            bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0, len(bar_ind))]
 
-                        ax_temp.barh(bar_pos, yd, bar_width, label=label, color=color_spec[i])
+                            ax_temp.barh(bar_pos, yd, bar_width, label=label, color=color_spec[i])
 
-                        bar_index = bar_index + 1
+                            bar_index = bar_index + 1
 
-                    elif(chart_type_ord == 'stacked'):
-                        bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0,len(bar_ind))]
+                        elif(chart_type_ord == 'stacked'):
+                            bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0,len(bar_ind))]
 
-                        yoff = np.where(yd > 0, yoff_pos, yoff_neg)
+                            yoff = np.where(yd > 0, yoff_pos, yoff_neg)
 
-                        ax_temp.bar(bar_pos, yd, label = label, color = color_spec[i], bottom = yoff)
+                            ax_temp.bar(bar_pos, yd, label = label, color = color_spec[i], bottom = yoff)
 
-                        yoff_pos = yoff_pos + np.maximum(yd, zeros)
-                        yoff_neg = yoff_neg + np.minimum(yd, zeros)
+                            yoff_pos = yoff_pos + np.maximum(yd, zeros)
+                            yoff_neg = yoff_neg + np.minimum(yd, zeros)
 
-                        # bar_index = bar_index + 1
+                            # bar_index = bar_index + 1
 
-                    elif(chart_type_ord == 'scatter'):
-                        ax_temp.scatter(xd, yd, label = label, color = color_spec[i])
+                        elif(chart_type_ord == 'scatter'):
+                            ax_temp.scatter(xd, yd, label = label, color = color_spec[i])
 
-                        if style.line_of_best_fit is True:
-                            self.trendline(ax_temp, xd.values, yd.values, order=1, color= color_spec[i], alpha=1,
+                            if style.line_of_best_fit is True:
+                                self.trendline(ax_temp, xd.values, yd.values, order=1, color= color_spec[i], alpha=1,
                                                scale_factor = style.scale_factor)
 
 
@@ -572,20 +595,24 @@ class EngineMatplotlib(EngineTemplate):
     def format_x_axis(self, ax, data_frame, style, has_bar, bar_ind, has_matrix):
 
         if has_matrix:
-            # ax.colorbar()
-            # ax.xticks(rotation=90)
-            ax.set_xticks(bar_ind)
-            ax.set_xlim([0, len(bar_ind)])
-            ax.set_yticks(bar_ind)
-            ax.set_ylim([0, len(bar_ind)])
+            x_bar_ind = np.arange(0, len(data_frame.columns))
+            y_bar_ind = np.arange(0, len(data_frame.index))
+
+            ax.set_xticks(x_bar_ind + 0.5)
+            ax.set_xlim([0, len(x_bar_ind)])
+            ax.set_yticks(y_bar_ind + 0.5)
+            ax.set_ylim([0, len(y_bar_ind)])
+
+            plt.setp(plt.yticks()[1], rotation=90)
+
             ax.set_xticklabels(data_frame.columns, minor=False)
             ax.set_yticklabels(data_frame.index, minor=False)
 
-            # ax.plot([], [])
+            ax.plot([], [])
 
-            for y in range(len(data_frame.index)):
-                for x in range(len(data_frame.columns)):
-                    plt.text(x + 0.5, y + 0.5, '%.0f' % data_frame.loc[y, x],
+            for x in range(len(data_frame.index)):
+                for y in range(len(data_frame.columns)):
+                    plt.text(x + 0.5, y + 0.5, '%.0f' % data_frame.ix[x, y],
                          horizontalalignment='center',
                          verticalalignment='center',
                          )
@@ -909,6 +936,42 @@ class EnginePlotly(EngineTemplate):
                                            dimensions=(style.width * style.scale_factor * scale,
                                                        style.height * style.scale_factor * scale),
                                            asFigure=True)
+                elif chart_type_ord == 'heatmap':
+                    fig = data_frame.iplot(kind=chart_type,
+                                           title=style.title,
+                                           xTitle=style.x_title,
+                                           yTitle=style.y_title,
+                                           x=x, y=y,
+                                           mode=mode,
+                                           size=marker_size,
+                                           theme=style.plotly_theme,
+                                           bestfit=style.line_of_best_fit,
+                                           legend=style.display_legend,
+                                           colorscale=style.color,
+                                           dimensions=(style.width * style.scale_factor * scale,
+                                                       style.height * style.scale_factor * scale),
+                                           asFigure=True)
+
+                    # TODO get annotations to work on Plotly/cufflinks heatmaps
+
+                    # z = data_frame.values
+                    #
+                    # annotations = []
+                    # for n, row in enumerate(z):
+                    #     for m, val in enumerate(row):
+                    #         val = z[n][m]
+                    #         annotations.append(
+                    #             dict(
+                    #                 text=str(val),
+                    #                 x=x[m], y=y[n],
+                    #                 xref='x1', yref='y1',
+                    #                 font=dict(color='white' if val > 0.5 else 'black'),
+                    #                 showarrow=False)
+                    #         )
+                    #
+                    # fig['layout'].update(
+                    #     annotations=annotations,
+                    # )
 
                 elif chart_type_ord == 'line':
                     chart_type_ord = 'scatter'
@@ -972,7 +1035,7 @@ class EnginePlotly(EngineTemplate):
 
                     fig = dict(data=data, layout=layout)
 
-                if chart_type_ord not in ['surface', 'choropleth']:
+                if chart_type_ord not in ['surface', 'choropleth', 'heatmap']:
 
                     fig = data_frame.iplot(kind=chart_type_ord,
                                            title=style.title,

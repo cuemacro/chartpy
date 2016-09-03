@@ -126,6 +126,8 @@ class ChartConstants(object):
     # 'green' :   '#8EBA42',
     # 'pink'  :   '#FFB5B8'
 
+    chartfactory_default_colormap = 'Blues'
+
     # nicer than the default colors of matplotlib (fully editable!)
     # list of colors from http://www.github.com/santosjorge/cufflinks project
     # where I've overwritten some of the primary colours (with the above)

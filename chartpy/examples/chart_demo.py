@@ -19,6 +19,7 @@ except:
 # choose run_example = 0 for everything
 # run_example = 1 - plot US GDP with multiple libraries
 # run_example = 2 - plot US and UK unemployment demonstrating multiple line types
+# run_example = 3 - correlations of a few different stocks in USA
 run_example = 0
 
 if run_example == 1 or run_example == 0:
@@ -58,7 +59,30 @@ if run_example == 2 or run_example == 0:
     style.engine = 'bokeh'
     Chart(df, style=style).plot()
 
-    # Bokeh wrapper doesn't yet support horizontal bars, but matplotlib wrapper does
-    style.engine = 'matplotlib'
+    # Bokeh wrapper doesn't yet support horizontal bars, but matplotlib and plotly/cufflink wrappers do
+    style.engine = 'plotly'
     style.chart_type = 'barh'
-    Chart(df, style=style).plot()
+    Chart(df, engine='plotly', style=style).plot()
+    Chart(df, engine='matplotlib', style=style).plot()
+
+if run_example == 3 or run_example == 0:
+    df = Quandl.get(["WIKI/ABBV", "WIKI/TRIP", "WIKI/HPQ"], authtoken=quandl_api_key, trim_start="2016-06-01")
+
+    # get only adjusted close field, calculate returns and create correlation matrix
+    columns = [item for item in df.columns if " - Adj. Close" in item]
+    df = df[columns]
+    df.columns = [a.replace(' - Adj. Close', '') for a in df.columns]
+    df = df / df.shift(1) - 1
+    corr = df.corr() * 100
+
+    print(corr)
+
+    # set the style of the plot
+    style = Style(title="Stock Correlations", source="Quandl/Fred", color='Blues')
+
+    # Chart object is initialised with the dataframe and our chart style
+    chart = Chart(df=corr, chart_type='heatmap', style=style)
+
+    chart.plot(engine='matplotlib')
+    # chart.plot(engine='bokeh')    # TODO
+    chart.plot(engine='plotly')

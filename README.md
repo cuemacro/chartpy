@@ -106,6 +106,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 23 Sep 2016 - Fixed deprecated method for uploading to Twitter
 * 03 Sep 2016 - Added horizontal bars and heatmap for matplotlib and plotly
 * 28 Aug 2016 - Added explanation of why chartpy?
 * 20 Aug 2016 - Added Plotly default palette, surface examples

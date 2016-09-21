@@ -52,7 +52,8 @@ class Twitter:
             self.twitter.update_status(status=msg)
         else:
             photo = open(picture, 'rb')
-            self.twitter.update_status_with_media(status=msg, media=photo)
+            response = self.twitter.upload_media(media=photo)
+            self.twitter.update_status(status=msg, media_ids=[response['media_id']])
 
 
 

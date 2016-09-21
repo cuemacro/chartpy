@@ -19,6 +19,7 @@ except:
 # choose run_example = 0 for everything
 # run_example = 1 - plot US GDP with multiple libraries
 # run_example = 2 - plot US and UK unemployment demonstrating multiple line types
+# run_example = 3 - correlations of a few different stocks in USA
 run_example = 0
 
 if run_example == 1 or run_example == 0:
@@ -43,6 +44,10 @@ if run_example == 2 or run_example == 0:
     # download US and Texas unemployment rate
     df = Quandl.get(["FRED/UNRATE", "FRED/TXUR"], authtoken=quandl_api_key, trim_start="2015-12-01")
 
+    import pandas
+
+    df.index = pandas.to_datetime(df.index, format='%Y-%m-%d')
+
     # first plot without any parameters (will use defaults) - note how we can it assign the dataframe to either Chart
     # or the plot method
     Chart(df).plot()
@@ -51,7 +56,33 @@ if run_example == 2 or run_example == 0:
     # we can also specify the engine within the Style object if we choose
     style = Style(title="US & Texas unemployment rate", chart_type=['bar', 'line'], engine='matplotlib')
 
-    Chart(df, style=style).plot()
-
     style.engine = 'bokeh'
     Chart(df, style=style).plot()
+
+    # Bokeh wrapper doesn't yet support horizontal bars, but matplotlib and plotly/cufflink wrappers do
+    style.engine = 'plotly'
+    style.chart_type = 'barh'
+    Chart(df, engine='plotly', style=style).plot()
+    Chart(df, engine='matplotlib', style=style).plot()
+
+if run_example == 3 or run_example == 0:
+    df = Quandl.get(["WIKI/ABBV", "WIKI/TRIP", "WIKI/HPQ"], authtoken=quandl_api_key, trim_start="2016-06-01")
+
+    # get only adjusted close field, calculate returns and create correlation matrix
+    columns = [item for item in df.columns if " - Adj. Close" in item]
+    df = df[columns]
+    df.columns = [a.replace(' - Adj. Close', '') for a in df.columns]
+    df = df / df.shift(1) - 1
+    corr = df.corr() * 100
+
+    print(corr)
+
+    # set the style of the plot
+    style = Style(title="Stock Correlations", source="Quandl/Fred", color='Blues')
+
+    # Chart object is initialised with the dataframe and our chart style
+    chart = Chart(df=corr, chart_type='heatmap', style=style)
+
+    chart.plot(engine='matplotlib')
+    # chart.plot(engine='bokeh')    # TODO
+    chart.plot(engine='plotly')

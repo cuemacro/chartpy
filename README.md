@@ -23,7 +23,10 @@ and much more.
 
 At present chartpy supports several types of plots
 * line (bokeh, plotly and matplotlib)
+* bar (bokeh, plotly and matplotlib)
 * scatter (bokeh, plotly and matplotlib)
+* bar horizontal (matplotlib and plotly)
+* heatmap (matplotlib and plotly)
 * surface (plotly)
 * map plots (plotly)
 * looking to add more (any requests?)
@@ -46,6 +49,16 @@ Create subplots with minimal extra coding (see examples/subplot_examples.py)
 Do surface plots (plotly only at present - see examples/surface_examples.py)
 
 <img src="https://github.com/cuemacro/chartpy/blob/master/chartpy/examples/volsurface.png?raw=true" width="543"/>
+
+Do bar horizontal plots (matplotlib and plotly - see examples/chart_demo.py)
+
+<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy/examples/barh.png?raw=true" width="543"/>
+
+Create heatmaps (matplotlib and plotly - see examples/chart_demo.py)
+
+<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy/examples/heatmap.png?raw=true" width="543"/>
+
+<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy/examples/plotlyheatmap.png?raw=true" width="543"/>
 
 # Requirements
 
@@ -93,6 +106,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 03 Sep 2016 - Added horizontal bars and heatmap for matplotlib and plotly
 * 28 Aug 2016 - Added explanation of why chartpy?
 * 20 Aug 2016 - Added Plotly default palette, surface examples
 * 19 Aug 2016 - Added HTML examples for bokeh & plotly, subplotting for bokeh, plotly & matplotlib (with subplot_examples)

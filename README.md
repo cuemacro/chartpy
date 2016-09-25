@@ -60,7 +60,8 @@ Create heatmaps (matplotlib and plotly - see examples/chart_demo.py)
 
 <img src="https://github.com/cuemacro/chartpy/blob/master/chartpy/examples/plotlyheatmap.png?raw=true" width="543"/>
 
-Create webpages (using Canvas class - see examples/canvas_demo.py) - using mixture of plots using few lines of Python!
+Create webpages (using Canvas class - see examples/canvas_demo.py) - using mixture of plots (plotly, bokeh & matplotlib), tables
+and text, with just a few lines of Python!
 
 <img src="https://github.com/cuemacro/chartpy/blob/master/chartpy/examples/canvas.png?raw=true" width="543"/>
 

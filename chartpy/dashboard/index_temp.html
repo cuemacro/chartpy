@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>chartpy dashboard</title>
+  <link rel="shortcut icon" href="logo.png" />
+  <link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="static/css/keen-dashboards.css" />
+  <!-- For slider -->
+  <link rel="stylesheet" type="text/css" href="static/css/iThing.css" />
+</head>
+<body class="application">
+
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand">
+          <img src="logo.png" alt="Smiley face" height="23" width="23">
+        </a>
+        <a class="navbar-brand" href="http://www.cuemacro.com">chartpy dashboard </a>
+
+      </div>
+    </div>
+</div>
+
+ <div class="container-fluid">
+
+    <div class="row">
+      <!--<div class="col-sm-6">-->
+      <div style="display:inline-block; width: 500px">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Streaming Live Data Example
+          </div>
+          <div style="display:inline-block; height: 340px" class="chart-stage">
+            <!--<div id="grid-1-1"> -->
+              <div>
+                <iframe width="640px" height="350px" frameborder="0" scrolling="no" src="..\examples\1474728423.419042bokeh.html"></iframe>
+              <!--</div> -->
+            </div>
+          </div>
+          <div class="chart-notes">
+            Stream live data to charts with <a href="https://plot.ly/python/streaming-tutorial/">Python</a>, <a href="https://plot.ly/matlab/streaming-tutorial/">MATLAB</a>, or <a href="https://github.com/plotly/plotly-nodejs">Node.js</a>.
+          </div>
+        </div>
+      </div>
+      <div style="display:inline-block; width: 500px">
+        <div class="chart-wrapper">
+          <div class="chart-title">
+            Bar Chart Example
+          </div>
+          <div style="display:inline-block; height: 340px" class="chart-stage">
+            To add
+          </div>
+          <div class="chart-notes">
+            Make a <a href="https://plot.ly/javascript-graphing-library/bar-charts/">bar chart</a> in Python
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+    <hr>
+
+    <p class="small text-muted">
+      Based on <a href="http://keen.github.io/dashboards/">Keen IO</a> template</a>
+    </p>
+    <p class="small text-muted">
+    This is a single static web page that can be displayed with any HTTP web server, offline as a HTML file</a>.
+    </p>
+
+  </div>
+
+  <!--<script type="text/javascript" src="../../assets/lib/jquery/dist/jquery.min.js"></script>-->
+  <script type="text/javascript" src="static/js/slider/jquery-1.7.2.min.js"></script>
+  <script type="text/javascript" src="static/js/bootstrap/dist/js/bootstrap.min.js"></script>
+
+  <script type="text/javascript" src="static/js/holderjs/holder.js"></script>
+  <script>
+    Holder.add_theme("white", { background:"#fff", foreground:"#a7a7a7", size:10 });
+  </script>
+
+  <!-- Slider widget files -->
+  <script type="text/javascript" src="static/js/slider/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="static/js/slider/jQRangeSliderMouseTouch.js"></script>
+  <script type="text/javascript" src="static/js/slider/jQRangeSliderDraggable.js"></script>
+  <script type="text/javascript" src="static/js/slider/jQRangeSliderBar.js"></script>
+  <script type="text/javascript" src="static/js/slider/jQRangeSliderHandle.js"></script>
+  <script type="text/javascript" src="static/js/slider/jQRangeSliderLabel.js"></script>
+  <script type="text/javascript" src="static/js/slider/jQRangeSlider.js"></script>
+  <script type="text/javascript" src="static/js/slider/jQDateRangeSliderHandle.js"></script>
+  <script type="text/javascript" src="static/js/slider/jQDateRangeSlider.js"></script>
+  <script type="text/javascript" src="static/js/slider/jQRuler.js"></script>
+  <script type="text/javascript" src="static/js/slider/slider.js"></script>
+
+</body>
+</html>

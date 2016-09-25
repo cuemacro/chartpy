@@ -26,12 +26,13 @@ from chartpy.engine import EngineMatplotlib, EngineBokeh, EnginePlotly
 
 class Chart(object):
 
-    df = None
-    engine = ChartConstants().chartfactory_default_engine
-    style = Style()
-    chart_type = 'line' # default chart type is line chart
-
     def __init__(self, df = None, engine = None, chart_type = None, style = None):
+
+        self.df = None
+        self.engine = ChartConstants().chartfactory_default_engine
+        self.style = Style()
+        self.chart_type = 'line'  # default chart type is line chart
+        self.is_plotted = False
 
         if df is not None: self.df = df
         if engine is not None: self.engine = engine
@@ -73,6 +74,8 @@ class Chart(object):
             twitter.auto_set_key()
             twitter.update_status(twitter_msg, picture=style.file_output)
 
+        self.is_plotted = True
+
         return fig
 
     def get_engine(self, engine):
@@ -85,7 +88,7 @@ class Chart(object):
         return None
 
     # TODO fix this
-    def _iplot(self, data_frame, engine=engine, chart_type=None, style=None):
+    def _iplot(self, data_frame, engine=None, chart_type=None, style=None):
         return Chart.get_engine(engine).plot_chart(data_frame, style, chart_type)
 
 #######################################################################################################################

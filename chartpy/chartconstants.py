@@ -25,6 +25,7 @@ class ChartConstants(object):
 
     ###### automatically find the root of ChartPy
     root_chartpy = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('\\', '/') + "/chartpy/"
+    root_dashboard = root_chartpy + "/dashboard/"
 
     # Twitter settings (you need to set these up on Twitter)
     TWITTER_APP_KEY                 = "x"

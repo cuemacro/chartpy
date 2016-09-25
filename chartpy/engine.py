@@ -109,7 +109,7 @@ class EngineTemplate(object):
 
 #######################################################################################################################
 
-from bokeh.plotting import figure, output_file, show, gridplot
+from bokeh.plotting import figure, output_file, show, gridplot, save
 from bokeh.charts import HeatMap
 
 class EngineBokeh(EngineTemplate):
@@ -119,9 +119,9 @@ class EngineBokeh(EngineTemplate):
         cm = ColorMaster()
 
         if style.scale_factor > 0:
-            scale_factor = style.scale_factor * 2/3
+            scale_factor = abs(style.scale_factor) * 2/3
         else:
-            scale_factor = style.scale_factor
+            scale_factor = abs(style.scale_factor)
 
         try:
             if style.bokeh_plot_mode == "offline_jupyter":
@@ -132,8 +132,12 @@ class EngineBokeh(EngineTemplate):
 
         try:
             html = style.html_file_output
+
             if (html is None):
-                html = "bokeh.html"
+                import time
+                style.html_file_output = str(time.time()) + "bokeh.html"
+
+                html = style.html_file_output
 
             output_file(html)
         except: pass
@@ -295,6 +299,13 @@ class EngineBokeh(EngineTemplate):
 
                 p1.grid.grid_line_alpha = 0.3
 
+                # p1.min_border_left = -40
+                # p1.min_border_right = 0
+                # p1.min_border_top = 0
+                # p1.min_border_bottom = 0
+
+                p1.min_border = -50
+
             plot_list.append(p1)
 
         p_final = gridplot(plot_list, ncols=1)
@@ -303,7 +314,10 @@ class EngineBokeh(EngineTemplate):
             p_final.title.text = style.title
         except: pass
 
-        show(p_final)  # open a browser
+        if style.silent_display:
+            save(p_final)
+        else:
+            show(p_final)  # open a browser
 
     def get_color_list(self, i):
         color_palette = cc.bokeh_palette
@@ -332,10 +346,10 @@ class EngineMatplotlib(EngineTemplate):
         self.apply_style_sheet(style)
 
         # create figure & add a subplot
-        fig = plt.figure(figsize = ((style.width * style.scale_factor)/style.dpi,
-                                    (style.height * style.scale_factor)/style.dpi), dpi = style.dpi)
+        fig = plt.figure(figsize = ((style.width * abs(style.scale_factor))/style.dpi,
+                                    (style.height * abs(style.scale_factor))/style.dpi), dpi = style.dpi)
 
-        fig.suptitle(style.title, fontsize = 14 * style.scale_factor)
+        fig.suptitle(style.title, fontsize = 14 * abs(style.scale_factor))
 
         # matplotlib 1.5
         try:
@@ -482,7 +496,7 @@ class EngineMatplotlib(EngineTemplate):
 
                             if style.line_of_best_fit is True:
                                 self.trendline(ax_temp, xd.values, yd.values, order=1, color= color_spec[i], alpha=1,
-                                               scale_factor = style.scale_factor)
+                                               scale_factor = abs(style.scale_factor))
 
 
                 # format X axis
@@ -491,12 +505,12 @@ class EngineMatplotlib(EngineTemplate):
             except: pass
 
             if style.display_source_label == True:
-                ax.annotate('Source: ' + style.source, xy = (1, 0), xycoords='axes fraction', fontsize=7 * style.scale_factor,
-                            xytext=(-5 * style.scale_factor, 10 * style.scale_factor), textcoords='offset points',
+                ax.annotate('Source: ' + style.source, xy = (1, 0), xycoords='axes fraction', fontsize=7 * abs(style.scale_factor),
+                            xytext=(-5 * abs(style.scale_factor), 10 * abs(style.scale_factor)), textcoords='offset points',
                             ha='right', va='top', color = style.source_color)
 
             if style.display_brand_label == True:
-                self.create_brand_label(ax, anno = style.brand_label, scale_factor = style.scale_factor)
+                self.create_brand_label(ax, anno = style.brand_label, scale_factor = abs(style.scale_factor))
 
             leg = []
             leg2 = []
@@ -507,12 +521,12 @@ class EngineMatplotlib(EngineTemplate):
             if ax2 != []: loc = 2
 
             try:
-                leg = ax.legend(loc = loc, prop={'size':10 * style.scale_factor})
+                leg = ax.legend(loc = loc, prop={'size':10 * abs(style.scale_factor)})
                 leg.get_frame().set_linewidth(0.0)
                 leg.get_frame().set_alpha(0)
 
                 if ax2 != []:
-                    leg2 = ax2.legend(loc = 1, prop={'size':10 * style.scale_factor})
+                    leg2 = ax2.legend(loc = 1, prop={'size':10 * abs(style.scale_factor)})
                     leg2.get_frame().set_linewidth(0.0)
                     leg2.get_frame().set_alpha(0)
             except: pass
@@ -524,6 +538,10 @@ class EngineMatplotlib(EngineTemplate):
             except: pass
 
         try:
+            if (style.file_output is None):
+                import time
+                style.file_output = str(time.time()) + "matplotlib.png"
+
             plt.savefig(style.file_output, transparent=False)
         except: pass
 
@@ -587,7 +605,7 @@ class EngineMatplotlib(EngineTemplate):
         except: plt.style.use(style.style_sheet)
 
         # adjust font size for scale factor
-        matplotlib.rcParams.update({'font.size': matplotlib.rcParams['font.size'] * style.scale_factor})
+        matplotlib.rcParams.update({'font.size': matplotlib.rcParams['font.size'] * abs(style.scale_factor)})
 
         # do not use offsets/scientific notation
         matplotlib.rcParams.update({'axes.formatter.useoffset': False})
@@ -815,8 +833,8 @@ class EngineMatplotlib(EngineTemplate):
         if Rval == False:
             text = 'R^2 = %0.2f, m = %0.4f, c = %0.4f' %(Rsqr, slope, intercept)
 
-            ax.annotate(text, xy=(1, 1), xycoords='axes fraction', fontsize=8 * scale_factor,
-                    xytext=(-5 * scale_factor, 10 * scale_factor), textcoords='offset points',
+            ax.annotate(text, xy=(1, 1), xycoords='axes fraction', fontsize=8 * abs(scale_factor),
+                    xytext=(-5 * abs(scale_factor), 10 * abs(scale_factor)), textcoords='offset points',
                     ha='right', va='top')
 
             # Plot R^2 value
@@ -830,8 +848,8 @@ class EngineMatplotlib(EngineTemplate):
 
     def create_brand_label(self, ax, anno, scale_factor):
         ax.annotate(anno, xy = (1, 1), xycoords = 'axes fraction',
-                    fontsize = 10 * scale_factor, color = 'white',
-                    xytext = (0 * scale_factor, 15 * scale_factor), textcoords = 'offset points',
+                    fontsize = 10 * abs(scale_factor), color = 'white',
+                    xytext = (0 * abs(scale_factor), 15 * abs(scale_factor)), textcoords = 'offset points',
                     va = "center", ha = "center",
                     bbox = dict(boxstyle = "round,pad=0.0", facecolor = cc.chartfactory_brand_color))
 
@@ -861,7 +879,7 @@ class EnginePlotly(EngineTemplate):
         scale = 1
 
         try:
-            if (style.plotly_plot_mode == 'offline_html'):
+            if (style.plotly_plot_mode == 'offline_html' and style.scale_factor > 0):
                 scale = 2/3
         except:
             pass
@@ -933,8 +951,8 @@ class EnginePlotly(EngineTemplate):
                                            bestfit=style.line_of_best_fit,
                                            legend=style.display_legend,
                                            colorscale=style.color,
-                                           dimensions=(style.width * style.scale_factor * scale,
-                                                       style.height * style.scale_factor * scale),
+                                           dimensions=(style.width * abs(style.scale_factor) * scale,
+                                                       style.height * abs(style.scale_factor) * scale),
                                            asFigure=True)
                 elif chart_type_ord == 'heatmap':
                     fig = data_frame.iplot(kind=chart_type,
@@ -948,8 +966,8 @@ class EnginePlotly(EngineTemplate):
                                            bestfit=style.line_of_best_fit,
                                            legend=style.display_legend,
                                            colorscale=style.color,
-                                           dimensions=(style.width * style.scale_factor * scale,
-                                                       style.height * style.scale_factor * scale),
+                                           dimensions=(style.width * abs(style.scale_factor) * scale,
+                                                       style.height * abs(style.scale_factor) * scale),
                                            asFigure=True)
 
                     # TODO get annotations to work on Plotly/cufflinks heatmaps
@@ -1049,13 +1067,23 @@ class EnginePlotly(EngineTemplate):
                                            bestfit=style.line_of_best_fit,
                                            legend=style.display_legend,
                                            color=color_spec1,
-                                           dimensions=(style.width * style.scale_factor * scale,
-                                                       style.height * style.scale_factor * scale),
+                                           dimensions=(style.width * abs(style.scale_factor) * scale,
+                                                       style.height * abs(style.scale_factor) * scale),
                                            asFigure=True)
 
                 fig.update(dict(layout=dict(legend=dict(
                     x=0.05,
                     y=1
+                ))))
+
+                import plotly.graph_objs as go
+
+                fig.update(dict(layout=dict(margin=go.Margin(
+                    l=20,
+                    r=20,
+                    b=40,
+                    t=40,
+                    pad=0
                 ))))
 
                 fig.update(dict(layout=dict(paper_bgcolor='rgba(0,0,0,0)')))
@@ -1087,7 +1115,9 @@ class EnginePlotly(EngineTemplate):
             if style.html_file_output is not None:
                 temp_html = style.html_file_output
             else:
-                temp_html = "plotly.html"
+                import time
+                style.html_file_output = str(time.time()) + "plotly.html"
+                temp_html = style.html_file_output
 
             plotly.offline.plot(fig, filename=temp_html, auto_open = not(style.silent_display))
 
@@ -1101,7 +1131,7 @@ class EnginePlotly(EngineTemplate):
         #         width=style.width * style.scale_factor, height=style.height * style.scale_factor)
         try:
             plotly.plotly.image.save_as(fig, filename=style.file_output, format='png',
-                                width=style.width * style.scale_factor, height=style.height * style.scale_factor)
+                                width=style.width * abs(style.scale_factor), height=style.height * abs(style.scale_factor))
         except: pass
 
     def get_color_list(self, i):

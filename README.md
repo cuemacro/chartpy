@@ -60,6 +60,10 @@ Create heatmaps (matplotlib and plotly - see examples/chart_demo.py)
 
 <img src="https://github.com/cuemacro/chartpy/blob/master/chartpy/examples/plotlyheatmap.png?raw=true" width="543"/>
 
+Create webpages (using Canvas class - see examples/canvas_demo.py) - using mixture of plots using few lines of Python!
+
+<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy/examples/canvas.png?raw=true" width="543"/>
+
 # Requirements
 
 Major requirements
@@ -106,6 +110,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 25 Sep 2016 - Added Canvas method to easily create webpage reports with charts
 * 23 Sep 2016 - Fixed deprecated method for uploading to Twitter
 * 03 Sep 2016 - Added horizontal bars and heatmap for matplotlib and plotly
 * 28 Aug 2016 - Added explanation of why chartpy?

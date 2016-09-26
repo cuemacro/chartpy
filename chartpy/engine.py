@@ -1078,13 +1078,14 @@ class EnginePlotly(EngineTemplate):
 
                 import plotly.graph_objs as go
 
-                fig.update(dict(layout=dict(margin=go.Margin(
-                    l=20,
-                    r=20,
-                    b=40,
-                    t=40,
-                    pad=0
-                ))))
+                if style.thin_margin:
+                    fig.update(dict(layout=dict(margin=go.Margin(
+                        l=20,
+                        r=20,
+                        b=40,
+                        t=40,
+                        pad=0
+                    ))))
 
                 fig.update(dict(layout=dict(paper_bgcolor='rgba(0,0,0,0)')))
                 fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))

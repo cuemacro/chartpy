@@ -52,6 +52,7 @@ class Style(object):
                  width=cc.chartfactory_width,
                  height=cc.chartfactory_height,
                  resample=None,
+                 thin_margin=False,
 
                  # lines and multiple y-axis
                  y_axis_2_series=[],
@@ -124,6 +125,7 @@ class Style(object):
         self.width = width
         self.height = height
         self.resample = resample
+        self.thin_margin = thin_margin
 
         # lines and multiple y-axis
         self.y_axis_2_series = y_axis_2_series
@@ -314,6 +316,14 @@ class Style(object):
     @height.setter
     def height(self, height):
         self.__height = height
+
+    @property
+    def thin_margin(self):
+        return self.__thin_margin
+
+    @thin_margin.setter
+    def thin_margin(self, thin_margin):
+        self.__thin_margin = thin_margin
 
     ###### resample frequency
     @property

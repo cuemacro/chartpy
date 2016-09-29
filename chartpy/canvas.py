@@ -26,14 +26,14 @@ class Canvas(object):
     def __init__(self, elements_to_render):
         self.elements_to_render = elements_to_render
 
-    def generate_canvas(self, silent_display = True, output_filename = None, canvas_plotter = 'plain'):
+    def generate_canvas(self, jupyter_notebook = False, silent_display = True, output_filename = None, canvas_plotter = 'plain'):
 
         if canvas_plotter == 'plain':
             canvas_plotter = CanvasPlotterPlain()
         elif canvas_plotter == 'keen':
             canvas_plotter = CanvasPlotterKeen()
 
-        canvas_plotter.render_canvas(self.elements_to_render, silent_display=silent_display,
+        canvas_plotter.render_canvas(self.elements_to_render, jupyter_notebook=jupyter_notebook, silent_display=silent_display,
                                      output_filename=output_filename)
 
 #########################################
@@ -43,10 +43,10 @@ import pandas
 class CanvasPlotterTemplate(object):
 
     @abc.abstractmethod
-    def render_canvas(self, elements_to_render, silent_display = True, output_filename = None, canvas_plotter = None):
+    def render_canvas(self, elements_to_render, jupyter_notebook = False, silent_display = True, output_filename = None, canvas_plotter = None):
         pass
 
-    def output_page(self, html, output_filename, silent_display):
+    def output_page(self, html, jupyter_notebook, output_filename, silent_display):
         if output_filename is None:
             import datetime
             html_filename = str(datetime.datetime.now()).replace(':', '-').replace(' ', '-').replace(".", "-") + "-canvas.html"
@@ -63,8 +63,18 @@ class CanvasPlotterTemplate(object):
             import webbrowser
             webbrowser.open(html_filename)
 
+        if (jupyter_notebook):
+            from IPython.core.display import display, HTML
+            html = HTML('<iframe src="' + html_filename + '" frameborder="0" scrolling="no" width=900 align="middle" '+
+                        """
+                        onload="this.style.height=this.contentDocument.body.scrollHeight +'px';"></iframe>
+                        """)
+
+            print(html)
+            display(html)
+
 class CanvasPlotterPlain(CanvasPlotterTemplate):
-    def render_canvas(self, elements_to_render, silent_display=True, output_filename=None):
+    def render_canvas(self, elements_to_render, jupyter_notebook = False, silent_display=True, output_filename=None):
 
         html = []
         html.append('<head><title>chartpy dashboard</title>')
@@ -110,18 +120,19 @@ class CanvasPlotterPlain(CanvasPlotterTemplate):
                         source_file = chart.style.html_file_output
 
                     try:
+                        width = chart.style.width * abs(chart.style.scale_factor) + padding
+                        height = chart.style.height * abs(chart.style.scale_factor) + padding
+
                         html.append('<div align="center"><div>')
-                        html.append('<iframe src="' + source_file + '" width="' + str(
-                            chart.style.width * abs(chart.style.scale_factor) + padding) + \
-                               '" height="' + str(chart.style.height * abs(
-                            chart.style.scale_factor) + padding) + '" frameborder="0" scrolling="no"></iframe>')
+                        html.append('<iframe src="' + source_file + '" width="' + str(width) + \
+                               '" height="' + str(height) + '" frameborder="0" scrolling="no"></iframe>')
 
                         html.append('</div></div>')
                     except:
                         pass
 
-                    print(chart.style.html_file_output)
-                    print(chart)
+                    # print(chart.style.html_file_output)
+                    # print(chart)
                 elif isinstance(object, str):
                     html.append(object)
                 elif isinstance(object, pandas.DataFrame):
@@ -135,11 +146,11 @@ class CanvasPlotterPlain(CanvasPlotterTemplate):
 
         html = '\n'.join(html)
 
-        self.output_page(html, output_filename, silent_display)
+        self.output_page(html, jupyter_notebook, output_filename, silent_display)
 
 #### based on Keen.io template at https://github.com/plotly/dashboards
 class CanvasPlotterKeen(CanvasPlotterTemplate):
-    def render_canvas(self, elements_to_render, silent_display = True, output_filename = None):
+    def render_canvas(self, elements_to_render, jupyter_notebook = False, silent_display = True, output_filename = None):
 
         html = []
 
@@ -247,8 +258,8 @@ class CanvasPlotterKeen(CanvasPlotterTemplate):
 
                     html.append('</div>')
 
-                    print(chart.style.html_file_output)
-                    print(chart)
+                    # print(chart.style.html_file_output)
+                    # print(chart)
                 elif isinstance(object, str):
                     html.append('<div style="display:inline-block;>')
                     html.append(object)
@@ -266,7 +277,7 @@ class CanvasPlotterKeen(CanvasPlotterTemplate):
 
         html = '\n'.join(html)
 
-        self.output_page(html, output_filename, silent_display)
+        self.output_page(html, jupyter_notebook, output_filename, silent_display)
 
 plain_css = '''
 <style>

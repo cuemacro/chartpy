@@ -133,6 +133,9 @@ class EngineBokeh(EngineTemplate):
             pass
 
         try:
+            if style.file_output is not None:
+                style.html_file_output = style.file_output
+
             html = style.html_file_output
 
             if (html is None):

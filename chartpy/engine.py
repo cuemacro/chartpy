@@ -24,7 +24,7 @@ import abc
 from math import log10, floor
 import numpy
 import pandas
-
+import datetime
 from chartpy.style import Style
 from chartpy.chartconstants import ChartConstants
 
@@ -39,6 +39,8 @@ class EngineTemplate(object):
     def plot_chart(self, data_frame, style, type):
         return
 
+    def get_time_stamp(self):
+        return str(datetime.datetime.now()).replace(':', '-').replace(' ', '-').replace(".", "-")
 
     def get_bar_indices(self, data_frame, style, chart_type, bar_ind):
         has_bar = 'no-bar'
@@ -135,7 +137,7 @@ class EngineBokeh(EngineTemplate):
 
             if (html is None):
                 import time
-                style.html_file_output = str(time.time()) + "bokeh.html"
+                style.html_file_output = self.get_time_stamp() + "-bokeh.html"
 
                 html = style.html_file_output
 
@@ -504,7 +506,7 @@ class EngineMatplotlib(EngineTemplate):
 
             except: pass
 
-            if style.display_source_label == True:
+            if style.display_source_label == True and style.source is not None:
                 ax.annotate('Source: ' + style.source, xy = (1, 0), xycoords='axes fraction', fontsize=7 * abs(style.scale_factor),
                             xytext=(-5 * abs(style.scale_factor), 10 * abs(style.scale_factor)), textcoords='offset points',
                             ha='right', va='top', color = style.source_color)
@@ -540,7 +542,7 @@ class EngineMatplotlib(EngineTemplate):
         try:
             if (style.file_output is None):
                 import time
-                style.file_output = str(time.time()) + "matplotlib.png"
+                style.file_output = self.get_time_stamp() + "-matplotlib.png"
 
             plt.savefig(style.file_output, transparent=False)
         except: pass
@@ -1117,7 +1119,7 @@ class EnginePlotly(EngineTemplate):
                 temp_html = style.html_file_output
             else:
                 import time
-                style.html_file_output = str(time.time()) + "plotly.html"
+                style.html_file_output = self.get_time_stamp() + "-plotly.html"
                 temp_html = style.html_file_output
 
             plotly.offline.plot(fig, filename=temp_html, auto_open = not(style.silent_display))

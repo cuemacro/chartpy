@@ -111,6 +111,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 29 Sep 2016 - New webpage_examples notebook to illustrate creating chart webpages
 * 26 Sep 2016 - Added thin margin setting for Plotly
 * 25 Sep 2016 - Added Canvas method to easily create webpage reports with charts
 * 23 Sep 2016 - Fixed deprecated method for uploading to Twitter

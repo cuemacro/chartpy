@@ -1,18 +1,9 @@
-<head>
- <title>
-  chartpy dashboard
- </title>
- <style>
-  a, a:focus, a:hover, a:active {
+a, a:focus, a:hover, a:active {
   color: #00afd7;
 }
 
-p, tr {
-  font-family: "Open Sans Light", "Raleway", "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
 h1, h2, h3 {
-  font-family: "Open Sans Light", "Raleway", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Raleway", "Helvetica Neue", Helvetica, Arial, sans-serif;
   margin: 12px 0;
 }
 h1 {
@@ -162,99 +153,3 @@ h3 {
 .love p {
   margin-bottom: 0;
 }
-
-td {
-    text-align: center;
-}
- </style>
-</head>
-<h1>
- chartpy dashboard
-</h1>
-<table cellpadding="0">
- <tr>
-  <td>
-   A demo of chartpy canvas!!
-  </td>
-  <td>
-   <div align="center">
-    <div>
-     <iframe frameborder="0" height="340" scrolling="no" src="2016-09-29-14-36-45-632998-bokeh.html" width="440">
-     </iframe>
-    </div>
-   </div>
-  </td>
- </tr>
- <tr>
-  <td>
-   <div align="center">
-    <div>
-     <iframe frameborder="0" height="340" scrolling="no" src="2016-09-29-14-36-45-695542-plotly.html" width="440">
-     </iframe>
-    </div>
-   </div>
-  </td>
-  <td>
-   <table border="1" class="dataframe">
-    <thead>
-     <tr style="text-align: right;">
-      <th>
-      </th>
-      <th>
-       Real QoQ
-      </th>
-     </tr>
-     <tr>
-      <th>
-       DATE
-      </th>
-      <th>
-      </th>
-     </tr>
-    </thead>
-    <tbody>
-     <tr>
-      <th>
-       2015-04-01
-      </th>
-      <td>
-       2.6
-      </td>
-     </tr>
-     <tr>
-      <th>
-       2015-07-01
-      </th>
-      <td>
-       2.0
-      </td>
-     </tr>
-     <tr>
-      <th>
-       2015-10-01
-      </th>
-      <td>
-       0.9
-      </td>
-     </tr>
-     <tr>
-      <th>
-       2016-01-01
-      </th>
-      <td>
-       0.8
-      </td>
-     </tr>
-     <tr>
-      <th>
-       2016-04-01
-      </th>
-      <td>
-       1.1
-      </td>
-     </tr>
-    </tbody>
-   </table>
-  </td>
- </tr>
-</table>

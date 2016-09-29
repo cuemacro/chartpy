@@ -351,7 +351,8 @@ class EngineMatplotlib(EngineTemplate):
         fig = plt.figure(figsize = ((style.width * abs(style.scale_factor))/style.dpi,
                                     (style.height * abs(style.scale_factor))/style.dpi), dpi = style.dpi)
 
-        fig.suptitle(style.title, fontsize = 14 * abs(style.scale_factor))
+        if style.title is not None:
+            fig.suptitle(style.title, fontsize = 14 * abs(style.scale_factor))
 
         # matplotlib 1.5
         try:

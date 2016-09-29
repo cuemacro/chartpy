@@ -50,6 +50,8 @@ class CanvasPlotterTemplate(object):
         if output_filename is None:
             import datetime
             html_filename = str(datetime.datetime.now()).replace(':', '-').replace(' ', '-').replace(".", "-") + "-canvas.html"
+        else:
+            html_filename = output_filename
 
         from bs4 import BeautifulSoup
         soup = BeautifulSoup(html, 'html.parser')
@@ -64,13 +66,16 @@ class CanvasPlotterTemplate(object):
             webbrowser.open(html_filename)
 
         if (jupyter_notebook):
-            from IPython.core.display import display, HTML
-            html = HTML('<iframe src="' + html_filename + '" frameborder="0" scrolling="no" width=900 align="middle" '+
-                        """
-                        onload="this.style.height=this.contentDocument.body.scrollHeight +'px';"></iframe>
-                        """)
+            # from IPython.core.display import display, HTML
+            from IPython.display import IFrame, display, HTML
 
-            print(html)
+            html = IFrame(html_filename, width=900, height=350, onload="this.style.height=this.contentDocument.body.scrollHeight +'px'")
+            # html = HTML('<iframe src="' + html_filename + '" frameborder="0" scrolling="no" width=900 align="middle" '+
+            #            """
+            #            onload="this.style.height=this.contentDocument.body.scrollHeight +'px';"></iframe>
+            #            """)
+
+            # print(html)
             display(html)
 
 class CanvasPlotterPlain(CanvasPlotterTemplate):

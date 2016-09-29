@@ -16,7 +16,12 @@ try:
 except:
     quandl_api_key = "x"
 
-if True:
+# choose run_example = 0 for everything
+# run_example = 1 - create a plain and Keen.io based template for a chart webpage
+
+run_example = 0
+
+if run_example == 1 or run_example == 0:
 
     df = Quandl.get(["FRED/A191RL1Q225SBEA"], authtoken=quandl_api_key)
     df.columns = ["Real QoQ"]
@@ -33,6 +38,12 @@ if True:
 
     text = "A demo of chartpy canvas!!"
 
+    # using plain template
     canvas = Canvas([[text, chart_bokeh], [chart_plotly, df.tail(n=5)]])
 
     canvas.generate_canvas(silent_display=False, canvas_plotter='plain')
+
+    # using the Keen template (needs static folder in the same place as final HTML file)
+    canvas = Canvas([[chart_bokeh, chart_plotly], [chart_plotly, chart_matplotlib]])
+
+    canvas.generate_canvas(silent_display=False, canvas_plotter='keen')

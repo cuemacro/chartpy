@@ -52,7 +52,7 @@ class Style(object):
                  width=cc.chartfactory_width,
                  height=cc.chartfactory_height,
                  resample=None,
-                 thin_margin=True,
+                 thin_margin=False,
 
                  # lines and multiple y-axis
                  y_axis_2_series=[],

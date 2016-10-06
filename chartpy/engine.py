@@ -1068,6 +1068,8 @@ class EnginePlotly(EngineTemplate):
                                            x=x, y=y, z=z,
                                            subplots=False,
                                            mode=mode,
+                                           gridcolor=None,
+                                           secondary_y=style.y_axis_2_series,
                                            size=marker_size,
                                            theme=style.plotly_theme,
                                            bestfit=style.line_of_best_fit,

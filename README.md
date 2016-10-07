@@ -111,6 +111,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 07 Oct 2016 - Added .idea to .gitignore
 * 06 Oct 2016 - Added support for secondary y-axis in Plotly
 * 29 Sep 2016 - New webpage_examples notebook to illustrate creating chart webpages
 * 26 Sep 2016 - Added thin margin setting for Plotly

@@ -111,6 +111,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 10 Oct 2016 - Added xkcd style plots for matplotlib
 * 07 Oct 2016 - Added .idea to .gitignore
 * 06 Oct 2016 - Added support for secondary y-axis in Plotly
 * 29 Sep 2016 - New webpage_examples notebook to illustrate creating chart webpages

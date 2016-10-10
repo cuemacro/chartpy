@@ -70,6 +70,9 @@ class Style(object):
                  display_source_label=cc.chartfactory_display_source_label,
                  display_legend=True,
 
+                 # matplotlib only
+                 xkcd=False,
+
                  # display output
                  silent_display=False,
                  file_output=None,
@@ -142,6 +145,9 @@ class Style(object):
         self.source_color = source_color
         self.display_source_label = display_source_label
         self.display_legend = display_legend
+
+        # matplotlib only
+        self.xkcd = xkcd
 
         # display output
         self.silent_display = silent_display
@@ -431,6 +437,16 @@ class Style(object):
     @display_legend.setter
     def display_legend(self, display_legend):
         self.__display_legend = display_legend
+
+
+    ###### matplotlib only
+    @property
+    def xkcd(self):
+        return self.__xkcd
+
+    @xkcd.setter
+    def xkcd(self, xkcd):
+        self.__xkcd = xkcd
 
     ###### display output settings
     @property

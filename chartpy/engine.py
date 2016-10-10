@@ -349,7 +349,7 @@ class EngineMatplotlib(EngineTemplate):
     def plot_chart(self, data_frame, style, chart_type):
 
         self.apply_style_sheet(style)
-
+        plt.xkcd()
         # create figure & add a subplot
         fig = plt.figure(figsize = ((style.width * abs(style.scale_factor))/style.dpi,
                                     (style.height * abs(style.scale_factor))/style.dpi), dpi = style.dpi)

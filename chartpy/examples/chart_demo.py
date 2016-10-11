@@ -27,7 +27,7 @@ if run_example == 1 or run_example == 0:
 
     # we can use the charting tools in several ways
     chart = Chart()
-    chart.plot(df = df)
+    # chart.plot(df = df)
 
     # set the style of the plot
     style = Style(title="US GDP", source="Quandl/Fred")

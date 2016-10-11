@@ -106,19 +106,21 @@ class CanvasPlotterPlain(CanvasPlotterTemplate):
 
                     padding = 40
 
-                    if (not (chart.is_plotted)):
-                        old_margin = chart.style.thin_margin
-                        chart.style.thin_margin = True
+                    old_margin = chart.style.thin_margin
+                    old_silent_display = chart.style.silent_display
+                    chart.style.silent_display = True
+                    chart.style.thin_margin = True
 
-                        chart.plot()
+                    chart.plot()
 
-                        chart.style.thin_margin = old_margin
+                    chart.style.thin_margin = old_margin
+                    chart.style.silent_display = old_silent_display
 
                     # grab file name
                     if chart.engine == 'matplotlib':
-                        if (chart.style.file_output is None):
-                            import time
-                            chart.style.file_output = str(time.time()) + "matplotlib.png"
+                        # if (chart.style.file_output is None):
+                        #     import time
+                        #     chart.style.file_output = str(time.time()) + "matplotlib.png"
 
                         source_file = chart.style.file_output
                     else:
@@ -214,12 +216,13 @@ class CanvasPlotterKeen(CanvasPlotterTemplate):
                     html.append('<div class="chart-wrapper">')
                     html.append('<div class="chart-title">' + chart.style.title + '</div>')
 
-                    # if (not (chart.is_plotted)):
                     old_scale_factor = chart.style.scale_factor
+                    old_silent_display = chart.style.silent_display
                     old_margin = chart.style.thin_margin
                     old_title = chart.style.title
                     old_source = chart.style.source
 
+                    chart.style.silent_display = True
                     chart.style.title = None
                     chart.style.source = None
                     chart.style.thin_margin = True
@@ -230,6 +233,7 @@ class CanvasPlotterKeen(CanvasPlotterTemplate):
 
                     chart.plot()
 
+                    chart.style.silent_display = old_silent_display
                     chart.style.scale_factor = old_scale_factor
                     chart.style.thin_margin = old_margin
                     chart.style.title = old_title

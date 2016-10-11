@@ -81,6 +81,7 @@ class Style(object):
                  # output
                  html_file_output=None,
                  display_mpld3=False,
+                 auto_generate_filename=False,
 
                  # plotly only
                  plotly_url=None,
@@ -157,6 +158,7 @@ class Style(object):
         # output
         self.html_file_output = html_file_output
         self.display_mpld3 = display_mpld3
+        self.auto_generate_filename = auto_generate_filename
 
         # bokeh only
         self.bokeh_plot_mode = bokeh_plot_mode  # 'online', 'offline_html', 'offline_jupyter'
@@ -489,6 +491,14 @@ class Style(object):
     @display_mpld3.setter
     def display_mpld3(self, display_mpld3):
         self.__display_mpld3 = display_mpld3
+
+    @property
+    def auto_generate_filename(self):
+        return self.__auto_generate_filename
+
+    @auto_generate_filename.setter
+    def auto_generate_filename(self, auto_generate_filename):
+        self.__auto_generate_filename = auto_generate_filename
 
     ###### Plotly specific settings
     @property

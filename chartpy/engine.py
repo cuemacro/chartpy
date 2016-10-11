@@ -109,6 +109,23 @@ class EngineTemplate(object):
 
         return data_frame_list
 
+    def generate_file_names(self, style, engine):
+        if style.html_file_output is not None and not (style.auto_generate_filename):
+            pass
+        else:
+            import time
+            style.html_file_output = (self.get_time_stamp() + "-" + engine + ".html")
+            style.auto_generate_filename = True
+
+        if style.file_output is not None and not (style.auto_generate_filename):
+            pass
+        else:
+            import time
+            style.file_output = (self.get_time_stamp() + "-" + engine + ".png")
+            style.auto_generate_filename = True
+
+        return style
+
 #######################################################################################################################
 
 from bokeh.plotting import figure, output_file, show, gridplot, save
@@ -133,18 +150,9 @@ class EngineBokeh(EngineTemplate):
             pass
 
         try:
-            if style.file_output is not None:
-                style.html_file_output = style.file_output
+            style = self.generate_file_names(style, 'bokeh')
 
-            html = style.html_file_output
-
-            if (html is None):
-                import time
-                style.html_file_output = self.get_time_stamp() + "-bokeh.html"
-
-                html = style.html_file_output
-
-            output_file(html)
+            output_file(style.html_file_output)
         except: pass
 
         data_frame_list = self.split_data_frame_to_list(data_frame, style)
@@ -547,9 +555,7 @@ class EngineMatplotlib(EngineTemplate):
             except: pass
 
         try:
-            if (style.file_output is None):
-                import time
-                style.file_output = self.get_time_stamp() + "-matplotlib.png"
+            style = self.generate_file_names(style, 'matplotlib')
 
             plt.savefig(style.file_output, transparent=False)
         except: pass
@@ -593,15 +599,18 @@ class EngineMatplotlib(EngineTemplate):
         except:
             pass
 
-        # display in matplotlib window
+        # display in matplotlib window (or clear from pyplot)
         try:
             if cc.chartfactory_silent_display == True:
+                plt.close(fig)
+
                 return fig
             elif style.silent_display == False:
                 plt.show()
             else:
-                return fig
+                plt.close(fig)
 
+                return fig
         except:
             pass
 
@@ -1114,6 +1123,8 @@ class EnginePlotly(EngineTemplate):
         fig.update(dict(layout=dict(paper_bgcolor='rgba(0,0,0,0)')))
         fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))
 
+        style = self.generate_file_names(style, 'plotly')
+
         if style.plotly_plot_mode == 'online':
             plotly.tools.set_credentials_file(username=style.plotly_username, api_key=style.plotly_api_key)
 
@@ -1123,14 +1134,7 @@ class EnginePlotly(EngineTemplate):
                     asImage=style.plotly_as_image)
 
         elif style.plotly_plot_mode == 'offline_html':
-            if style.html_file_output is not None:
-                temp_html = style.html_file_output
-            else:
-                import time
-                style.html_file_output = self.get_time_stamp() + "-plotly.html"
-                temp_html = style.html_file_output
-
-            plotly.offline.plot(fig, filename=temp_html, auto_open = not(style.silent_display))
+            plotly.offline.plot(fig, filename=style.html_file_output, auto_open = not(style.silent_display))
 
         elif style.plotly_plot_mode == 'offline_jupyter':
 

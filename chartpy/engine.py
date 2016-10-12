@@ -110,12 +110,12 @@ class EngineTemplate(object):
         return data_frame_list
 
     def generate_file_names(self, style, engine):
-        if style.html_file_output is not None and not (style.auto_generate_filename):
+        if style.html_file_output is not None and not (style.auto_generate_html_filename):
             pass
         else:
             import time
             style.html_file_output = (self.get_time_stamp() + "-" + engine + ".html")
-            style.auto_generate_filename = True
+            style.auto_generate_html_filename = True
 
         if style.file_output is not None and not (style.auto_generate_filename):
             pass

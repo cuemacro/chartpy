@@ -554,6 +554,8 @@ class EngineMatplotlib(EngineTemplate):
                     if leg2 != []: leg.remove()
             except: pass
 
+        # fig.autofmt_xdate()
+
         try:
             style = self.generate_file_names(style, 'matplotlib')
 
@@ -669,7 +671,7 @@ class EngineMatplotlib(EngineTemplate):
                 import matplotlib.dates as mdates
 
                 if style.date_formatter is not None:
-                    ax.format_xdata = mdates.DateFormatter(style.date_formatter)
+                    myFmt = mdates.DateFormatter(style.date_formatter)
 
                 plt.tight_layout()
                 # ax.tick_params(axis='x', labelsize=matplotlib.rcParams['font.size'] * 0.5)

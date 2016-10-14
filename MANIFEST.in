@@ -1,4 +1,5 @@
 recursive-include chartpy/ *.*
-recursive-include chartpy/dashboard/*.*
-recursive-include chartpy/stylesheets/*.*
+include chartpy/dashboard/*.*
 include chartpy/stylesheets/*.*
+include chartpy/dashboard/*.*
+include chartpy/examples/notebooks/*.*

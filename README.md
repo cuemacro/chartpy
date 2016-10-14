@@ -111,6 +111,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 14 Oct 2016 - Fixed missing stylesheets in package setup
 * 12 Oct 2016 - Fixed handling of auto generated filenames
 * 11 Oct 2016 - Changed handling of auto generated filenames
 * 10 Oct 2016 - Added xkcd style plots for matplotlib

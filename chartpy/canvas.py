@@ -130,11 +130,11 @@ class CanvasPlotterPlain(CanvasPlotterTemplate):
                         width = chart.style.width * abs(chart.style.scale_factor) + padding
                         height = chart.style.height * abs(chart.style.scale_factor) + padding
 
-                        html.append('<div align="center"><div>')
+                        #html.append('<div align="center"><div>')
                         html.append('<iframe src="' + source_file + '" width="' + str(width) + \
                                '" height="' + str(height) + '" frameborder="0" scrolling="no"></iframe>')
 
-                        html.append('</div></div>')
+                        #html.append('</div></div>')
                     except:
                         pass
 
@@ -143,7 +143,14 @@ class CanvasPlotterPlain(CanvasPlotterTemplate):
                 elif isinstance(object, str):
                     html.append(object)
                 elif isinstance(object, pandas.DataFrame):
-                    html.append(object.to_html())
+                    old_width = pandas.get_option('display.max_colwidth')
+                    pandas.set_option('display.max_colwidth', -1)
+
+                    html_table = object.to_html(escape=False).replace('border="1"', 'border="0"')
+                    html_table = html_table.replace("text-align: right;", "text-align: center; vertical-align: text-top;")
+
+                    html.append(html_table)
+                    pandas.set_option('display.max_colwidth', old_width)
 
                 html.append('</td>\n')
 
@@ -425,7 +432,6 @@ h3 {
   color: #00afd7;
 }
 
-
 .sample-item {
   margin-bottom: 24px;
 }
@@ -452,6 +458,13 @@ h3 {
 
 td {
     text-align: center;
+    vertical-align: text-top;
 }
+
+tr {
+    text-align: center;
+    vertical-align: text-top;
+}
+
 </style>
 '''

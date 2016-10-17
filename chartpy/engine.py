@@ -1116,9 +1116,9 @@ class EnginePlotly(EngineTemplate):
                 fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))
 
                 # deal with grids
-                fig.update(dict(layout=dict(xaxis=dict(showgrid=style.x_axis_showgrid))))
-                fig.update(dict(layout=dict(yaxis=dict(showgrid=style.y_axis_showgrid))))
-                fig.update(dict(layout=dict(yaxis2=dict(showgrid=style.y_axis_2_showgrid))))
+                if (not(style.x_axis_showgrid)): fig.update(dict(layout=dict(xaxis=dict(showgrid=style.x_axis_showgrid))))
+                if (not(style.y_axis_showgrid)): fig.update(dict(layout=dict(yaxis=dict(showgrid=style.y_axis_showgrid))))
+                if (not(style.y_axis_2_showgrid)): fig.update(dict(layout=dict(yaxis2=dict(showgrid=style.y_axis_2_showgrid))))
 
                 fig_list.append(fig)
 

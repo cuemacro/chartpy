@@ -111,6 +111,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 17 Oct 2016 - Added grid flags for bokeh, plotly and matplotlib
 * 14 Oct 2016 - Fixed missing stylesheets in package setup
 * 12 Oct 2016 - Fixed handling of auto generated filenames
 * 11 Oct 2016 - Changed handling of auto generated filenames

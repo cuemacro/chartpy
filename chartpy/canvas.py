@@ -459,11 +459,13 @@ h3 {
 td {
     text-align: center;
     vertical-align: text-top;
+    font-size: 12px
 }
 
 tr {
     text-align: center;
     vertical-align: text-top;
+    font-size: 12px
 }
 
 </style>

@@ -212,11 +212,13 @@ class EngineBokeh(EngineTemplate):
             p1.xaxis.axis_label_text_font = cc.bokeh_font
             p1.xaxis.axis_label_text_font_style = cc.bokeh_font_style
             p1.xaxis.axis_label = style.x_title
+            p1.xaxis.visible = style.x_axis_showgrid
 
             p1.yaxis.axis_label_text_font_size = str(10) + "pt"
             p1.yaxis.axis_label_text_font = cc.bokeh_font
             p1.yaxis.axis_label_text_font_style = cc.bokeh_font_style
             p1.yaxis.axis_label = style.y_title
+            p1.yaxis.visible = style.y_axis_showgrid
 
             p1.legend.location = "top_left"
             p1.legend.label_text_font_size = str(10) + "pt"
@@ -410,12 +412,14 @@ class EngineMatplotlib(EngineTemplate):
             # create a second y axis if necessary
             ax2 = []
 
+            ax.xaxis.grid(style.x_axis_showgrid)
+            ax.yaxis.grid(style.y_axis_showgrid)
+
             if style.y_axis_2_series != []:
                 ax2 = ax.twinx()
 
-                # do not use a grid with multiple y axes
-                ax.yaxis.grid(False)
-                ax2.yaxis.grid(False)
+                # set grid for second y axis
+                ax2.yaxis.grid(style.y_axis_2_showgrid)
 
             try:
                 # get all the correct colors (and construct gradients if necessary eg. from 'blues')
@@ -704,7 +708,7 @@ class EngineMatplotlib(EngineTemplate):
         if hasattr(data_frame.index[0], 'hour') and not(hasattr(data_frame.index[0], 'month')):
             ax.xaxis.set_major_locator(MultipleLocator(86400./3.))
             ax.xaxis.set_minor_locator(MultipleLocator(86400./24.))
-            ax.grid(b = True, which='minor', color='w', linewidth=0.5)
+            ax.grid(b = style.x_axis_showgrid, which='minor', color='w', linewidth=0.5)
 
         # TODO have more refined way of formating time series x-axis!
 
@@ -1110,6 +1114,11 @@ class EnginePlotly(EngineTemplate):
 
                 fig.update(dict(layout=dict(paper_bgcolor='rgba(0,0,0,0)')))
                 fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))
+
+                # deal with grids
+                fig.update(dict(layout=dict(xaxis=dict(showgrid=style.x_axis_showgrid))))
+                fig.update(dict(layout=dict(yaxis=dict(showgrid=style.y_axis_showgrid))))
+                fig.update(dict(layout=dict(yaxis2=dict(showgrid=style.y_axis_2_showgrid))))
 
                 fig_list.append(fig)
 

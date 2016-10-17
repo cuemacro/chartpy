@@ -62,6 +62,11 @@ class Style(object):
                  marker_size=1,
                  line_of_best_fit=False,
 
+                 # grid
+                 x_axis_showgrid = True,
+                 y_axis_showgrid = True,
+                 y_axis_2_showgrid = True,
+
                  # labelling of sources
                  brand_label=cc.chartfactory_brand_label,
                  display_brand_label=cc.chartfactory_display_brand_label,
@@ -139,6 +144,11 @@ class Style(object):
         self.linewidth_2 = linewidth_2
         self.marker_size = marker_size
         self.line_of_best_fit = line_of_best_fit
+
+        # grids
+        self.x_axis_showgrid = x_axis_showgrid
+        self.y_axis_showgrid = y_axis_showgrid
+        self.y_axis_2_showgrid = y_axis_2_showgrid
 
         # labelling of sources
         self.brand_label = brand_label
@@ -392,6 +402,31 @@ class Style(object):
     @line_of_best_fit.setter
     def line_of_best_fit(self, line_of_best_fit):
         self.__line_of_best_fit = line_of_best_fit
+        
+    ###### grids
+    @property
+    def x_axis_showgrid(self):
+        return self.__x_axis_showgrid
+
+    @x_axis_showgrid.setter
+    def x_axis_showgrid(self, x_axis_showgrid):
+        self.__x_axis_showgrid = x_axis_showgrid
+
+    @property
+    def y_axis_showgrid(self):
+        return self.__y_axis_showgrid
+
+    @y_axis_showgrid.setter
+    def y_axis_showgrid(self, y_axis_showgrid):
+        self.__y_axis_showgrid = y_axis_showgrid
+
+    @property
+    def y_axis_2_showgrid(self):
+        return self.__y_axis_2_showgrid
+
+    @y_axis_2_showgrid.setter
+    def y_axis_2_showgrid(self, y_axis_2_showgrid):
+        self.__y_axis_2_showgrid = y_axis_2_showgrid
 
     ###### label properties
     @property

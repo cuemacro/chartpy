@@ -342,6 +342,29 @@ class EngineBokeh(EngineTemplate):
     def generic_settings(self):
         return
 
+######################################################################################################################
+
+try:
+    from IPython.display import display
+    from bqplot import (
+        OrdinalScale, LinearScale, Bars, Lines, Axis, Figure
+    )
+except:
+    pass
+
+class EngineBqplot(EngineTemplate):
+    def plot_chart(self, data_frame, style, chart_type):
+        pass
+        # TODO
+
+    def get_color_list(self, i):
+        color_palette = cc.bokeh_palette
+
+        return color_palette[i % len(color_palette)]
+
+    def generic_settings(self):
+        return
+
 #######################################################################################################################
 
 # matplotlib based libraries
@@ -435,7 +458,7 @@ class EngineMatplotlib(EngineTemplate):
                 bar_width = (1 - bar_space) / (no_of_bars)
                 bar_index = 0
 
-                has_matrix = False
+                has_matrix = 'no'
 
                 if not(isinstance(chart_type, list)):
                     if chart_type == 'heatmap':
@@ -454,9 +477,14 @@ class EngineMatplotlib(EngineTemplate):
 
                         ax.pcolor(data_frame.values, cmap=color, alpha=0.8)
 
-                        has_matrix = True
+                        has_matrix = '2d-matrix'
+                    elif chart_type == 'surface':
+                        # TODO
+                        # ax.plot_surface(X, Y, Z)
 
-                if (not(has_matrix)):
+                        has_matrix = '3d-matrix'
+
+                if (has_matrix == 'no'):
                     # plot the lines (using custom palettes as appropriate)
                     color_spec = cm.create_color_list(style, data_frame)
 
@@ -636,7 +664,7 @@ class EngineMatplotlib(EngineTemplate):
 
     def format_x_axis(self, ax, data_frame, style, has_bar, bar_ind, has_matrix):
 
-        if has_matrix:
+        if has_matrix == '2d-matrix':
             x_bar_ind = np.arange(0, len(data_frame.columns))
             y_bar_ind = np.arange(0, len(data_frame.index))
 
@@ -821,7 +849,6 @@ class EngineMatplotlib(EngineTemplate):
         if label in y_axis_2_series: return ax2
 
         return ax
-
 
     def trendline(self, ax, xd, yd, order=1, color='red', alpha=1, Rval=False, scale_factor = 1):
         """ Make a line of best fit """
@@ -1025,7 +1052,7 @@ class EnginePlotly(EngineTemplate):
                     y = data_frame.columns[1]
                     z = data_frame.columns[2]
 
-                # special case for choropleth which has yet to be implemented in Cufflinks
+                # special case for map/choropleth which has yet to be implemented in Cufflinks
                 # will likely remove this in the future
                 elif chart_type_ord == 'choropleth':
 
@@ -1112,6 +1139,7 @@ class EnginePlotly(EngineTemplate):
                         pad=0
                     ))))
 
+                # change background color
                 fig.update(dict(layout=dict(paper_bgcolor='rgba(0,0,0,0)')))
                 fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))
 
@@ -1131,6 +1159,7 @@ class EnginePlotly(EngineTemplate):
         self.publish_plot(fig, style)
 
     def publish_plot(self, fig, style):
+        # change background color
         fig.update(dict(layout=dict(paper_bgcolor='rgba(0,0,0,0)')))
         fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))
 
@@ -1166,6 +1195,8 @@ class EnginePlotly(EngineTemplate):
         return color_palette[i % len(color_palette)]
 
 #######################################################################################################################
+
+# create color lists to be used in plots
 
 class ColorMaster:
 

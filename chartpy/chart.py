@@ -22,7 +22,7 @@ Creates chart using several underlying plotting libraries (Matplotlib, Plotly an
 from chartpy.twitter import Twitter
 from chartpy.chartconstants import ChartConstants
 from chartpy.style import Style
-from chartpy.engine import EngineMatplotlib, EngineBokeh, EnginePlotly
+from chartpy.engine import EngineMatplotlib, EngineBokeh, EngineBqplot, EnginePlotly
 
 class Chart(object):
 
@@ -83,6 +83,7 @@ class Chart(object):
         if engine is None:          return self.get_engine(self.engine)
         elif engine == 'matplotlib':  return EngineMatplotlib()
         elif engine == 'bokeh':     return EngineBokeh()
+        elif engine == 'bqplot':    return EngineBqplot()
         elif engine == 'plotly':    return EnginePlotly()
 
         return None

@@ -111,6 +111,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 25 Jan 2017 - Added save_fig attribute in style
 * 23 Jan 2017 - Moved examples folder
 * 30 Nov 2016 - Added skeleton for bqplot (not implemented yet)
 * 17 Oct 2016 - Added grid flags for bokeh, plotly and matplotlib, improved formating on printing dataframes

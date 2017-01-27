@@ -88,6 +88,7 @@ class Style(object):
                  display_mpld3=False,
                  auto_generate_filename=False,
                  auto_generate_html_filename=False,
+                 save_fig=True,
 
                  # plotly only
                  plotly_url=None,
@@ -164,6 +165,7 @@ class Style(object):
         # display output
         self.silent_display = silent_display
         self.file_output = file_output
+        self.save_fig = True
         self.date_formatter = date_formatter
 
         # output
@@ -503,6 +505,14 @@ class Style(object):
     @file_output.setter
     def file_output(self, file_output):
         self.__file_output = file_output
+        
+    @property
+    def save_fig(self):
+        return self.__save_fig
+
+    @save_fig.setter
+    def save_fig(self, save_fig):
+        self.__save_fig = save_fig
 
     @property
     def date_formatter(self):

@@ -591,7 +591,8 @@ class EngineMatplotlib(EngineTemplate):
         try:
             style = self.generate_file_names(style, 'matplotlib')
 
-            plt.savefig(style.file_output, transparent=False)
+            if style.save_fig:
+                plt.savefig(style.file_output, transparent=False)
         except: pass
 
 

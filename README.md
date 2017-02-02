@@ -111,6 +111,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 02 Feb 2017 - Added page title to Canvas and starting to add PDF support for canvas
 * 27 Jan 2017 - Added save_fig attribute in style
 * 23 Jan 2017 - Moved examples folder
 * 30 Nov 2016 - Added skeleton for bqplot (not implemented yet)

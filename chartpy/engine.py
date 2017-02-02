@@ -408,6 +408,8 @@ class EngineMatplotlib(EngineTemplate):
 
         subplot_no = 1
 
+        first_ax = None
+
         for data_frame in data_frame_list:
 
             bar_ind = np.arange(0, len(data_frame.index))
@@ -418,7 +420,14 @@ class EngineMatplotlib(EngineTemplate):
             if style.subplots == False and len(data_frame_list) == 1:
                 ax = fig.add_subplot(111)
             else:
-                ax = fig.add_subplot(2,1,subplot_no)
+                if first_ax is None:
+                    ax = fig.add_subplot(2, 1, subplot_no)
+                    first_ax = ax
+
+                if style.share_subplot_x:
+                    ax = fig.add_subplot(2,1,subplot_no, sharex=first_ax)
+                else:
+                    ax = fig.add_subplot(2,1,subplot_no)
 
             subplot_no = subplot_no + 1
 

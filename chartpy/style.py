@@ -45,6 +45,7 @@ class Style(object):
 
                  # subplot
                  subplots=False,
+                 share_subplot_x=False,
 
                  # display sizes
                  scale_factor=cc.chartfactory_scale_factor,
@@ -129,6 +130,7 @@ class Style(object):
 
         # subplots
         self.subplots = subplots
+        self.share_subplot_x = share_subplot_x
 
         # display sizes
         self.scale_factor = scale_factor
@@ -165,7 +167,7 @@ class Style(object):
         # display output
         self.silent_display = silent_display
         self.file_output = file_output
-        self.save_fig = True
+        self.save_fig = save_fig
         self.date_formatter = date_formatter
 
         # output
@@ -305,6 +307,14 @@ class Style(object):
     @subplots.setter
     def subplots(self, subplots):
         self.__subplots = subplots
+
+    @property
+    def share_subplot_x(self):
+        return self.__share_subplot_x
+
+    @share_subplot_x.setter
+    def share_subplot_x(self, share_subplot_x):
+        self.__share_subplot_x = share_subplot_x
 
     ###### chart size
     @property

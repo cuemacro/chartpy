@@ -46,7 +46,7 @@ class CanvasPlotterTemplate(object):
     def render_canvas(self, elements_to_render, jupyter_notebook = False, silent_display = True, output_filename = None, canvas_plotter = None):
         pass
 
-    def output_page(self, html, jupyter_notebook, output_filename, silent_display):
+    def output_page(self, html, jupyter_notebook, output_filename, silent_display, render_pdf):
         if output_filename is None:
             import datetime
             html_filename = str(datetime.datetime.now()).replace(':', '-').replace(' ', '-').replace(".", "-") + "-canvas.html"
@@ -78,15 +78,36 @@ class CanvasPlotterTemplate(object):
             # print(html)
             display(html)
 
+        if(render_pdf):
+            pdf_filename = html_filename.replace('html', 'pdf')
+            pdf_filename = pdf_filename.replace('htm', 'pdf')
+
+            import six
+
+            from xhtml2pdf import pisa
+
+            pdf = six.StringIO()
+            resultFile = open(pdf_filename, "w+b")
+            from io import StringIO, BytesIO
+            pisaStatus = pisa.CreatePDF(StringIO(html), resultFile)
+
+            import ho.xhtml2pdf as xhtml2pdf
+
+            resultFile.close()
+
+            if not pdf.err:
+                xhtml2pdf.startViewer(pdf)
+
 class CanvasPlotterPlain(CanvasPlotterTemplate):
-    def render_canvas(self, elements_to_render, jupyter_notebook = False, silent_display=True, output_filename=None):
+    def render_canvas(self, elements_to_render, jupyter_notebook = False, silent_display=True, output_filename=None,
+                      page_title="chartpy dashboard", render_pdf=False):
 
         html = []
-        html.append('<head><title>chartpy dashboard</title>')
+        html.append('<head><title>' + page_title + '</title>')
         html.append(plain_css)
         html.append('</head>')
 
-        html.append('<h1>chartpy dashboard</h1>')
+        html.append('<h1>' + page_title + '</h1>')
         html.append('<table cellpadding="0">')
 
         for i in range(0, len(elements_to_render)):
@@ -160,11 +181,12 @@ class CanvasPlotterPlain(CanvasPlotterTemplate):
 
         html = '\n'.join(html)
 
-        self.output_page(html, jupyter_notebook, output_filename, silent_display)
+        self.output_page(html, jupyter_notebook, output_filename, silent_display, render_pdf)
 
 #### based on Keen.io template at https://github.com/plotly/dashboards
 class CanvasPlotterKeen(CanvasPlotterTemplate):
-    def render_canvas(self, elements_to_render, jupyter_notebook = False, silent_display = True, output_filename = None):
+    def render_canvas(self, elements_to_render, jupyter_notebook = False, silent_display = True, output_filename = None,
+                      page_title='chartpy dashboard', render_pdf=False):
 
         html = []
 
@@ -172,7 +194,9 @@ class CanvasPlotterKeen(CanvasPlotterTemplate):
                 <!DOCTYPE html>
                 <html>
                 <head>
-                  <title>chartpy dashboard</title>
+                  <title>''')
+        html.append(page_title)
+        html.append('''</title>
                   <link rel="shortcut icon" href="logo.png" />
                   <link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css" />
                   <link rel="stylesheet" type="text/css" href="static/css/keen-dashboards.css" />
@@ -293,7 +317,7 @@ class CanvasPlotterKeen(CanvasPlotterTemplate):
 
         html = '\n'.join(html)
 
-        self.output_page(html, jupyter_notebook, output_filename, silent_display)
+        self.output_page(html, jupyter_notebook, output_filename, silent_display, render_pdf)
 
 plain_css = '''
 <style>

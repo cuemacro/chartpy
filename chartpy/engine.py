@@ -556,11 +556,11 @@ class EngineMatplotlib(EngineTemplate):
                                 self.trendline(ax_temp, xd.values, yd.values, order=1, color= color_spec[i], alpha=1,
                                                scale_factor = abs(style.scale_factor))
 
-
                 # format X axis
                 self.format_x_axis(ax, data_frame, style, has_bar, bar_ind, has_matrix)
 
-            except: pass
+            except Exception as e:
+                print(str(e))
 
             if style.display_source_label == True and style.source is not None:
                 ax.annotate('Source: ' + style.source, xy = (1, 0), xycoords='axes fraction', fontsize=7 * abs(style.scale_factor),
@@ -834,6 +834,11 @@ class EngineMatplotlib(EngineTemplate):
 
                 elif diff < timedelta(days = 365 * 5):
                     locator = YearLocator()
+                    ax.xaxis.set_major_locator(locator)
+                    ax.xaxis.set_major_formatter(md.DateFormatter('%Y'))
+                else:
+                    years = floor(diff.days/365.0/5.0)
+                    locator = YearLocator(years)
                     ax.xaxis.set_major_locator(locator)
                     ax.xaxis.set_major_formatter(md.DateFormatter('%Y'))
 

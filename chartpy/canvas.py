@@ -26,15 +26,15 @@ class Canvas(object):
     def __init__(self, elements_to_render):
         self.elements_to_render = elements_to_render
 
-    def generate_canvas(self, jupyter_notebook = False, silent_display = True, output_filename = None, canvas_plotter = 'plain'):
+    def generate_canvas(self, page_title = 'chartpy dashboard', jupyter_notebook = False, silent_display = True, output_filename = None, canvas_plotter = 'plain', render_pdf=False):
 
         if canvas_plotter == 'plain':
             canvas_plotter = CanvasPlotterPlain()
         elif canvas_plotter == 'keen':
             canvas_plotter = CanvasPlotterKeen()
 
-        canvas_plotter.render_canvas(self.elements_to_render, jupyter_notebook=jupyter_notebook, silent_display=silent_display,
-                                     output_filename=output_filename)
+        canvas_plotter.render_canvas(self.elements_to_render, page_title=page_title, jupyter_notebook=jupyter_notebook, silent_display=silent_display,
+                                     output_filename=output_filename, render_pdf=render_pdf)
 
 #########################################
 import abc
@@ -424,8 +424,6 @@ h3 {
   font-weight: 100;
   letter-spacing: .05em;
 }
-
-
 
 .hero {
   background-position: 50% 100%;

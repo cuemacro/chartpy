@@ -67,7 +67,13 @@ class Chart(object):
             except:
                 pass
 
-        fig = self.get_engine(engine).plot_chart(df, style, chart_type)
+        if engine is None:
+            fig = self.get_engine(engine).plot_chart(df, style, chart_type)
+        else:
+            if isinstance(engine, str):
+                fig = self.get_engine(engine).plot_chart(df, style, chart_type)
+            else:
+                fig = self.engine.plot_chart(df, style, chart_type)
 
         if twitter_on:
             twitter = Twitter()

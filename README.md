@@ -111,6 +111,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 05 Feb 2017 - Fixed x-axis date formatting issue with matplotlib wrapper
 * 02 Feb 2017 - Added page title to Canvas and starting to add PDF support for canvas
 * 27 Jan 2017 - Added save_fig attribute in style
 * 23 Jan 2017 - Moved examples folder

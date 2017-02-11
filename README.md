@@ -42,30 +42,30 @@ documented
 
 Doing plots in multiple libraries by simply changing a keyword, from the Jupyter notebook.
 
-<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy/examples/screenshot.png?raw=true" width="543"/>
+<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy_examples/screenshot.png?raw=true" width="543"/>
 
 Create subplots with minimal extra coding (see examples/subplot_examples.py)
 
-<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy/examples/subplot.png?raw=true" width="543"/>
+<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy_examples/subplot.png?raw=true" width="543"/>
 
 Do surface plots (plotly only at present - see examples/surface_examples.py)
 
-<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy/examples/volsurface.png?raw=true" width="543"/>
+<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy_examples/volsurface.png?raw=true" width="543"/>
 
 Do bar horizontal plots (matplotlib and plotly - see examples/chart_demo.py)
 
-<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy/examples/barh.png?raw=true" width="543"/>
+<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy_examples/barh.png?raw=true" width="543"/>
 
 Create heatmaps (matplotlib and plotly - see examples/chart_demo.py)
 
-<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy/examples/heatmap.png?raw=true" width="543"/>
+<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy_examples/heatmap.png?raw=true" width="543"/>
 
-<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy/examples/plotlyheatmap.png?raw=true" width="543"/>
+<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy_examples/plotlyheatmap.png?raw=true" width="543"/>
 
 Create HTML webpages (using Canvas class - see examples/canvas_demo.py) - using mixture of plots (plotly, bokeh & matplotlib), tables
 and text, with just a few lines of Python! The HTML file can then be uploaded to a webserver for display (or sent around by e-mail etc)
 
-<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy/examples/canvas.png?raw=true" width="543"/>
+<img src="https://github.com/cuemacro/chartpy/blob/master/chartpy_examples/canvas.png?raw=true" width="543"/>
 
 # Requirements
 

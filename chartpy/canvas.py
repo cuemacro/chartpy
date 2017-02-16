@@ -43,7 +43,8 @@ import pandas
 class CanvasPlotterTemplate(object):
 
     @abc.abstractmethod
-    def render_canvas(self, elements_to_render, jupyter_notebook = False, silent_display = True, output_filename = None, canvas_plotter = None):
+    def render_canvas(self, elements_to_render, jupyter_notebook = False, silent_display = True, output_filename = None, canvas_plotter = None,
+                      page_title="chartpy dashboard", render_pdf=False):
         pass
 
     def output_page(self, html, jupyter_notebook, output_filename, silent_display, render_pdf):

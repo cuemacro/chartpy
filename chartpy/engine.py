@@ -602,7 +602,7 @@ class EngineMatplotlib(EngineTemplate):
 
             if style.save_fig:
                 plt.savefig(style.file_output, transparent=False)
-        except: pass
+        except Exception as e: pass
 
 
         ####### various matplotlib converters are unstable
@@ -650,6 +650,10 @@ class EngineMatplotlib(EngineTemplate):
 
                 return fig
             elif style.silent_display == False:
+                if not(style.block_new_plots):
+                    # TODO
+                    pass
+
                 plt.show()
             else:
                 plt.close(fig)

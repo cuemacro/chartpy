@@ -55,6 +55,9 @@ class Style(object):
                  resample=None,
                  thin_margin=False,
 
+                 # should we block display of new screens?
+                 block_new_plots=False,
+
                  # lines and multiple y-axis
                  y_axis_2_series=[],
                  linewidth_2_series=[],
@@ -139,6 +142,9 @@ class Style(object):
         self.height = height
         self.resample = resample
         self.thin_margin = thin_margin
+
+        # block display
+        self.block_new_plots = block_new_plots
 
         # lines and multiple y-axis
         self.y_axis_2_series = y_axis_2_series
@@ -356,6 +362,14 @@ class Style(object):
     @thin_margin.setter
     def thin_margin(self, thin_margin):
         self.__thin_margin = thin_margin
+
+    @property
+    def block_new_plots(self):
+        return self.__block_new_plots
+
+    @block_new_plots.setter
+    def block_new_plots(self, block_new_plots):
+        self.__block_new_plots = block_new_plots
 
     ###### resample frequency
     @property

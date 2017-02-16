@@ -374,7 +374,7 @@ try:
 except:
     pass
 
-class EngineVispy(EngineTemplate):
+class EngineVisPy(EngineTemplate):
     def plot_chart(self, data_frame, style, chart_type):
 
         cm = ColorMaster()
@@ -389,8 +389,6 @@ class EngineVispy(EngineTemplate):
 
         try:
             style = self.generate_file_names(style, 'vispy')
-
-            output_file(style.html_file_output)
         except:
             pass
 
@@ -473,6 +471,10 @@ class EngineVispy(EngineTemplate):
         if style.silent_display:
             pass
         else:
+            if style.save_fig:
+                import vispy.io as io
+                io.write_png(style.file_output, fig.render())
+
             fig.show(run=True)
 
 

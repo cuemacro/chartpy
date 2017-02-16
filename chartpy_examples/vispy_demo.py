@@ -115,12 +115,14 @@ if __name__ == '__main__':
 
     df = pandas.DataFrame(index=t, data=x.T)
 
+    style = Style(save_fig=True)
+
     print('About to plot vispy...')
     # try vispy, which will work (uses GPU)
-    Chart().plot(df, engine='vispy')
+    Chart().plot(df, engine='vispy', style=style)
 
     print('About to plot matplotlib...')
     # try matplotlib, which will likely be very slow or crash...
-    Chart().plot(df, engine='matplotlib')
+    Chart().plot(df, engine='matplotlib', style=style)
 
 

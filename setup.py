@@ -18,5 +18,6 @@ setup(name='chartpy',
                           'numpy',
                           'plotly',
                           'cufflinks',
-                          'bokeh'],
+                          'bokeh',
+                          'vispy'],
 	  zip_safe=False)

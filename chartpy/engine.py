@@ -367,6 +367,126 @@ class EngineBqplot(EngineTemplate):
 
 #######################################################################################################################
 
+# vispy based plots
+
+try:
+    from vispy import plot as vp
+except:
+    pass
+
+class EngineVispy(EngineTemplate):
+    def plot_chart(self, data_frame, style, chart_type):
+
+        cm = ColorMaster()
+
+        scale_factor = abs(style.scale_factor)
+
+        try:
+            if style.vispy_plot_mode == "offline_jupyter":
+                pass
+        except:
+            pass
+
+        try:
+            style = self.generate_file_names(style, 'vispy')
+
+            output_file(style.html_file_output)
+        except:
+            pass
+
+        data_frame_list = self.split_data_frame_to_list(data_frame, style)
+
+        plot_list = []
+
+        plot_width = int((style.width * scale_factor))
+        plot_height = int((style.height * scale_factor) / len(data_frame_list))
+
+        fig = vp.Fig(size=(plot_width, plot_height), show=False, title=style.title)
+
+        for data_frame in data_frame_list:
+            bar_ind = numpy.arange(1, len(data_frame.index) + 1)
+
+            if data_frame.index.name == 'Date':
+                data_frame = data_frame.copy()
+                data_frame = data_frame.reset_index()
+                data_frame = data_frame.drop(['Date'], axis=1)
+
+            xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame, style, chart_type, bar_ind)
+
+            # make the x-axis float as a temporary fix, vispy can't handle Date labels
+            separate_chart = False
+
+            # axis properties
+            color_spec = cm.create_color_list(style, data_frame)
+
+            import matplotlib
+
+            bar_space = 0.2
+            bar_width = (1 - bar_space) / (no_of_bars)
+            bar_index = 0
+
+            has_bar = 'no-bar'
+
+            if not (separate_chart):
+
+                # plot each series in the dataframe separately
+                for i in range(0, len(data_frame.columns)):
+                    label = str(data_frame.columns[i])
+                    glyph_name = 'glpyh' + str(i)
+
+                    # set chart type which can differ for each time series
+                    if isinstance(chart_type, list):
+                        chart_type_ord = chart_type[i]
+                    else:
+                        chart_type_ord = chart_type
+
+                    # get the color
+                    if color_spec[i] is None:
+                        color_spec[i] = self.get_color_list(i)
+
+                    try:
+                        color_spec[i] = matplotlib.colors.rgb2hex(color_spec[i])
+                    except:
+                        pass
+
+                    yd = data_frame.ix[:, i]
+
+                    # plot each time series as appropriate line, scatter etc.
+                    if chart_type_ord == 'line':
+                        fig[0, 0].plot(np.array((xd, yd)).T, marker_size=0, color=color_spec[i])
+
+                        # TODO
+                        pass
+
+                    elif (chart_type_ord == 'bar'):
+                        # TODO
+                        pass
+                    elif (chart_type_ord == 'barh'):
+                        # TODO
+                        pass
+
+                    elif chart_type_ord == 'scatter':
+                        # TODO
+                        pass
+
+
+        if style.silent_display:
+            pass
+        else:
+            fig.show(run=True)
+
+
+    def get_color_list(self, i):
+        color_palette = cc.bokeh_palette
+
+        return color_palette[i % len(color_palette)]
+
+    def generic_settings(self):
+        return
+
+
+#######################################################################################################################
+
 # matplotlib based libraries
 from datetime import timedelta
 

@@ -129,6 +129,7 @@ class EngineTemplate(object):
 #######################################################################################################################
 
 from bokeh.plotting import figure, output_file, show, gridplot, save
+from bokeh.models import Range1d
 from bokeh.charts import HeatMap
 
 class EngineBokeh(EngineTemplate):
@@ -187,12 +188,12 @@ class EngineBokeh(EngineTemplate):
 
                 from math import pi
                 p1.xaxis.major_label_orientation = pi/2
-            elif type(data_frame.index) == pandas.tslib.Timestamp:
+            elif type(data_frame.index) == pandas.tslib.Timestamp or (type(xd[0]) == pandas.tslib.Timestamp and type(xd[-1]) == pandas.tslib.Timestamp):
                 p1 = figure(
                     x_axis_type = "datetime",
                     plot_width = plot_width,
                     plot_height = plot_height,
-                    x_range = (xd[0], xd[-1])
+                    # x_range=(xd[0], xd[-1])   # at present Bokeh doesn't like to set limits with datetime, hopefully will change!
                 )
 
             # otherwise numerical axis

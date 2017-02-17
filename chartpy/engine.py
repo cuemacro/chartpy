@@ -495,6 +495,7 @@ from datetime import timedelta
 
 import matplotlib
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import axes3d
 import numpy as np
 
 from matplotlib.dates import YearLocator, MonthLocator, DayLocator, HourLocator, MinuteLocator
@@ -533,24 +534,44 @@ class EngineMatplotlib(EngineTemplate):
 
         first_ax = None
 
+        movie_frame = []
+
         for data_frame in data_frame_list:
 
             bar_ind = np.arange(0, len(data_frame.index))
+
+            chart_projection = '2d'
+
+            if not (isinstance(chart_type, list)):
+                if chart_type == 'surface': chart_projection = '3d'
 
             # for bar charts, create a proxy x-axis (then relabel)
             xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame, style, chart_type, bar_ind)
 
             if style.subplots == False and len(data_frame_list) == 1:
-                ax = fig.add_subplot(111)
+                if chart_projection == '3d':
+                    ax = fig.add_subplot(111, projection=chart_projection)
+                else:
+                    ax = fig.add_subplot(111)
             else:
                 if first_ax is None:
-                    ax = fig.add_subplot(2, 1, subplot_no)
+                    if chart_projection == '3d':
+                        ax = fig.add_subplot(2,1,subplot_no, projection=chart_projection)
+                    else:
+                        ax = fig.add_subplot(2, 1, subplot_no)
+
                     first_ax = ax
 
                 if style.share_subplot_x:
-                    ax = fig.add_subplot(2,1,subplot_no, sharex=first_ax)
+                    if chart_projection == '3d':
+                        ax = fig.add_subplot(2,1,subplot_no, sharex=first_ax, projection=chart_projection)
+                    else:
+                        ax = fig.add_subplot(2, 1, subplot_no, sharex=first_ax)
                 else:
-                    ax = fig.add_subplot(2,1,subplot_no)
+                    if chart_projection == '3d':
+                        ax = fig.add_subplot(2,1,subplot_no, projection=chart_projection)
+                    else:
+                        ax = fig.add_subplot(2, 1, subplot_no)
 
             subplot_no = subplot_no + 1
 
@@ -593,26 +614,33 @@ class EngineMatplotlib(EngineTemplate):
                 has_matrix = 'no'
 
                 if not(isinstance(chart_type, list)):
+
+                    ax_temp = ax
+
+                    color = style.color
+
+                    if style.color == []:
+                        color = cc.chartfactory_default_colormap
+                    else:
+                        if isinstance(style.color, list):
+                            color = style.color[subplot_no - 1]
+
                     if chart_type == 'heatmap':
-                        ax.set_frame_on(False)
+                        ax_temp.set_frame_on(False)
 
                         # weird hack, otherwise comes out all inverted!
                         data_frame = data_frame.iloc[::-1]
 
-                        color = style.color
-
-                        if style.color == []:
-                            color = cc.chartfactory_default_colormap
-                        else:
-                            if isinstance(style.color, list):
-                                color = style.color[subplot_no - 1]
-
-                        ax.pcolor(data_frame.values, cmap=color, alpha=0.8)
+                        movie_frame.append(ax_temp.pcolor(data_frame.values, cmap=color, alpha=0.8))
 
                         has_matrix = '2d-matrix'
                     elif chart_type == 'surface':
-                        # TODO
-                        # ax.plot_surface(X, Y, Z)
+
+                        # TODO still very early alpha
+                        X, Y = np.meshgrid(range(0, len(data_frame.columns)), range(0, len(data_frame.index)))
+                        Z = data_frame.values
+
+                        movie_frame.append(ax_temp.plot_surface(X, Y, Z, cmap=color, vmin=Z.min(), vmax=Z.max(), rstride=1, cstride=1))
 
                         has_matrix = '3d-matrix'
 
@@ -641,14 +669,14 @@ class EngineMatplotlib(EngineTemplate):
 
                             if linewidth_t is None: linewidth_t = matplotlib.rcParams['axes.linewidth']
 
-                            ax_temp.plot(xd, yd, label = label, color = color_spec[i],
-                                         linewidth = linewidth_t)
+                            movie_frame.append(ax_temp.plot(xd, yd, label = label, color = color_spec[i],
+                                         linewidth = linewidth_t))
 
                         elif(chart_type_ord == 'bar'):
                             # for multiple bars we need to allocate space properly
                             bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0,len(bar_ind))]
 
-                            ax_temp.bar(bar_pos, yd, bar_width, label = label, color = color_spec[i])
+                            movie_frame.append(ax_temp.bar(bar_pos, yd, bar_width, label = label, color = color_spec[i]))
 
                             bar_index = bar_index + 1
 
@@ -656,7 +684,7 @@ class EngineMatplotlib(EngineTemplate):
                             # for multiple bars we need to allocate space properly
                             bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0, len(bar_ind))]
 
-                            ax_temp.barh(bar_pos, yd, bar_width, label=label, color=color_spec[i])
+                            movie_frame.append(ax_temp.barh(bar_pos, yd, bar_width, label=label, color=color_spec[i]))
 
                             bar_index = bar_index + 1
 
@@ -665,7 +693,7 @@ class EngineMatplotlib(EngineTemplate):
 
                             yoff = np.where(yd > 0, yoff_pos, yoff_neg)
 
-                            ax_temp.bar(bar_pos, yd, label = label, color = color_spec[i], bottom = yoff)
+                            movie_frame.append(ax_temp.bar(bar_pos, yd, label = label, color = color_spec[i], bottom = yoff))
 
                             yoff_pos = yoff_pos + np.maximum(yd, zeros)
                             yoff_neg = yoff_neg + np.minimum(yd, zeros)
@@ -673,7 +701,7 @@ class EngineMatplotlib(EngineTemplate):
                             # bar_index = bar_index + 1
 
                         elif(chart_type_ord == 'scatter'):
-                            ax_temp.scatter(xd, yd, label = label, color = color_spec[i])
+                            movie_frame.append(ax_temp.scatter(xd, yd, label = label, color = color_spec[i]))
 
                             if style.line_of_best_fit is True:
                                 self.trendline(ax_temp, xd.values, yd.values, order=1, color= color_spec[i], alpha=1,
@@ -801,7 +829,7 @@ class EngineMatplotlib(EngineTemplate):
 
     def format_x_axis(self, ax, data_frame, style, has_bar, bar_ind, has_matrix):
 
-        if has_matrix == '2d-matrix':
+        if has_matrix == '2d-matrix' or has_matrix == '3d-matrix':
             x_bar_ind = np.arange(0, len(data_frame.columns))
             y_bar_ind = np.arange(0, len(data_frame.index))
 

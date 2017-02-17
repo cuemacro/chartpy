@@ -708,7 +708,7 @@ class EngineMatplotlib(EngineTemplate):
                                                scale_factor = abs(style.scale_factor))
 
                 # format X axis
-                self.format_x_axis(ax_temp, data_frame, style, has_bar, bar_ind, has_matrix)
+                self.format_x_axis(ax_temp, data_frame, style, has_bar, bar_ind, bar_width, has_matrix)
 
             except Exception as e:
                 print(str(e))
@@ -746,8 +746,8 @@ class EngineMatplotlib(EngineTemplate):
                     if leg2 != []: leg.remove()
             except: pass
 
-        #import matplotlib.animation as animation
-        #pam_ani = animation.ArtistAnimation(fig, movie_frame, interval=1000, blit=False)
+        # import matplotlib.animation as animation
+        # pam_ani = animation.ArtistAnimation(fig, movie_frame, interval=1000, blit=False)
 
         # fig.autofmt_xdate()
 
@@ -830,15 +830,16 @@ class EngineMatplotlib(EngineTemplate):
         # do not use offsets/scientific notation
         matplotlib.rcParams.update({'axes.formatter.useoffset': False})
 
-    def format_x_axis(self, ax, data_frame, style, has_bar, bar_ind, has_matrix):
+    def format_x_axis(self, ax, data_frame, style, has_bar, bar_ind, bar_width, has_matrix):
 
         if has_matrix == '2d-matrix' or has_matrix == '3d-matrix':
             x_bar_ind = np.arange(0, len(data_frame.columns))
             y_bar_ind = np.arange(0, len(data_frame.index))
 
-            ax.set_xticks(x_bar_ind + 0.5)
+            offset = 0.5
+            ax.set_xticks(x_bar_ind + offset)
             ax.set_xlim([0, len(x_bar_ind)])
-            ax.set_yticks(y_bar_ind + 0.5)
+            ax.set_yticks(y_bar_ind + offset)
             ax.set_ylim([0, len(y_bar_ind)])
 
             plt.setp(plt.yticks()[1], rotation=90)
@@ -850,12 +851,8 @@ class EngineMatplotlib(EngineTemplate):
 
             for x in range(len(data_frame.index)):
                 for y in range(len(data_frame.columns)):
-                    x_c = data_frame.index[x]
-                    y_c = data_frame.columns[y]
 
-                    z = '%.0f' % data_frame.ix[x_c, y_c]
-
-                    plt.text(x + 0.5, y + 0.5, z,
+                    plt.text(x +  offset, y +  offset, '%.0f' % data_frame.ix[x, y],
                          horizontalalignment='center',
                          verticalalignment='center',
                          )
@@ -863,7 +860,8 @@ class EngineMatplotlib(EngineTemplate):
             return
 
         if has_bar == 'barv':
-            ax.set_xticks(bar_ind)
+            offset = bar_width / 2.0
+            ax.set_xticks(bar_ind - offset)
             ax.set_xticklabels(data_frame.index)
             ax.set_xlim([-1, len(bar_ind)])
 

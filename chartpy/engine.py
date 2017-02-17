@@ -548,7 +548,7 @@ class EngineMatplotlib(EngineTemplate):
             # for bar charts, create a proxy x-axis (then relabel)
             xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame, style, chart_type, bar_ind)
 
-            if style.subplots == False and len(data_frame_list) == 1:
+            if style.subplots == False and first_ax is None:
                 if chart_projection == '3d':
                     ax = fig.add_subplot(111, projection=chart_projection)
                 else:
@@ -556,7 +556,7 @@ class EngineMatplotlib(EngineTemplate):
             else:
                 if first_ax is None:
                     if chart_projection == '3d':
-                        ax = fig.add_subplot(2,1,subplot_no, projection=chart_projection)
+                        ax = fig.add_subplot(2, 1, subplot_no, projection=chart_projection)
                     else:
                         ax = fig.add_subplot(2, 1, subplot_no)
 
@@ -564,12 +564,12 @@ class EngineMatplotlib(EngineTemplate):
 
                 if style.share_subplot_x:
                     if chart_projection == '3d':
-                        ax = fig.add_subplot(2,1,subplot_no, sharex=first_ax, projection=chart_projection)
+                        ax = fig.add_subplot(2, 1, subplot_no, sharex=first_ax, projection=chart_projection)
                     else:
                         ax = fig.add_subplot(2, 1, subplot_no, sharex=first_ax)
                 else:
                     if chart_projection == '3d':
-                        ax = fig.add_subplot(2,1,subplot_no, projection=chart_projection)
+                        ax = fig.add_subplot(2, 1, subplot_no, projection=chart_projection)
                     else:
                         ax = fig.add_subplot(2, 1, subplot_no)
 
@@ -708,7 +708,7 @@ class EngineMatplotlib(EngineTemplate):
                                                scale_factor = abs(style.scale_factor))
 
                 # format X axis
-                self.format_x_axis(ax, data_frame, style, has_bar, bar_ind, has_matrix)
+                self.format_x_axis(ax_temp, data_frame, style, has_bar, bar_ind, has_matrix)
 
             except Exception as e:
                 print(str(e))
@@ -745,6 +745,9 @@ class EngineMatplotlib(EngineTemplate):
                     if leg != []: leg.remove()
                     if leg2 != []: leg.remove()
             except: pass
+
+        #import matplotlib.animation as animation
+        #pam_ani = animation.ArtistAnimation(fig, movie_frame, interval=1000, blit=False)
 
         # fig.autofmt_xdate()
 
@@ -847,7 +850,12 @@ class EngineMatplotlib(EngineTemplate):
 
             for x in range(len(data_frame.index)):
                 for y in range(len(data_frame.columns)):
-                    plt.text(x + 0.5, y + 0.5, '%.0f' % data_frame.ix[x, y],
+                    x_c = data_frame.index[x]
+                    y_c = data_frame.columns[y]
+
+                    z = '%.0f' % data_frame.ix[x_c, y_c]
+
+                    plt.text(x + 0.5, y + 0.5, z,
                          horizontalalignment='center',
                          verticalalignment='center',
                          )

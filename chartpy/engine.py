@@ -126,6 +126,40 @@ class EngineTemplate(object):
 
         return style
 
+    def get_max_min_dataframes(self, data_frame_list):
+        """Gets minimum and maximum values for a series of dataframes. Can be particularly useful for adjusting colormaps
+        for lightness/darkness.
+
+        Parameters
+        ----------
+        data_frame_list : DataFrame (list)
+            DataFrames to be checked
+
+        Returns
+        -------
+        float, float
+            Minimum and maximum values
+        """
+
+        import sys
+
+        minz = sys.float_info.max
+        maxz = sys.float_info.min
+
+        for data_frame in data_frame_list:
+
+            minz_1 = data_frame.min(axis=0).min()
+            maxz_1 = data_frame.max(axis=0).max()
+
+            if minz_1 != numpy.nan:
+                minz = min(minz, minz_1)
+
+            if maxz_1 != numpy.nan:
+                maxz = max(maxz, maxz_1)
+
+
+        return minz, maxz
+
 #######################################################################################################################
 
 from bokeh.plotting import figure, output_file, show, gridplot, save
@@ -424,6 +458,14 @@ class EngineVisPy(EngineTemplate):
             bar_width = (1 - bar_space) / (no_of_bars)
             bar_index = 0
 
+            separate_chart = False
+
+            if chart_type == 'surface':
+                # TODO
+
+
+                separate_chart = True
+
             has_bar = 'no-bar'
 
             if not (separate_chart):
@@ -514,9 +556,6 @@ class EngineMatplotlib(EngineTemplate):
         fig = plt.figure(figsize = ((style.width * abs(style.scale_factor))/style.dpi,
                                     (style.height * abs(style.scale_factor))/style.dpi), dpi = style.dpi)
 
-        if style.title is not None:
-            fig.suptitle(style.title, fontsize = 14 * abs(style.scale_factor))
-
         # matplotlib 1.5
         try:
             cyc = matplotlib.rcParams['axes.prop_cycle']
@@ -536,87 +575,37 @@ class EngineMatplotlib(EngineTemplate):
 
         movie_frame = []
 
+        ordinal = 0
+
+        minz, maxz = self.get_max_min_dataframes(data_frame_list=data_frame_list)
+
         for data_frame in data_frame_list:
-
             bar_ind = np.arange(0, len(data_frame.index))
-
-            chart_projection = '2d'
-
-            if not (isinstance(chart_type, list)):
-                if chart_type == 'surface': chart_projection = '3d'
 
             # for bar charts, create a proxy x-axis (then relabel)
             xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame, style, chart_type, bar_ind)
 
-            if style.subplots == False and first_ax is None:
-                if chart_projection == '3d':
-                    ax = fig.add_subplot(111, projection=chart_projection)
-                else:
-                    ax = fig.add_subplot(111)
-            else:
-                if first_ax is None:
-                    if chart_projection == '3d':
-                        ax = fig.add_subplot(2, 1, subplot_no, projection=chart_projection)
-                    else:
-                        ax = fig.add_subplot(2, 1, subplot_no)
+            ax, ax2, subplot_no, ordinal = self._create_subplot(fig, chart_type, style, subplot_no, first_ax, ordinal)
 
-                    first_ax = ax
+            # for stacked bar
+            yoff_pos = np.zeros(len(data_frame.index.values))  # the bottom values for stacked bar chart
+            yoff_neg = np.zeros(len(data_frame.index.values))  # the bottom values for stacked bar chart
 
-                if style.share_subplot_x:
-                    if chart_projection == '3d':
-                        ax = fig.add_subplot(2, 1, subplot_no, sharex=first_ax, projection=chart_projection)
-                    else:
-                        ax = fig.add_subplot(2, 1, subplot_no, sharex=first_ax)
-                else:
-                    if chart_projection == '3d':
-                        ax = fig.add_subplot(2, 1, subplot_no, projection=chart_projection)
-                    else:
-                        ax = fig.add_subplot(2, 1, subplot_no)
+            zeros = np.zeros(len(data_frame.index.values))
 
-            subplot_no = subplot_no + 1
-
-            if style.x_title != '': ax.set_xlabel(style.x_title)
-            if style.y_title != '': ax.set_ylabel(style.y_title)
-
-            plt.xlabel(style.x_title)
-            plt.ylabel(style.y_title)
-
-            # format Y axis
-            y_formatter = matplotlib.ticker.ScalarFormatter(useOffset = False)
-            ax.yaxis.set_major_formatter(y_formatter)
-
-            # create a second y axis if necessary
-            ax2 = []
-
-            ax.xaxis.grid(style.x_axis_showgrid)
-            ax.yaxis.grid(style.y_axis_showgrid)
-
-            if style.y_axis_2_series != []:
-                ax2 = ax.twinx()
-
-                # set grid for second y axis
-                ax2.yaxis.grid(style.y_axis_2_showgrid)
+            # for bar chart
+            bar_space = 0.2
+            bar_width = (1 - bar_space) / (no_of_bars)
+            bar_index = 0
 
             try:
-                # get all the correct colors (and construct gradients if necessary eg. from 'blues')
-
-                # for stacked bar
-                yoff_pos = np.zeros(len(data_frame.index.values)) # the bottom values for stacked bar chart
-                yoff_neg = np.zeros(len(data_frame.index.values)) # the bottom values for stacked bar chart
-
-                zeros = np.zeros(len(data_frame.index.values))
-
-                # for bar chart
-                bar_space = 0.2
-                bar_width = (1 - bar_space) / (no_of_bars)
-                bar_index = 0
-
                 has_matrix = 'no'
 
                 if not(isinstance(chart_type, list)):
 
                     ax_temp = ax
 
+                    # get all the correct colors (and construct gradients if necessary eg. from 'blues')
                     color = style.color
 
                     if style.color == []:
@@ -631,7 +620,10 @@ class EngineMatplotlib(EngineTemplate):
                         # weird hack, otherwise comes out all inverted!
                         data_frame = data_frame.iloc[::-1]
 
-                        movie_frame.append(ax_temp.pcolor(data_frame.values, cmap=color, alpha=0.8))
+                        if style.normalize_colormap:
+                            movie_frame.append(ax_temp.pcolor(data_frame.values, cmap=color, alpha=0.8, vmax=maxz, vmin=minz))
+                        else:
+                            movie_frame.append(ax_temp.pcolor(data_frame.values, cmap=color, alpha=0.8))
 
                         has_matrix = '2d-matrix'
                     elif chart_type == 'surface':
@@ -640,7 +632,11 @@ class EngineMatplotlib(EngineTemplate):
                         X, Y = np.meshgrid(range(0, len(data_frame.columns)), range(0, len(data_frame.index)))
                         Z = data_frame.values
 
-                        movie_frame.append(ax_temp.plot_surface(X, Y, Z, cmap=color, vmin=Z.min(), vmax=Z.max(), rstride=1, cstride=1))
+                        if style.normalize_colormap:
+                            movie_frame.append(ax_temp.plot_surface(X, Y, Z, cmap=color, rstride=1, cstride=1,
+                                                                    vmax=maxz, vmin=minz))
+                        else:
+                            movie_frame.append(ax_temp.plot_surface(X, Y, Z, cmap=color, rstride=1, cstride=1))
 
                         has_matrix = '3d-matrix'
 
@@ -670,7 +666,7 @@ class EngineMatplotlib(EngineTemplate):
                             if linewidth_t is None: linewidth_t = matplotlib.rcParams['axes.linewidth']
 
                             movie_frame.append(ax_temp.plot(xd, yd, label = label, color = color_spec[i],
-                                         linewidth = linewidth_t))
+                                         linewidth = linewidth_t),)
 
                         elif(chart_type_ord == 'bar'):
                             # for multiple bars we need to allocate space properly
@@ -711,43 +707,43 @@ class EngineMatplotlib(EngineTemplate):
                 self.format_x_axis(ax_temp, data_frame, style, has_bar, bar_ind, bar_width, has_matrix)
 
             except Exception as e:
+                pass
+                # print(str(e))
+
+            self._create_legend(ax, ax2, style)
+
+        try:
+            ax_temp.set_zlim(minz, maxz)
+        except:
+            pass
+
+        anim = None
+
+        # should we animate the figure?
+        if style.animate_figure:
+
+            if style.animate_titles is None:
+                titles = range(1, len(data_frame_list) + 1)
+            else:
+                titles = style.animate_titles
+
+            # initialization function: weirdly need to plot the last one (otherwise get ghosting!)
+            def init():
+                return [movie_frame[-1]]
+
+            def update(i):
+                fig.canvas.set_window_title(str(titles[i]))
+
+                return [movie_frame[i]]
+
+            import matplotlib.animation as animation
+
+            try:
+                anim = animation.FuncAnimation(plt.gcf(), update, interval=style.animate_frame_ms, blit=True,
+                                               frames=len(data_frame_list),
+                                               init_func=init, repeat=True)
+            except Exception as e:
                 print(str(e))
-
-            if style.display_source_label == True and style.source is not None:
-                ax.annotate('Source: ' + style.source, xy = (1, 0), xycoords='axes fraction', fontsize=7 * abs(style.scale_factor),
-                            xytext=(-5 * abs(style.scale_factor), 10 * abs(style.scale_factor)), textcoords='offset points',
-                            ha='right', va='top', color = style.source_color)
-
-            if style.display_brand_label == True:
-                self.create_brand_label(ax, anno = style.brand_label, scale_factor = abs(style.scale_factor))
-
-            leg = []
-            leg2 = []
-
-            loc = 'best'
-
-            # if we have two y-axis then make sure legends are in opposite corners
-            if ax2 != []: loc = 2
-
-            try:
-                leg = ax.legend(loc = loc, prop={'size':10 * abs(style.scale_factor)})
-                leg.get_frame().set_linewidth(0.0)
-                leg.get_frame().set_alpha(0)
-
-                if ax2 != []:
-                    leg2 = ax2.legend(loc = 1, prop={'size':10 * abs(style.scale_factor)})
-                    leg2.get_frame().set_linewidth(0.0)
-                    leg2.get_frame().set_alpha(0)
-            except: pass
-
-            try:
-                if style.display_legend is False:
-                    if leg != []: leg.remove()
-                    if leg2 != []: leg.remove()
-            except: pass
-
-        # import matplotlib.animation as animation
-        # pam_ani = animation.ArtistAnimation(fig, movie_frame, interval=1000, blit=False)
 
         # fig.autofmt_xdate()
 
@@ -755,8 +751,26 @@ class EngineMatplotlib(EngineTemplate):
             style = self.generate_file_names(style, 'matplotlib')
 
             if style.save_fig:
+
+                # TODO get save movie file to work in GIF and MP4 (hangs currently on these)
+                # install FFMPEG with: conda install --channel https://conda.anaconda.org/conda-forge ffmpeg
+                if style.animate_figure:
+                    pass
+                    # file = style.file_output.upper()
+
+                    # if '.GIF' in file:
+                    # anim.save(style.file_output, writer='imagemagick', fps=5, dpi=80)
+                    # print('GIF saved')
+
+                    # plt.rcParams['animation.ffmpeg_path'] = 'c:\\ffmpeg\\bin\\ffmpeg.exe'
+
+                    # Writer = animation.writers['ffmpeg']
+                    # writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
+                    # anim.save('test.mp4', writer=writer)
+
                 plt.savefig(style.file_output, transparent=False)
-        except Exception as e: pass
+        except Exception as e:
+             print(str(e))
 
 
         ####### various matplotlib converters are unstable
@@ -860,7 +874,11 @@ class EngineMatplotlib(EngineTemplate):
             return
 
         if has_bar == 'barv':
-            offset = bar_width / 2.0
+            if matplotlib.__version__ > '1.9':
+                offset = bar_width / 2.0    # for matplotlib 2
+            else:
+                offset = 0
+
             ax.set_xticks(bar_ind - offset)
             ax.set_xticklabels(data_frame.index)
             ax.set_xlim([-1, len(bar_ind)])
@@ -941,8 +959,6 @@ class EngineMatplotlib(EngineTemplate):
                     ax.xaxis.set_major_formatter(md.DateFormatter(style.date_formatter))
                 elif diff < timedelta(days = 4):
 
-
-
                     date_formatter = '%H:%M'
                     xfmt = md.DateFormatter(date_formatter)
                     ax.xaxis.set_major_formatter(xfmt)
@@ -1002,6 +1018,12 @@ class EngineMatplotlib(EngineTemplate):
                     locator = YearLocator(years)
                     ax.xaxis.set_major_locator(locator)
                     ax.xaxis.set_major_formatter(md.DateFormatter('%Y'))
+
+                if matplotlib.__version__ > '1.9':
+                    max = dates.max()
+                    min = dates.min()
+
+                    plt.xlim(min, max)
 
             except:
                 try:
@@ -1073,12 +1095,112 @@ class EngineMatplotlib(EngineTemplate):
             # return the R^2 value:
             return Rsqr
 
-    def create_brand_label(self, ax, anno, scale_factor):
+    def _create_brand_label(self, ax, anno, scale_factor):
         ax.annotate(anno, xy = (1, 1), xycoords = 'axes fraction',
                     fontsize = 10 * abs(scale_factor), color = 'white',
                     xytext = (0 * abs(scale_factor), 15 * abs(scale_factor)), textcoords = 'offset points',
                     va = "center", ha = "center",
                     bbox = dict(boxstyle = "round,pad=0.0", facecolor = cc.chartfactory_brand_color))
+
+    def _create_subplot(self, fig, chart_type, style, subplot_no, first_ax, ordinal):
+
+        if style.title is not None:
+            fig.suptitle(style.title, fontsize = 14 * abs(style.scale_factor))
+
+        chart_projection = '2d'
+
+        if not (isinstance(chart_type, list)):
+            if chart_type == 'surface': chart_projection = '3d'
+
+        if style.subplots == False and first_ax is None:
+            if chart_projection == '3d':
+                ax = fig.add_subplot(111, projection=chart_projection)
+            else:
+                ax = fig.add_subplot(111)
+        else:
+            if first_ax is None:
+                if chart_projection == '3d':
+                    ax = fig.add_subplot(2, 1, subplot_no, projection=chart_projection)
+                else:
+                    ax = fig.add_subplot(2, 1, subplot_no)
+
+                first_ax = ax
+
+            if style.share_subplot_x:
+                if chart_projection == '3d':
+                    ax = fig.add_subplot(2, 1, subplot_no, sharex=first_ax, projection=chart_projection)
+                else:
+                    ax = fig.add_subplot(2, 1, subplot_no, sharex=first_ax)
+            else:
+                if chart_projection == '3d':
+                    ax = fig.add_subplot(2, 1, subplot_no, projection=chart_projection)
+                else:
+                    ax = fig.add_subplot(2, 1, subplot_no)
+
+        subplot_no = subplot_no + 1
+
+        if style.x_title != '': ax.set_xlabel(style.x_title)
+        if style.y_title != '': ax.set_ylabel(style.y_title)
+
+        plt.xlabel(style.x_title)
+        plt.ylabel(style.y_title)
+
+        # format Y axis
+        y_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
+        ax.yaxis.set_major_formatter(y_formatter)
+
+        # create a second y axis if necessary
+        ax2 = []
+
+        ax.xaxis.grid(style.x_axis_showgrid)
+        ax.yaxis.grid(style.y_axis_showgrid)
+
+        if style.y_axis_2_series != []:
+            ax2 = ax.twinx()
+
+            # set grid for second y axis
+            ax2.yaxis.grid(style.y_axis_2_showgrid)
+
+        return ax, ax2, subplot_no, ordinal + 1
+
+
+    def _create_legend(self, ax, ax2, style):
+        if style.display_source_label == True and style.source is not None:
+            ax.annotate('Source: ' + style.source, xy=(1, 0), xycoords='axes fraction',
+                        fontsize=7 * abs(style.scale_factor),
+                        xytext=(-5 * abs(style.scale_factor), 10 * abs(style.scale_factor)), textcoords='offset points',
+                        ha='right', va='top', color=style.source_color)
+
+        if style.display_brand_label == True:
+            self._create_brand_label(ax, anno=style.brand_label, scale_factor=abs(style.scale_factor))
+
+        leg = []
+        leg2 = []
+
+        loc = 'best'
+
+        # if we have two y-axis then make sure legends are in opposite corners
+        if ax2 != []: loc = 2
+
+        try:
+            leg = ax.legend(loc=loc, prop={'size': 10 * abs(style.scale_factor)})
+            leg.get_frame().set_linewidth(0.0)
+            leg.get_frame().set_alpha(0)
+
+            if ax2 != []:
+                leg2 = ax2.legend(loc=1, prop={'size': 10 * abs(style.scale_factor)})
+                leg2.get_frame().set_linewidth(0.0)
+                leg2.get_frame().set_alpha(0)
+        except:
+            pass
+
+        try:
+            if style.display_legend is False:
+                if leg != []: leg.remove()
+                if leg2 != []: leg.remove()
+        except:
+            pass
+
 
 #######################################################################################################################
 cf = None
@@ -1181,6 +1303,7 @@ class EnginePlotly(EngineTemplate):
                                            dimensions=(style.width * abs(style.scale_factor) * scale,
                                                        style.height * abs(style.scale_factor) * scale),
                                            asFigure=True)
+
                 elif chart_type_ord == 'heatmap':
                     fig = data_frame.iplot(kind=chart_type,
                                            title=style.title,

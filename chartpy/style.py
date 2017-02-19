@@ -42,6 +42,7 @@ class Style(object):
                  color_2=[],
                  color_2_series=[],
                  exclude_from_color=[],
+                 normalize_colormap=True,
 
                  # subplot
                  subplots=False,
@@ -57,6 +58,11 @@ class Style(object):
 
                  # should we block display of new screens?
                  block_new_plots=False,
+
+                 # show this be an animation?
+                 animate_figure=False,
+                 animate_titles=None,
+                 animate_frame_ms=250,
 
                  # lines and multiple y-axis
                  y_axis_2_series=[],
@@ -130,6 +136,7 @@ class Style(object):
         self.color_2 = color_2
         self.color_2_series = color_2_series
         self.exclude_from_color = exclude_from_color
+        self.normalize_colormap = normalize_colormap
 
         # subplots
         self.subplots = subplots
@@ -145,6 +152,11 @@ class Style(object):
 
         # block display
         self.block_new_plots = block_new_plots
+        
+        # animation parameters
+        self.animate_figure = animate_figure
+        self.animate_titles = animate_titles
+        self.animate_frame_ms = animate_frame_ms
 
         # lines and multiple y-axis
         self.y_axis_2_series = y_axis_2_series
@@ -305,6 +317,14 @@ class Style(object):
     def exclude_from_color(self, exclude_from_color):
         self.__exclude_from_color = self.str_list(exclude_from_color)
 
+    @property
+    def normalize_colormap(self):
+        return self.__normalize_colormap
+
+    @normalize_colormap.setter
+    def normalize_colormap(self, normalize_colormap):
+        self.__normalize_colormap = self.str_list(normalize_colormap)
+
     ###### subplots
     @property
     def subplots(self):
@@ -370,6 +390,31 @@ class Style(object):
     @block_new_plots.setter
     def block_new_plots(self, block_new_plots):
         self.__block_new_plots = block_new_plots
+        
+    @property
+    def animate_figure(self):
+        return self.__animate_figure
+
+    @animate_figure.setter
+    def animate_figure(self, animate_figure):
+        self.__animate_figure = animate_figure
+
+    @property
+    def animate_titles(self):
+        return self.__animate_titles
+
+    @animate_titles.setter
+    def animate_titles(self, animate_titles):
+        self.__animate_titles = animate_titles
+        
+    @property
+    def animate_frame_ms(self):
+        return self.__animate_frame_ms
+
+    @animate_frame_ms.setter
+    def animate_frame_ms(self, animate_frame_ms):
+        self.__animate_frame_ms = animate_frame_ms
+
 
     ###### resample frequency
     @property

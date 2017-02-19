@@ -122,6 +122,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 19 Feb 2017 - Added simple animations for matplotlib
 * 16 Feb 2017 - Added VisPy support for plotting and added demo example
 * 11 Feb 2017 - Added chartpy logo
 * 05 Feb 2017 - Fixed x-axis date formatting issue with matplotlib wrapper

@@ -141,6 +141,9 @@ class EngineTemplate(object):
             Minimum and maximum values
         """
 
+        if not(isinstance(data_frame_list, list)):
+            data_frame_list = [data_frame_list]
+
         import sys
 
         minz = sys.float_info.max
@@ -150,6 +153,40 @@ class EngineTemplate(object):
 
             minz_1 = data_frame.min(axis=0).min()
             maxz_1 = data_frame.max(axis=0).max()
+
+            if minz_1 != numpy.nan:
+                minz = min(minz, minz_1)
+
+            if maxz_1 != numpy.nan:
+                maxz = max(maxz, maxz_1)
+
+
+        return minz, maxz
+
+    def get_max_min_x_axis(self, data_frame_list):
+        """Gets minimum and maximum values for the x_axis. Can be particularly useful for adjusting colormaps
+        for lightness/darkness.
+
+        Parameters
+        ----------
+        data_frame_list : DataFrame (list)
+            DataFrames to be checked
+
+        Returns
+        -------
+        obj, obj
+            Minimum and maximum values
+        """
+
+        import sys
+
+        minz = data_frame_list[0].index[0]
+        maxz = data_frame_list[0].index[-1]
+
+        for data_frame in data_frame_list:
+
+            minz_1 = data_frame.index[0]
+            maxz_1 = data_frame.index[-1]
 
             if minz_1 != numpy.nan:
                 minz = min(minz, minz_1)
@@ -436,6 +473,8 @@ class EngineVisPy(EngineTemplate):
 
         fig = vp.Fig(size=(plot_width, plot_height), show=False, title=style.title)
 
+        min_x, max_x = self.get_max_min_x_axis(data_frame_list=data_frame_list)
+
         for data_frame in data_frame_list:
             bar_ind = numpy.arange(1, len(data_frame.index) + 1)
 
@@ -462,7 +501,6 @@ class EngineVisPy(EngineTemplate):
 
             if chart_type == 'surface':
                 # TODO
-
 
                 separate_chart = True
 
@@ -496,6 +534,7 @@ class EngineVisPy(EngineTemplate):
                     if chart_type_ord == 'line':
                         fig[0, 0].plot(np.array((xd, yd)).T, marker_size=0, color=color_spec[i])
 
+                        fig[0, 0].view.camera.set_range(x=(min_x, max_x))
                         # TODO
                         pass
 
@@ -520,6 +559,8 @@ class EngineVisPy(EngineTemplate):
 
             fig.show(run=True)
 
+            print(min_x); print(max_x)
+            fig[0, 0].view.camera.set_range(x=(min_x, max_x))
 
     def get_color_list(self, i):
         color_palette = cc.bokeh_palette
@@ -1210,7 +1251,7 @@ try:
     import cufflinks as cf
 except: pass
 
-import plotly.plotly
+# import plotly.plotly
 
 class EnginePlotly(EngineTemplate):
 

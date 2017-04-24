@@ -32,6 +32,7 @@ except:
 
 # choose run_example = 0 for everything
 # run_example = 1 - xkcd example
+# run_example = 2 - fun xkcd example
 run_example = 0
 
 if run_example == 1 or run_example == 0:
@@ -40,6 +41,21 @@ if run_example == 1 or run_example == 0:
 
     # set the style of the plot
     style = Style(title="US GDP", source="Quandl/Fred", xkcd=True)
+
+    # Chart object is initialised with the dataframe and our chart style
+    chart = Chart(df=df, chart_type='line', style=style, engine='matplotlib')
+
+    chart.plot()
+
+if run_example == 2 or run_example == 0:
+    import pandas, numpy
+
+    dt = pandas.date_range(start="1 Jan 1950", end="1 Apr 2017", freq='M')
+    data = numpy.arange(len(dt))
+    df = pandas.DataFrame(index=dt, data=data, columns=['Importance'])
+
+    # set the style of the plot
+    style = Style(title="Importance of puns", source="@saeedamenfx", xkcd=True, x_title="Puns", y_title="Importance")
 
     # Chart object is initialised with the dataframe and our chart style
     chart = Chart(df=df, chart_type='line', style=style, engine='matplotlib')

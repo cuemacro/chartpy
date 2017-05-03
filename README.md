@@ -7,7 +7,7 @@ with a unified interface. You simply need to change a single keyword to change w
 to learn the low level details of each library. I've also created new stylesheets and formating to ensure that the default matplotlib
 styling looks more modern using Open Sans font.
 
-*Contributors for the project are very much welcome!*
+*Contributors for the project are very much welcome, sell below!*
 
 ```
 chart = Chart(df=df, chart_type='line', style=style)
@@ -112,6 +112,12 @@ I've also tried to design the library so that adding a new plotting engine is fa
 and edit the get_engine method in Chart), so it's basically future proof for whatever new chart libraries come along, with
 relatively small changes to your code base.
 
+# Contributors
+
+Contributors are always welcome for finmarketpy, findatapy and chartpy. If you'd like to contribute, have a look at
+[Planned Features](PLANNED_FEATURES.md] for areas we're looking for help on. Or if you have any ideas for improvements
+to the libriares please let us know too!
+
 # chartpy examples
 
 In chartpy/examples you will find several demos
@@ -122,6 +128,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 03 May 2017 - Added more on contributors
 * 24 Apr 2017 - Added extra xkcd example
 * 19 Feb 2017 - Added simple animations for matplotlib
 * 16 Feb 2017 - Added VisPy support for plotting and added demo example

@@ -115,7 +115,7 @@ relatively small changes to your code base.
 # Contributors
 
 Contributors are always welcome for finmarketpy, findatapy and chartpy. If you'd like to contribute, have a look at
-[Planned Features](PLANNED_FEATURES.md] for areas we're looking for help on. Or if you have any ideas for improvements
+[Planned Features](https://github.com/cuemacro/finmarketpy/blob/master/PLANNED_FEATURES.md) for areas we're looking for help on. Or if you have any ideas for improvements
 to the libriares please let us know too!
 
 # chartpy examples
@@ -128,6 +128,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 05 Jul 2017 - Fixed PLANNED_FEATURES.md link
 * 03 May 2017 - Added more on contributors
 * 24 Apr 2017 - Added extra xkcd example
 * 19 Feb 2017 - Added simple animations for matplotlib

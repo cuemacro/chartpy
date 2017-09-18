@@ -259,7 +259,8 @@ class EngineBokeh(EngineTemplate):
 
                 from math import pi
                 p1.xaxis.major_label_orientation = pi/2
-            elif type(data_frame.index) == pandas.tslib.Timestamp or (type(xd[0]) == pandas.tslib.Timestamp and type(xd[-1]) == pandas.tslib.Timestamp):
+            elif type(data_frame.index) == pandas.tslib.Timestamp or (type(xd[0]) == pandas.tslib.Timestamp and type(xd[-1]) == pandas.tslib.Timestamp)\
+                    or type(data_frame.index) == pandas.DatetimeIndex:
                 p1 = figure(
                     x_axis_type = "datetime",
                     plot_width = plot_width,
@@ -783,6 +784,7 @@ class EngineMatplotlib(EngineTemplate):
                 anim = animation.FuncAnimation(plt.gcf(), update, interval=style.animate_frame_ms, blit=True,
                                                frames=len(data_frame_list),
                                                init_func=init, repeat=True)
+
             except Exception as e:
                 print(str(e))
 
@@ -797,11 +799,13 @@ class EngineMatplotlib(EngineTemplate):
                 # install FFMPEG with: conda install --channel https://conda.anaconda.org/conda-forge ffmpeg
                 if style.animate_figure:
                     pass
-                    # file = style.file_output.upper()
+                    file = style.file_output.upper()
 
                     # if '.GIF' in file:
                     # anim.save(style.file_output, writer='imagemagick', fps=5, dpi=80)
                     # print('GIF saved')
+
+                    # FFwriter = animation.FFMpegWriter()
 
                     # plt.rcParams['animation.ffmpeg_path'] = 'c:\\ffmpeg\\bin\\ffmpeg.exe'
 

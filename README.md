@@ -128,6 +128,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 18 Sep 2017 - Fixed plotting DataFrame with DatetimeIndex with Bokeh
 * 05 Jul 2017 - Fixed PLANNED_FEATURES.md link
 * 03 May 2017 - Added more on contributors
 * 24 Apr 2017 - Added extra xkcd example

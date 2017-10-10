@@ -201,7 +201,11 @@ class EngineTemplate(object):
 
 from bokeh.plotting import figure, output_file, show, gridplot, save
 from bokeh.models import Range1d
-from bokeh.charts import HeatMap
+
+try:
+    from bokeh.charts import HeatMap
+except:
+    pass
 
 class EngineBokeh(EngineTemplate):
 

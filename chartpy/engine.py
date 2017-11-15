@@ -631,6 +631,12 @@ class EngineMatplotlib(EngineTemplate):
             # for bar charts, create a proxy x-axis (then relabel)
             xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame, style, chart_type, bar_ind)
 
+            try:
+               xd = xd.to_pydatetime()
+            except:
+                pass
+
+
             ax, ax2, subplot_no, ordinal = self._create_subplot(fig, chart_type, style, subplot_no, first_ax, ordinal)
 
             # for stacked bar

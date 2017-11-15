@@ -636,7 +636,6 @@ class EngineMatplotlib(EngineTemplate):
             except:
                 pass
 
-
             ax, ax2, subplot_no, ordinal = self._create_subplot(fig, chart_type, style, subplot_no, first_ax, ordinal)
 
             # for stacked bar

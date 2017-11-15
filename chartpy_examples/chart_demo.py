@@ -24,7 +24,6 @@ from chartpy import Chart, Style
 # get your own free Quandl API key from https://www.quandl.com/
 try:
     from chartpy.chartcred import ChartCred
-
     cred = ChartCred()
     quandl_api_key = cred.quandl_api_key
 except:

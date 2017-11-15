@@ -29,7 +29,6 @@ from math import sqrt
 from scipy.stats import norm
 import numpy as np
 
-
 ## from SciPy cookbook http://scipy.github.io/old-wiki/pages/Cookbook/BrownianMotion
 def brownian(x0, n, dt, delta, out=None):
     """

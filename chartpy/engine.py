@@ -489,7 +489,7 @@ class EngineVisPy(EngineTemplate):
                 data_frame = data_frame.drop(['Date'], axis=1)
 
             xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame, style, chart_type, bar_ind)
-
+            xd = data_frame.index
             # make the x-axis float as a temporary fix, vispy can't handle Date labels
             separate_chart = False
 
@@ -539,7 +539,7 @@ class EngineVisPy(EngineTemplate):
                     if chart_type_ord == 'line':
                         fig[0, 0].plot(np.array((xd, yd)).T, marker_size=0, color=color_spec[i])
 
-                        fig[0, 0].view.camera.set_range(x=(min_x, max_x))
+                        # fig[0, 0].view.camera.set_range(x=(min_x, max_x))
                         # TODO
                         pass
 
@@ -565,7 +565,7 @@ class EngineVisPy(EngineTemplate):
             fig.show(run=True)
 
             print(min_x); print(max_x)
-            fig[0, 0].view.camera.set_range(x=(min_x, max_x))
+            # fig[0, 0].view.camera.set_range(x=(min_x, max_x))
 
     def get_color_list(self, i):
         color_palette = cc.bokeh_palette
@@ -1342,6 +1342,8 @@ class EnginePlotly(EngineTemplate):
                 color_spec1 = color_spec[start:start + end]
                 start = end
 
+                full_line = False
+
                 if chart_type_ord == 'surface':
                     fig = data_frame.iplot(kind=chart_type,
                                            title=style.title,
@@ -1396,6 +1398,7 @@ class EnginePlotly(EngineTemplate):
                     # )
 
                 elif chart_type_ord == 'line':
+                    full_line = True
                     chart_type_ord = 'scatter'
                 elif chart_type_ord == 'scatter':
                     mode = 'markers'
@@ -1475,6 +1478,30 @@ class EnginePlotly(EngineTemplate):
                                            dimensions=(style.width * abs(style.scale_factor) * scale,
                                                        style.height * abs(style.scale_factor) * scale),
                                            asFigure=True)
+
+                    # for lines set the property of connectgaps (cannot specify directly in cufflinks)
+                    if full_line:
+                        for z in range(0, len(fig['data'])):
+                            fig['data'][z].connectgaps = style.connect_line_gaps
+
+                            # for k in range(0, len(fig['data'])):
+                            #     if full_line:
+                            #         fig['data'][k].connectgaps = style.connect_line_gaps
+
+                    if style.line_shape != None:
+                        if isinstance(style.line_shape, str):
+                            line_shape = [style.line_shape] * len(fig['data'])
+                        else:
+                            line_shape = style.line_shape
+
+                        for k in range(0, len(fig['data'])):
+                            fig['data'][k].line.shape = line_shape[k]
+
+                    if style.plotly_webgl:
+                        for k in range(0, len(fig['data'])):
+                            if fig['data'][k].type == 'scatter':
+                                fig['data'][k].type = 'scattergl'
+
 
                 fig.update(dict(layout=dict(legend=dict(
                     x=0.05,

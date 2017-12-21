@@ -71,11 +71,15 @@ class Style(object):
                  linewidth_2=None,
                  marker_size=1,
                  line_of_best_fit=False,
+                 line_shape=None,
 
                  # grid
                  x_axis_showgrid = True,
                  y_axis_showgrid = True,
                  y_axis_2_showgrid = True,
+
+                 # connect gaps
+                 connect_line_gaps=False,
 
                  # labelling of sources
                  brand_label=cc.chartfactory_brand_label,
@@ -108,6 +112,7 @@ class Style(object):
                  plotly_world_readable=cc.plotly_world_readable,
                  plotly_theme=None,
                  plotly_plot_mode=cc.plotly_plot_mode,
+                 plotly_webgl=cc.plotly_webgl,
 
                  # bokeh
                  bokeh_plot_mode=cc.bokeh_plot_mode,
@@ -165,11 +170,15 @@ class Style(object):
         self.linewidth_2 = linewidth_2
         self.marker_size = marker_size
         self.line_of_best_fit = line_of_best_fit
+        self.line_shape = line_shape
 
         # grids
         self.x_axis_showgrid = x_axis_showgrid
         self.y_axis_showgrid = y_axis_showgrid
         self.y_axis_2_showgrid = y_axis_2_showgrid
+
+        # connect line gaps
+        self.connect_line_gaps = connect_line_gaps
 
         # labelling of sources
         self.brand_label = brand_label
@@ -204,6 +213,7 @@ class Style(object):
         self.plotly_url = plotly_url
         self.plotly_as_image = plotly_as_image
         self.plotly_username = plotly_username
+        self.plotly_webgl = plotly_webgl
 
         # try to get API key from GraphicsConstants file
         try:
@@ -473,6 +483,15 @@ class Style(object):
     @line_of_best_fit.setter
     def line_of_best_fit(self, line_of_best_fit):
         self.__line_of_best_fit = line_of_best_fit
+
+    @property
+    def line_shape(self):
+        return self.__line_shape
+
+    @line_shape.setter
+    def line_shape(self, line_shape):
+        self.__line_shape = line_shape
+
         
     ###### grids
     @property
@@ -498,6 +517,16 @@ class Style(object):
     @y_axis_2_showgrid.setter
     def y_axis_2_showgrid(self, y_axis_2_showgrid):
         self.__y_axis_2_showgrid = y_axis_2_showgrid
+
+    ###### connect line gaps
+    @property
+    def connect_line_gaps(self):
+        return self.__connect_line_gaps
+
+    @connect_line_gaps.setter
+    def connect_line_gaps(self, connect_line_gaps):
+        self.__connect_line_gaps = connect_line_gaps
+
 
     ###### label properties
     @property
@@ -685,6 +714,15 @@ class Style(object):
     def plotly_plot_mode(self, plotly_plot_mode):
         self.__plotly_plot_mode = plotly_plot_mode
 
+    @property
+    def plotly_webgl(self):
+        return self.__plotly_webgl
+
+    @plotly_webgl.setter
+    def plotly_webgl(self, plotly_webgl):
+        self.__plotly_webgl = plotly_webgl
+
+    ###### bokeh specific settings
     @property
     def bokeh_plot_mode(self):
         return self.__bokeh_plot_mode

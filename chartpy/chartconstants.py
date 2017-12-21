@@ -84,6 +84,7 @@ class ChartConstants(object):
                        '#FBC15E',
                        '#8EBA42',
                        '#FFB5B8']
+    plotly_webgl = False
 
 
     ########## API KEYS

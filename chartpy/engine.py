@@ -30,7 +30,10 @@ from chartpy.chartconstants import ChartConstants
 
 cc = ChartConstants()
 
-class EngineTemplate(object):
+# compatible with Python 2 *and* 3:
+ABC = abc.ABCMeta('ABC', (object,), {'__slots__': ()})
+
+class EngineTemplate(ABC):
 
     def init(self):
         return
@@ -199,10 +202,9 @@ class EngineTemplate(object):
 
 #######################################################################################################################
 
-from bokeh.plotting import figure, output_file, show, gridplot, save
-from bokeh.models import Range1d
-
 try:
+    from bokeh.plotting import figure, output_file, show, gridplot, save
+    from bokeh.models import Range1d
     from bokeh.charts import HeatMap
 except:
     pass
@@ -421,6 +423,7 @@ class EngineBokeh(EngineTemplate):
 
 ######################################################################################################################
 
+# TODO bqplot interface not implemented yet
 try:
     from IPython.display import display
     from bqplot import (
@@ -432,7 +435,6 @@ except:
 class EngineBqplot(EngineTemplate):
     def plot_chart(self, data_frame, style, chart_type):
         pass
-        # TODO
 
     def get_color_list(self, i):
         color_palette = cc.bokeh_palette
@@ -583,7 +585,7 @@ from datetime import timedelta
 
 import matplotlib
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import axes3d
+
 import numpy as np
 
 from matplotlib.dates import YearLocator, MonthLocator, DayLocator, HourLocator, MinuteLocator
@@ -1262,9 +1264,13 @@ cf = None
 try:
     import plotly
     import cufflinks as cf
-except: pass
 
-# import plotly.plotly
+    import plotly  # JavaScript based plotting library with Python connector
+    plotly.tools.set_config_file(plotly_domain='http://type-here.com',
+                                 world_readable=cc.plotly_world_readable,
+                                 sharing=cc.plotly_sharing)
+except:
+    pass
 
 class EnginePlotly(EngineTemplate):
 
@@ -1276,267 +1282,421 @@ class EnginePlotly(EngineTemplate):
 
         marker_size = 1
 
-        x = ''; y = ''; z = ''
-        fig = None
+        x = '';
+        y = '';
+        z = ''
 
         scale = 1
 
         try:
+            # adjust sizing if offline_html format
             if (style.plotly_plot_mode == 'offline_html' and style.scale_factor > 0):
-                scale = 2/3
+                scale = 2 / 3
         except:
             pass
 
         # check other plots implemented by Cufflinks
-        if fig is None:
+        cm = ColorMaster()
 
-            cm = ColorMaster()
+        # create figure
+        data_frame_list = self.split_data_frame_to_list(data_frame, style)
+        fig_list = []
+        cols = []
 
-            # create figure
-            data_frame_list = self.split_data_frame_to_list(data_frame, style)
-            fig_list = []
-            cols = []
+        for data_frame in data_frame_list:
+            cols.append(data_frame.columns)
 
-            for data_frame in data_frame_list:
-                cols.append(data_frame.columns)
+        cols = list(numpy.array(cols).flat)
 
-            cols = list(np.array(cols).flat)
+        # get all the correct colors (and construct gradients if necessary eg. from 'Blues')
+        # need to change to strings for cufflinks
+        color_list = cm.create_color_list(style, [], cols=cols)
+        color_spec = []
 
-            # get all the correct colors (and construct gradients if necessary eg. from 'Blues')
-            # need to change to strings for cufflinks
+        # if no colors are specified then just use our default color set from chart constants
+        if color_list == [None] * len(color_list):
+            color_spec = [None] * len(color_list)
 
-            color_list = cm.create_color_list(style, [], cols=cols)
-            color_spec = []
+            for i in range(0, len(color_list)):
 
-            # if no colors are specified then just use our default color set from chart constants
-            if color_list == [None] * len(color_list):
-                color_spec = [None] * len(color_list)
+                # get the color
+                if color_spec[i] is None:
+                    color_spec[i] = self.get_color_list(i)
 
-                for i in range(0, len(color_list)):
-                    # get the color
-                    if color_spec[i] is None:
-                        color_spec[i] = self.get_color_list(i)
+                try:
+                    color_spec[i] = matplotlib.colors.rgb2hex(color_spec[i])
+                except:
+                    pass
 
+        else:
+            # otherwise assume all the colors are rgba
+            for color in color_list:
+                color = 'rgba' + str(color)
+                color_spec.append(color)
+
+        start = 0
+
+        # go through each data_frame in the list and plot
+        for i in range(0, len(data_frame_list)):
+            data_frame = data_frame_list[i]
+
+            if isinstance(chart_type, list):
+                chart_type_ord = chart_type[i]
+            else:
+                chart_type_ord = chart_type
+
+            end = start + len(data_frame.columns)
+            color_spec1 = color_spec[start:start + end]
+            start = end
+
+            # special call for surface and heatmaps
+
+            # NOTE: we use cufflinks library, which simplifies plotting DataFrames in plotly
+            if chart_type_ord == 'surface':
+                fig = data_frame.iplot(kind=chart_type,
+                                       title=style.title,
+                                       xTitle=style.x_title,
+                                       yTitle=style.y_title,
+                                       x=x, y=y, z=z,
+                                       mode=mode,
+                                       size=marker_size,
+                                       sharing=style.plotly_sharing,
+                                       theme=style.plotly_theme,
+                                       bestfit=style.line_of_best_fit,
+                                       legend=style.display_legend,
+                                       colorscale=style.color,
+                                       dimensions=(style.width * abs(style.scale_factor) * scale,
+                                                   style.height * abs(style.scale_factor) * scale),
+                                       asFigure=True)
+
+            elif chart_type_ord == 'heatmap':
+                fig = data_frame.iplot(kind=chart_type,
+                                       title=style.title,
+                                       xTitle=style.x_title,
+                                       yTitle=style.y_title,
+                                       x=x, y=y,
+                                       mode=mode,
+                                       size=marker_size,
+                                       sharing=style.plotly_sharing,
+                                       theme=style.plotly_theme,
+                                       bestfit=style.line_of_best_fit,
+                                       legend=style.display_legend,
+                                       colorscale=style.color,
+                                       dimensions=(style.width * abs(style.scale_factor) * scale,
+                                                   style.height * abs(style.scale_factor) * scale),
+                                       asFigure=True)
+
+                # special case for map/choropleth which has yet to be implemented in Cufflinks
+                            # will likely remove this in the future
+            elif chart_type_ord == 'choropleth':
+
+                for col in data_frame.columns:
                     try:
-                        color_spec[i] = matplotlib.colors.rgb2hex(color_spec[i])
+                        data_frame[col] = data_frame[col].astype(str)
                     except:
                         pass
 
-            else:
-                # otherwise assume all the colors are rgba
-                for color in color_list:
-                    color = 'rgba' + str(color)
-                    color_spec.append(color)
-
-            start = 0
-
-            for i in range(0, len(data_frame_list)):
-                data_frame = data_frame_list[i]
-
-                if isinstance(chart_type, list):
-                    chart_type_ord = chart_type[i]
+                if style.color != []:
+                    color = style.color
                 else:
-                    chart_type_ord = chart_type
+                    color = [[0.0, 'rgb(242,240,247)'], [0.2, 'rgb(218,218,235)'], [0.4, 'rgb(188,189,220)'], \
+                             [0.6, 'rgb(158,154,200)'], [0.8, 'rgb(117,107,177)'], [1.0, 'rgb(84,39,143)']]
 
-                end = start + len(data_frame.columns)
-                color_spec1 = color_spec[start:start + end]
-                start = end
+                text = ''
+
+                if 'text' in data_frame.columns:
+                    text = data_frame['Text']
+
+                data = [dict(
+                    type='choropleth',
+                    colorscale=color,
+                    autocolorscale=False,
+                    locations=data_frame['Code'],
+                    z=data_frame[style.plotly_choropleth_field].astype(float),
+                    locationmode=style.plotly_location_mode,
+                    text=text,
+                    marker=dict(
+                        line=dict(
+                            color='rgb(255,255,255)',
+                            width=1
+                        )
+                    ),
+                    colorbar=dict(
+                        title=style.units
+                    )
+                )]
+
+                layout = dict(
+                    title=style.title,
+                    geo=dict(
+                        scope=style.plotly_scope,
+                        projection=dict(type=style.plotly_projection),
+                        showlakes=True,
+                        lakecolor='rgb(255, 255, 255)',
+                    ),
+                )
+
+                fig = dict(data=data, layout=layout)
+
+            # otherwise we have a line plot (or similar such as a scatter plot)
+            else:
 
                 full_line = False
 
-                if chart_type_ord == 'surface':
-                    fig = data_frame.iplot(kind=chart_type,
-                                           title=style.title,
-                                           xTitle=style.x_title,
-                                           yTitle=style.y_title,
-                                           x=x, y=y, z=z,
-                                           mode=mode,
-                                           size=marker_size,
-                                           theme=style.plotly_theme,
-                                           bestfit=style.line_of_best_fit,
-                                           legend=style.display_legend,
-                                           colorscale=style.color,
-                                           dimensions=(style.width * abs(style.scale_factor) * scale,
-                                                       style.height * abs(style.scale_factor) * scale),
-                                           asFigure=True)
-
-                elif chart_type_ord == 'heatmap':
-                    fig = data_frame.iplot(kind=chart_type,
-                                           title=style.title,
-                                           xTitle=style.x_title,
-                                           yTitle=style.y_title,
-                                           x=x, y=y,
-                                           mode=mode,
-                                           size=marker_size,
-                                           theme=style.plotly_theme,
-                                           bestfit=style.line_of_best_fit,
-                                           legend=style.display_legend,
-                                           colorscale=style.color,
-                                           dimensions=(style.width * abs(style.scale_factor) * scale,
-                                                       style.height * abs(style.scale_factor) * scale),
-                                           asFigure=True)
-
-                    # TODO get annotations to work on Plotly/cufflinks heatmaps
-
-                    # z = data_frame.values
-                    #
-                    # annotations = []
-                    # for n, row in enumerate(z):
-                    #     for m, val in enumerate(row):
-                    #         val = z[n][m]
-                    #         annotations.append(
-                    #             dict(
-                    #                 text=str(val),
-                    #                 x=x[m], y=y[n],
-                    #                 xref='x1', yref='y1',
-                    #                 font=dict(color='white' if val > 0.5 else 'black'),
-                    #                 showarrow=False)
-                    #         )
-                    #
-                    # fig['layout'].update(
-                    #     annotations=annotations,
-                    # )
-
-                elif chart_type_ord == 'line':
+                if chart_type_ord == 'line':
                     full_line = True
+
                     chart_type_ord = 'scatter'
+                elif chart_type_ord in ['dash', 'dashdot', 'dot']:
+                    chart_type_ord = 'scatter'
+
                 elif chart_type_ord == 'scatter':
                     mode = 'markers'
                     marker_size = 5
                 elif chart_type_ord == 'bubble':
-                    x = data_frame.columns[0]
-                    y = data_frame.columns[1]
-                    z = data_frame.columns[2]
+                    chart_type_ord = 'scatter'
 
-                # special case for map/choropleth which has yet to be implemented in Cufflinks
-                # will likely remove this in the future
-                elif chart_type_ord == 'choropleth':
+                    mode = 'markers'
 
-                    for col in data_frame.columns:
-                        try:
-                            data_frame[col] = data_frame[col].astype(str)
-                        except:
-                            pass
+                    # x = data_frame.columns[0]
+                    # y = data_frame.columns[1]
+                    # z = data_frame.columns[2]
 
-                    if style.color != []:
-                        color = style.color
+                # using WebGL
+                # if len(data_frame.index) > 500:
+                #     import plotly.graph_objs as go
+                #
+                #     import numpy as np
+                #
+                #     data = []
+                #
+                #     for col in data_frame.columns:
+                #         data.append(go.Scattergl(
+                #             x=data_frame.index,
+                #             y=data_frame[col]
+                #             )
+                #         )
+                #     layout = dict(showlegend=False)
+                #     fig = dict(data=data, layout=layout)
+                # else:
+
+                # TODO check this!
+                # sometimes Plotly has issues generating figures in dash, so if fails first, try again
+                for m in range(0, 10):
+
+                    try:
+                        fig = data_frame.iplot(kind=chart_type_ord,
+                                               title=style.title,
+                                               xTitle=style.x_title,
+                                               yTitle=style.y_title,
+                                               x=x, y=y, z=z,
+                                               subplots=False,
+                                               sharing=style.plotly_sharing,
+                                               mode=mode,
+                                               secondary_y=style.y_axis_2_series,
+                                               size=marker_size,
+                                               theme=style.plotly_theme,
+                                               bestfit=style.line_of_best_fit,
+                                               legend=style.display_legend,
+                                               width=style.linewidth,
+                                               color=color_spec1,
+                                               dimensions=(style.width * abs(style.scale_factor) * scale,
+                                                           style.height * abs(style.scale_factor) * scale),
+                                               asFigure=True)
+
+                        break
+                    except Exception as e:
+                        import time
+                        time.sleep(.300)
+
+                        print(str(e))
+
+                        # self.logger.warn("Trying to plot " + str(m) + "... ")
+
+
+                # for lines set the property of connectgaps (cannot specify directly in cufflinks)
+                if full_line:
+                    for z in range(0, len(fig['data'])):
+                        fig['data'][z].connectgaps = style.connect_line_gaps
+
+                        # for k in range(0, len(fig['data'])):
+                        #     if full_line:
+                        #         fig['data'][k].connectgaps = style.connect_line_gaps
+
+                if style.line_shape != None:
+                    if isinstance(style.line_shape, str):
+                        line_shape = [style.line_shape] * len(fig['data'])
                     else:
-                        color = [[0.0, 'rgb(242,240,247)'], [0.2, 'rgb(218,218,235)'], [0.4, 'rgb(188,189,220)'], \
-                                 [0.6, 'rgb(158,154,200)'], [0.8, 'rgb(117,107,177)'], [1.0, 'rgb(84,39,143)']]
+                        line_shape = style.line_shape
 
-                    text = ''
+                    for k in range(0, len(fig['data'])):
+                        fig['data'][k].line.shape = line_shape[k]
 
-                    if 'text' in data_frame.columns:
-                        text = data_frame['Text']
+                if style.plotly_webgl:
+                    for k in range(0, len(fig['data'])):
+                        if fig['data'][k].type == 'scatter':
+                            fig['data'][k].type = 'scattergl'
 
-                    data = [dict(
-                        type='choropleth',
-                        colorscale=color,
-                        autocolorscale=False,
-                        locations=data_frame['Code'],
-                        z=data_frame[style.plotly_choropleth_field].astype(float),
-                        locationmode=style.plotly_location_mode,
-                        text=text,
-                        marker=dict(
-                            line=dict(
-                                color='rgb(255,255,255)',
-                                width=1
-                            )
-                        ),
-                        colorbar=dict(
-                            title=style.units
-                        )
-                    )]
-
-                    layout = dict(
-                        title=style.title,
-                        geo=dict(
-                            scope=style.plotly_scope,
-                            projection=dict(type=style.plotly_projection),
-                            showlakes=True,
-                            lakecolor='rgb(255, 255, 255)',
-                        ),
-                    )
-
-                    fig = dict(data=data, layout=layout)
-
-                if chart_type_ord not in ['surface', 'choropleth', 'heatmap']:
-
-                    fig = data_frame.iplot(kind=chart_type_ord,
-                                           title=style.title,
-                                           xTitle=style.x_title,
-                                           yTitle=style.y_title,
-                                           x=x, y=y, z=z,
-                                           subplots=False,
-                                           mode=mode,
-                                           secondary_y=style.y_axis_2_series,
-                                           size=marker_size,
-                                           theme=style.plotly_theme,
-                                           bestfit=style.line_of_best_fit,
-                                           legend=style.display_legend,
-                                           color=color_spec1,
-                                           dimensions=(style.width * abs(style.scale_factor) * scale,
-                                                       style.height * abs(style.scale_factor) * scale),
-                                           asFigure=True)
-
-                    # for lines set the property of connectgaps (cannot specify directly in cufflinks)
-                    if full_line:
-                        for z in range(0, len(fig['data'])):
-                            fig['data'][z].connectgaps = style.connect_line_gaps
-
-                            # for k in range(0, len(fig['data'])):
-                            #     if full_line:
-                            #         fig['data'][k].connectgaps = style.connect_line_gaps
-
-                    if style.line_shape != None:
-                        if isinstance(style.line_shape, str):
-                            line_shape = [style.line_shape] * len(fig['data'])
-                        else:
-                            line_shape = style.line_shape
-
-                        for k in range(0, len(fig['data'])):
-                            fig['data'][k].line.shape = line_shape[k]
-
-                    if style.plotly_webgl:
-                        for k in range(0, len(fig['data'])):
-                            if fig['data'][k].type == 'scatter':
-                                fig['data'][k].type = 'scattergl'
-
-
-                fig.update(dict(layout=dict(legend=dict(
-                    x=0.05,
-                    y=1
+            if style.y_axis_range is not None:
+                # override other properties, which cannot be set directly by cufflinks
+                fig.update(dict(layout=dict(yaxis=dict(
+                    range=style.y_axis_range
                 ))))
 
-                import plotly.graph_objs as go
+            if style.x_axis_range is not None:
+                # override other properties, which cannot be set directly by cufflinks
+                fig.update(dict(layout=dict(xaxis=dict(
+                    range=style.x_axis_range
+                ))))
 
-                if style.thin_margin:
-                    fig.update(dict(layout=dict(margin=go.Margin(
-                        l=20,
-                        r=20,
-                        b=40,
-                        t=40,
-                        pad=0
-                    ))))
+            fig.update(dict(layout=dict(legend=dict(
+                x=0.05,
+                y=1
+            ))))
 
-                # change background color
-                fig.update(dict(layout=dict(paper_bgcolor='rgba(0,0,0,0)')))
-                fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))
+            # adjust margins
+            if style.thin_margin:
+                fig.update(dict(layout=dict(margin=go.Margin(
+                    l=20,
+                    r=20,
+                    b=40,
+                    t=40,
+                    pad=0
+                ))))
 
-                # deal with grids
-                if (not(style.x_axis_showgrid)): fig.update(dict(layout=dict(xaxis=dict(showgrid=style.x_axis_showgrid))))
-                if (not(style.y_axis_showgrid)): fig.update(dict(layout=dict(yaxis=dict(showgrid=style.y_axis_showgrid))))
-                if (not(style.y_axis_2_showgrid)): fig.update(dict(layout=dict(yaxis2=dict(showgrid=style.y_axis_2_showgrid))))
+            # change background color
+            fig.update(dict(layout=dict(paper_bgcolor='rgba(0,0,0,0)')))
+            fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))
 
-                fig_list.append(fig)
+            # deal with grids
+            if (not (style.x_axis_showgrid)): fig.update(dict(layout=dict(xaxis=dict(showgrid=style.x_axis_showgrid))))
+            if (not (style.y_axis_showgrid)): fig.update(dict(layout=dict(yaxis=dict(showgrid=style.y_axis_showgrid))))
+            if (not (style.y_axis_2_showgrid)): fig.update(
+                dict(layout=dict(yaxis2=dict(showgrid=style.y_axis_2_showgrid))))
 
-            if len(fig_list) > 1:
-                import cufflinks
-                fig = cufflinks.subplots(fig_list)
+            fig_list.append(fig)
+
+        #### plotted all the lines
+
+        if len(fig_list) > 1:
+            fig = cufflinks.subplots(fig_list)
+
+            fig['layout'].update(title=style.title)
+        else:
+            fig = fig_list[0]
+
+        # override properties, which cannot be set directly by cufflinks
+
+        # for the type of line (ie. line or scatter)
+        # for making the lined dashed, dotted etc.
+        if style.subplots == False and isinstance(chart_type, list):
+            for j in range(0, len(fig['data'])):
+                mode = None;
+                dash = None;
+                line_shape = None;
+
+                if chart_type[j] == 'line':
+                    mode = 'lines'
+                elif chart_type[j] == 'scatter':
+                    mode = 'markers'
+                elif chart_type[j] in ['dash', 'dashdot', 'dot']:
+                    dash = chart_type[j]
+                    mode = 'lines'
+                elif chart_type[j] in ['hv', 'vh', 'vhv', 'spline', 'linear']:
+                    line_shape = chart_type[j]
+                    mode = 'lines'
+                elif chart_type[j] == 'bubble':
+                    mode = 'markers'
+
+                    bubble_series = style.bubble_series[cols[j]]
+
+                    # dash = chart_type[j]
+                    # data_frame[bubble_series.name] = bubble_series
+                    scale = (bubble_series.max())
+                    fig['data'][j].marker.size = (cc.bubble_size_scalar * (bubble_series.values / scale)).tolist()
+
+                if mode is not None:
+                    fig['data'][j].mode = mode
+
+                if dash is not None:
+                    fig['data'][j].line.dash = dash
+
+                if line_shape is not None:
+                    fig['data'][j].line.shape = line_shape
+
+        # if candlestick specified add that (needed to be appended on top of the Plotly figure's data
+        if style.candlestick_series is not None and not (style.plotly_webgl):
+
+            self.logger.debug("About to create candlesticks")
+
+            if isinstance(style.candlestick_series, plotly.graph_objs.Figure):
+                fig_candle = style.candlestick_series
             else:
-                fig = fig_list[0]
+                # from plotly.tools import FigureFactory as FF
+                fig_candle = figure_factory.create_candlestick(style.candlestick_series['open'],
+                                                               style.candlestick_series['high'],
+                                                               style.candlestick_series['low'],
+                                                               style.candlestick_series['close'],
+                                                               dates=style.candlestick_series['close'].index
+                                                               )
 
-        self.publish_plot(fig, style)
+            if style.candlestick_increasing_color is not None:
+                # increasing
+                fig_candle['data'][0].fillcolor = cm.get_color_code(style.candlestick_increasing_color)
+                fig_candle['data'][0].line.color = cm.get_color_code(style.candlestick_increasing_line_color)
+
+            if style.candlestick_decreasing_color is not None:
+                # descreasing
+                fig_candle['data'][1].fillcolor = cm.get_color_code(style.candlestick_decreasing_color)
+                fig_candle['data'][1].line.color = cm.get_color_code(style.candlestick_decreasing_line_color)
+
+            # append the data to the existing Plotly figure, plotted earlier
+            fig.data.append(fig_candle.data[0]);
+            fig.data.append(fig_candle.data[1])
+
+            self.logger.debug("Rendered candlesticks")
+
+        x_y_line_list = []
+
+        # fig.layout.yrange
+        # add x-line:
+        for x_y_line in style.x_y_line:
+            start = x_y_line[0]
+            finish = x_y_line[1]
+
+            x_y_line_list.append(
+                {
+                    'type': 'line',
+                    'x0': start[0],
+                    'y0': start[1],
+                    'x1': finish[0],
+                    'y1': finish[1],
+                    'line': {
+                        'color': 'black',
+                        'width': 0.5,
+                        'dash': 'dot',
+                    },
+                }
+            )
+
+        # x_y_line_list =  [{
+        #     'type': 'line',
+        #     'x0': 1,
+        #     'y0': 0,
+        #     'x1': 1,
+        #     'y1': 2,
+        #     'line': {
+        #         'color': 'rgb(55, 128, 191)',
+        #         'width': 3,
+        #     },
+        # }]
+
+        if len(x_y_line_list) > 0:
+            fig.layout.shapes = x_y_line_list
+
+        # publish the plot (depending on the output mode eg. to HTML file/Jupyter notebook)
+        # also return as a Figure object for plotting by a web server app (eg. Flask/Dash)
+        return self.publish_plot(fig, style)
 
     def publish_plot(self, fig, style):
         # change background color
@@ -1545,7 +1705,10 @@ class EnginePlotly(EngineTemplate):
 
         style = self.generate_file_names(style, 'plotly')
 
-        if style.plotly_plot_mode == 'online':
+        if style.plotly_plot_mode == 'dash':
+            pass
+
+        elif style.plotly_plot_mode == 'online':
             plotly.tools.set_credentials_file(username=style.plotly_username, api_key=style.plotly_api_key)
 
             plotly.plotly.plot(fig, filename=style.plotly_url,
@@ -1564,10 +1727,11 @@ class EnginePlotly(EngineTemplate):
 
         # plotly.offline.plot(fig, filename=style.file_output, format='png',
         #         width=style.width * style.scale_factor, height=style.height * style.scale_factor)
-        try:
-            plotly.plotly.image.save_as(fig, filename=style.file_output, format='png',
-                                width=style.width * abs(style.scale_factor), height=style.height * abs(style.scale_factor))
-        except: pass
+        if style.plotly_plot_mode != 'dash':
+            try:
+                plotly.plotly.image.save_as(fig, filename=style.file_output, format='png',
+                                    width=style.width * abs(style.scale_factor), height=style.height * abs(style.scale_factor))
+            except: pass
 
     def get_color_list(self, i):
         color_palette = cc.plotly_palette

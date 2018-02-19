@@ -1,3 +1,5 @@
+from __future__ import division
+
 __author__ = 'saeedamen' # Saeed Amen
 
 #
@@ -44,6 +46,16 @@ class Style(object):
                  exclude_from_color=[],
                  normalize_colormap=True,
 
+                 # bubble charts
+                 bubble_series=None,
+
+                 # candlestick charts
+                 candlestick_series=None,
+                 candlestick_increasing_color=None,
+                 candlestick_increasing_line_color=None,
+                 candlestick_decreasing_color=None,
+                 candlestick_decreasing_line_color=None,
+
                  # subplot
                  subplots=False,
                  share_subplot_x=False,
@@ -78,6 +90,11 @@ class Style(object):
                  y_axis_showgrid = True,
                  y_axis_2_showgrid = True,
 
+                 # vertical and horizontal lines from axis
+                 x_y_line=[],
+                 x_axis_range=None,
+                 y_axis_range=None,
+
                  # connect gaps
                  connect_line_gaps=False,
 
@@ -110,6 +127,7 @@ class Style(object):
                  plotly_username=cc.plotly_default_username,
                  plotly_api_key=None,
                  plotly_world_readable=cc.plotly_world_readable,
+                 plotly_sharing=cc.plotly_sharing,
                  plotly_theme=None,
                  plotly_plot_mode=cc.plotly_plot_mode,
                  plotly_webgl=cc.plotly_webgl,
@@ -142,6 +160,16 @@ class Style(object):
         self.color_2_series = color_2_series
         self.exclude_from_color = exclude_from_color
         self.normalize_colormap = normalize_colormap
+
+        # bubble specific fields
+        self.bubble_series = bubble_series
+
+        # candlestick specific fields
+        self.candlestick_series = candlestick_series
+        self.candlestick_increasing_color = candlestick_increasing_color
+        self.candlestick_increasing_line_color = candlestick_increasing_line_color
+        self.candlestick_decreasing_color = candlestick_decreasing_color
+        self.candlestick_decreasing_line_color = candlestick_decreasing_line_color
 
         # subplots
         self.subplots = subplots
@@ -176,6 +204,11 @@ class Style(object):
         self.x_axis_showgrid = x_axis_showgrid
         self.y_axis_showgrid = y_axis_showgrid
         self.y_axis_2_showgrid = y_axis_2_showgrid
+
+        # arbitrary line
+        self.x_y_line = x_y_line
+        self.x_axis_range = x_axis_range
+        self.y_axis_range = y_axis_range
 
         # connect line gaps
         self.connect_line_gaps = connect_line_gaps
@@ -223,8 +256,9 @@ class Style(object):
 
         self.plotly_api_key = plotly_api_key
         self.plotly_world_readable = plotly_world_readable
+        self.plotly_sharing = plotly_sharing
         self.plotly_theme = plotly_theme
-        self.plotly_plot_mode = plotly_plot_mode  # 'online', 'offline_html', 'offline_jupyter'
+        self.plotly_plot_mode = plotly_plot_mode  # 'dash', 'online', 'offline_html', 'offline_jupyter'
 
         # matplotlib only
         self.style_sheet = style_sheet
@@ -334,6 +368,57 @@ class Style(object):
     @normalize_colormap.setter
     def normalize_colormap(self, normalize_colormap):
         self.__normalize_colormap = self.str_list(normalize_colormap)
+
+        ###### bubble specific series
+
+    @property
+    def bubble_series(self):
+        return self.__bubble_series
+
+    @bubble_series.setter
+    def bubble_series(self, bubble_series):
+        self.__bubble_series = self.str_list(bubble_series)
+
+    ###### candlestick specific series
+    @property
+    def candlestick_series(self):
+        return self.__candlestick_series
+
+    @candlestick_series.setter
+    def candlestick_series(self, candlestick_series):
+        self.__candlestick_series = self.str_list(candlestick_series)
+
+    @property
+    def candlestick_increasing_color(self):
+        return self.__candlestick_increasing_color
+
+    @candlestick_increasing_color.setter
+    def candlestick_increasing_color(self, candlestick_increasing_color):
+        self.__candlestick_increasing_color = candlestick_increasing_color
+
+    @property
+    def candlestick_increasing_line_color(self):
+        return self.__candlestick_increasing_line_color
+
+    @candlestick_increasing_line_color.setter
+    def candlestick_increasing_line_color(self, candlestick_increasing_line_color):
+        self.__candlestick_increasing_line_color = candlestick_increasing_line_color
+
+    @property
+    def candlestick_decreasing_color(self):
+        return self.__candlestick_decreasing_color
+
+    @candlestick_decreasing_color.setter
+    def candlestick_decreasing_color(self, candlestick_decreasing_color):
+        self.__candlestick_decreasing_color = candlestick_decreasing_color
+
+    @property
+    def candlestick_decreasing_line_color(self):
+        return self.__candlestick_decreasing_line_color
+
+    @candlestick_decreasing_line_color.setter
+    def candlestick_decreasing_line_color(self, candlestick_decreasing_line_color):
+        self.__candlestick_decreasing_line_color = candlestick_decreasing_line_color
 
     ###### subplots
     @property
@@ -518,6 +603,31 @@ class Style(object):
     def y_axis_2_showgrid(self, y_axis_2_showgrid):
         self.__y_axis_2_showgrid = y_axis_2_showgrid
 
+    ###### vertical and horizontal lines
+    @property
+    def x_y_line(self):
+        return self.__x_y_line
+
+    @x_y_line.setter
+    def x_y_line(self, x_y_line):
+        self.__x_y_line = x_y_line
+
+    @property
+    def x_axis_range(self):
+        return self.__x_axis_range
+
+    @x_axis_range.setter
+    def x_axis_range(self, x_axis_range):
+        self.__x_axis_range = x_axis_range
+
+    @property
+    def y_axis_range(self):
+        return self.__y_axis_range
+
+    @y_axis_range.setter
+    def y_axis_range(self, y_axis_range):
+        self.__y_axis_range = y_axis_range
+
     ###### connect line gaps
     @property
     def connect_line_gaps(self):
@@ -697,6 +807,14 @@ class Style(object):
     @plotly_world_readable.setter
     def plotly_world_readable(self, plotly_world_readable):
         self.__plotly_world_readable = plotly_world_readable
+        
+    @property
+    def plotly_sharing(self):
+        return self.__plotly_sharing
+
+    @plotly_sharing.setter
+    def plotly_sharing(self, plotly_sharing):
+        self.__plotly_sharing = plotly_sharing
 
     @property
     def plotly_theme(self):

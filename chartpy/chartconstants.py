@@ -1,3 +1,5 @@
+from __future__ import division
+
 __author__ = 'saeedamen' # Saeed Amen
 
 #
@@ -97,27 +99,11 @@ class ChartConstants(object):
                     "xyz" : "pass"
                     }
 
+    plotly_sharing = 'private'
+
     plotly_streaming_key = "x"
 
-    # or we can store credentials in a file "chartcred.py" in the same folder, which will overwrite the above
-    try:
-        from chartpy.chartcred import ChartCred
-
-        cred = ChartCred()
-
-        TWITTER_APP_KEY = cred.TWITTER_APP_KEY
-        TWITTER_APP_SECRET = cred.TWITTER_APP_SECRET
-        TWITTER_OAUTH_TOKEN = cred.TWITTER_OAUTH_TOKEN
-        TWITTER_OAUTH_TOKEN_SECRET = cred.TWITTER_OAUTH_TOKEN_SECRET
-
-        plotly_default_username = cred.plotly_default_username
-
-        plotly_creds = cred.plotly_creds
-
-        plotly_streaming_key = cred.plotly_creds
-
-    except:
-        pass
+    quandl_api_key = "x"
 
     ##### Colors for plotting
     # 'red'   :   '#E24A33',
@@ -321,3 +307,17 @@ class ChartConstants(object):
         'yellow':			 '#FBC15E', #'#ffff33',
         'yellowgreen':		 '#9ACD32'
     }
+
+    # or we can store credentials in a file "chartcred.py" in the same folder, which will overwrite the above
+    # eg. TWITTER_APP_KEY, TWITTER_APP_SECRET, TWITTER_OAUTH_TOKEN, TWITTER_TOKEN_SECRET
+    # overwrite field variables with those listed in ChartCred
+    def __init__(self):
+        try:
+            from chartpy.util.chartcred import ChartCred
+            cred_keys = ChartCred.__dict__.keys()
+
+            for k in ChartConstants.__dict__.keys():
+                if k in cred_keys and '__' not in k:
+                    setattr(ChartConstants, k, getattr(ChartCred, k))
+        except:
+            pass

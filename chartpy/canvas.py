@@ -1,3 +1,5 @@
+from __future__ import division
+
 __author__ = 'saeedamen' # Saeed Amen
 
 #
@@ -38,9 +40,13 @@ class Canvas(object):
 
 #########################################
 import abc
+
+# compatible with Python 2 *and* 3:
+ABC = abc.ABCMeta('ABC', (object,), {'__slots__': ()})
+
 import pandas
 
-class CanvasPlotterTemplate(object):
+class CanvasPlotterTemplate(ABC):
 
     @abc.abstractmethod
     def render_canvas(self, elements_to_render, jupyter_notebook = False, silent_display = True, output_filename = None, canvas_plotter = None,

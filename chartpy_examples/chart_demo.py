@@ -12,6 +12,9 @@ __author__ = 'saeedamen'  # Saeed Amen
 # See the License for the specific language governing permissions and limitations under the License.
 #
 
+
+import pandas
+
 # support Quandl 3.x.x
 try:
     import quandl as Quandl
@@ -40,7 +43,7 @@ if run_example == 1 or run_example == 0:
 
     # we can use the charting tools in several ways
     chart = Chart()
-    # chart.plot(df = df)
+    df.index = pandas.to_datetime(df.index, format='%Y-%m-%d')
 
     # set the style of the plot
     style = Style(title="US GDP", source="Quandl/Fred")
@@ -49,15 +52,13 @@ if run_example == 1 or run_example == 0:
     chart = Chart(df=df, chart_type='line', style=style)
 
     # we now plot using multiple plotting libraries, with the same dataframe
-    chart.plot(engine='matplotlib')
     chart.plot(engine='bokeh')
     chart.plot(engine='plotly')
+    chart.plot(engine='matplotlib')
 
 if run_example == 2 or run_example == 0:
     # download US and Texas unemployment rate
     df = Quandl.get(["FRED/UNRATE", "FRED/TXUR"], authtoken=quandl_api_key, trim_start="2015-12-01")
-
-    import pandas
 
     df.index = pandas.to_datetime(df.index, format='%Y-%m-%d')
 

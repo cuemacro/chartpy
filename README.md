@@ -128,6 +128,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 19 Feb 2018 - Support for Python 2.7 and Plotly engine now supports dash
 * 21 Dec 2017 - Added webgl Plotly charts & other Plotly parameters
 * 15 Nov 2017 - Fixed bug when plotting time series with DatetimeIndex and newer matplotlib
 * 10 Oct 2017 - Added flag to works in Bokeh 0.12.9

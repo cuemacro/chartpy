@@ -585,6 +585,7 @@ from datetime import timedelta
 
 import matplotlib
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D # need to import in order to do 3D plots (even if not called)
 
 import numpy as np
 

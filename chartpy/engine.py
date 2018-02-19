@@ -1580,7 +1580,7 @@ class EnginePlotly(EngineTemplate):
         #### plotted all the lines
 
         if len(fig_list) > 1:
-            fig = cufflinks.subplots(fig_list)
+            fig = cf.subplots(fig_list)
 
             fig['layout'].update(title=style.title)
         else:

@@ -205,7 +205,7 @@ class EngineTemplate(ABC):
 try:
     from bokeh.plotting import figure, output_file, show, gridplot, save
     from bokeh.models import Range1d
-    from bokeh.charts import HeatMap
+    from bokeh.charts import HeatMap    # TODO deprecated need to redo
 except:
     pass
 
@@ -265,7 +265,7 @@ class EngineBokeh(EngineTemplate):
 
                 from math import pi
                 p1.xaxis.major_label_orientation = pi/2
-            elif type(data_frame.index) == pandas.tslib.Timestamp or (type(xd[0]) == pandas.tslib.Timestamp and type(xd[-1]) == pandas.tslib.Timestamp)\
+            elif type(data_frame.index) == pandas.Timestamp or (type(xd[0]) == pandas.Timestamp and type(xd[-1]) == pandas.Timestamp)\
                     or type(data_frame.index) == pandas.DatetimeIndex:
                 p1 = figure(
                     x_axis_type = "datetime",

@@ -48,6 +48,7 @@ class Style(object):
 
                  # bubble charts
                  bubble_series=None,
+                 bubble_size_scalar=cc.chartfactory_bubble_size_scalar,
 
                  # candlestick charts
                  candlestick_series=None,
@@ -163,6 +164,7 @@ class Style(object):
 
         # bubble specific fields
         self.bubble_series = bubble_series
+        self.bubble_size_scalar = bubble_size_scalar
 
         # candlestick specific fields
         self.candlestick_series = candlestick_series
@@ -369,7 +371,7 @@ class Style(object):
     def normalize_colormap(self, normalize_colormap):
         self.__normalize_colormap = self.str_list(normalize_colormap)
 
-        ###### bubble specific series
+    ###### bubble specific series
 
     @property
     def bubble_series(self):
@@ -378,6 +380,14 @@ class Style(object):
     @bubble_series.setter
     def bubble_series(self, bubble_series):
         self.__bubble_series = self.str_list(bubble_series)
+        
+    @property
+    def bubble_size_scalar(self):
+        return self.__bubble_size_scalar
+
+    @bubble_size_scalar.setter
+    def bubble_size_scalar(self, bubble_size_scalar):
+        self.__bubble_size_scalar = bubble_size_scalar
 
     ###### candlestick specific series
     @property

@@ -117,9 +117,15 @@ class CanvasPlotterPlain(CanvasPlotterTemplate):
         html.append('<h1>' + page_title + '</h1>')
         html.append('<table cellpadding="0">')
 
+        if not(isinstance(elements_to_render, list)):
+            elements_to_render = [elements_to_render]
+
         for i in range(0, len(elements_to_render)):
 
             row = elements_to_render[i]
+
+            if not(isinstance(row, list)):
+                row = [row]
 
             html.append('<tr>\n')
 
@@ -233,9 +239,15 @@ class CanvasPlotterKeen(CanvasPlotterTemplate):
 
         html.append('<div class="container-fluid">')
 
+        if not (isinstance(elements_to_render, list)):
+            elements_to_render = [elements_to_render]
+
         for i in range(0, len(elements_to_render)):
 
             row = elements_to_render[i]
+
+            if not (isinstance(row, list)):
+                row = [row]
 
             html.append('<div class="row">') # open row
 

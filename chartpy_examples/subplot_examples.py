@@ -12,6 +12,8 @@ __author__ = 'saeedamen'  # Saeed Amen
 # See the License for the specific language governing permissions and limitations under the License.
 #
 
+import pandas
+
 # support Quandl 3.x.x
 try:
     import quandl as Quandl
@@ -37,6 +39,7 @@ run_example = 0
 
 if run_example == 1 or run_example == 0:
     df = Quandl.get(["FRED/A191RL1Q225SBEA", "FRED/A191RP1Q027SBEA"], authtoken=quandl_api_key)
+
     df.columns = ["Real QoQ", "Nominal QoQ"]
 
     # set the style of the plot
@@ -51,6 +54,7 @@ if run_example == 1 or run_example == 0:
 
 if run_example == 2 or run_example == 0:
     df = Quandl.get(["FRED/A191RL1Q225SBEA", "FRED/A191RP1Q027SBEA"], authtoken=quandl_api_key)
+
     df.columns = ["Real QoQ", "Nominal QoQ"]
 
     df = [df, df]

@@ -1626,7 +1626,7 @@ class EnginePlotly(EngineTemplate):
                     # dash = chart_type[j]
                     # data_frame[bubble_series.name] = bubble_series
                     scale = (bubble_series.max())
-                    fig['data'][j].marker.size = (cc.bubble_size_scalar * (bubble_series.values / scale)).tolist()
+                    fig['data'][j].marker.size = (style.bubble_size_scalar * (bubble_series.values / scale)).tolist()
 
                 if mode is not None:
                     fig['data'][j].mode = mode
@@ -1640,7 +1640,7 @@ class EnginePlotly(EngineTemplate):
         # if candlestick specified add that (needed to be appended on top of the Plotly figure's data
         if style.candlestick_series is not None and not (style.plotly_webgl):
 
-            self.logger.debug("About to create candlesticks")
+            # self.logger.debug("About to create candlesticks")
 
             if isinstance(style.candlestick_series, plotly.graph_objs.Figure):
                 fig_candle = style.candlestick_series
@@ -1667,7 +1667,7 @@ class EnginePlotly(EngineTemplate):
             fig.data.append(fig_candle.data[0]);
             fig.data.append(fig_candle.data[1])
 
-            self.logger.debug("Rendered candlesticks")
+            # self.logger.debug("Rendered candlesticks")
 
         x_y_line_list = []
 

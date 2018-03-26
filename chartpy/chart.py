@@ -26,6 +26,8 @@ from chartpy.chartconstants import ChartConstants
 from chartpy.style import Style
 from chartpy.engine import EngineMatplotlib, EngineBokeh, EngineBqplot, EnginePlotly, EngineVisPy
 
+import pandas
+
 class Chart(object):
 
     def __init__(self, df = None, engine = None, chart_type = None, style = None):
@@ -68,6 +70,14 @@ class Chart(object):
                     chart_type = style.chart_type
             except:
                 pass
+
+        if isinstance(df, list):
+            for i in range(0, len(df)):
+                if isinstance(df[i], pandas.Series):
+                    df[i] = pandas.DataFrame(df[i])
+        else:
+            if isinstance(df, pandas.Series):
+                df = pandas.DataFrame(df)
 
         if engine is None:
             fig = self.get_engine(engine).plot_chart(df, style, chart_type)

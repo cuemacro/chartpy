@@ -62,6 +62,7 @@ class ChartConstants(object):
     chartfactory_dpi = 100
     chartfactory_width = 600
     chartfactory_height = 400
+    chartfactory_bubble_size_scalar = 35
 
     ########## BOKEH SETTINGS
     bokeh_font       = 'open sans'

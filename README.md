@@ -128,7 +128,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
-* 26 Mar 2018 - Various bug fixes
+* 26 Mar 2018 - Various bug fixes (bubble charts, plotting pandas dataframes etc).
 * 19 Feb 2018 - Support for Python 2.7 and Plotly engine now supports dash
 * 21 Dec 2017 - Added webgl Plotly charts & other Plotly parameters
 * 15 Nov 2017 - Fixed bug when plotting time series with DatetimeIndex and newer matplotlib

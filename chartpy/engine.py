@@ -1625,8 +1625,10 @@ class EnginePlotly(EngineTemplate):
 
                     # dash = chart_type[j]
                     # data_frame[bubble_series.name] = bubble_series
-                    scale = (bubble_series.max())
-                    fig['data'][j].marker.size = (style.bubble_size_scalar * (bubble_series.values / scale)).tolist()
+                    scale = float(bubble_series.max())
+
+                    fig['data'][j].marker.size = \
+                        (style.bubble_size_scalar * (bubble_series.values / scale)).tolist()
 
                 if mode is not None:
                     fig['data'][j].mode = mode

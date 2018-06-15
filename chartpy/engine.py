@@ -1279,7 +1279,7 @@ try:
     import plotly  # JavaScript based plotting library with Python connector
     import plotly.graph_objs as go
 
-    plotly.tools.set_config_file(plotly_domain='http://type-here.com',
+    plotly.tools.set_config_file(plotly_domain='https://type-here.com',
                                  world_readable=cc.plotly_world_readable,
                                  sharing=cc.plotly_sharing)
 except:

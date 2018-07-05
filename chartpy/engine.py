@@ -1522,8 +1522,7 @@ class EnginePlotly(EngineTemplate):
                         import time
                         time.sleep(.300)
 
-                        print(data_frame)
-                        print(str(e))
+                        print("Will attempt to render: "+ str(e))
 
                         # self.logger.warn("Trying to plot " + str(m) + "... ")
 

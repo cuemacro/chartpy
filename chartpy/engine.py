@@ -1498,24 +1498,44 @@ class EnginePlotly(EngineTemplate):
                 for m in range(0, 10):
 
                     try:
-                        fig = data_frame.iplot(kind=chart_type_ord,
-                                               title=style.title,
-                                               xTitle=style.x_title,
-                                               yTitle=style.y_title,
-                                               x=x, y=y, z=z,
-                                               subplots=False,
-                                               sharing=style.plotly_sharing,
-                                               mode=mode,
-                                               secondary_y=style.y_axis_2_series,
-                                               size=marker_size,
-                                               theme=style.plotly_theme,
-                                               bestfit=style.line_of_best_fit,
-                                               legend=style.display_legend,
-                                               width=style.linewidth,
-                                               color=color_spec1,
-                                               dimensions=(style.width * abs(style.scale_factor) * scale,
-                                                           style.height * abs(style.scale_factor) * scale),
-                                               asFigure=True)
+                        if style.plotly_theme is None:
+                            fig = data_frame.iplot(kind=chart_type_ord,
+                                                   title=style.title,
+                                                   xTitle=style.x_title,
+                                                   yTitle=style.y_title,
+                                                   x=x, y=y, z=z,
+                                                   subplots=False,
+                                                   sharing=style.plotly_sharing,
+                                                   mode=mode,
+                                                   secondary_y=style.y_axis_2_series,
+                                                   size=marker_size,
+                                                   # theme=style.plotly_theme,
+                                                   bestfit=style.line_of_best_fit,
+                                                   legend=style.display_legend,
+                                                   width=style.linewidth,
+                                                   color=color_spec1,
+                                                   dimensions=(style.width * abs(style.scale_factor) * scale,
+                                                               style.height * abs(style.scale_factor) * scale),
+                                                   asFigure=True)
+                        else:
+                            fig = data_frame.iplot(kind=chart_type_ord,
+                                                   title=style.title,
+                                                   xTitle=style.x_title,
+                                                   yTitle=style.y_title,
+                                                   x=x, y=y, z=z,
+                                                   subplots=False,
+                                                   sharing=style.plotly_sharing,
+                                                   mode=mode,
+                                                   secondary_y=style.y_axis_2_series,
+                                                   size=marker_size,
+                                                   theme=style.plotly_theme,
+                                                   bestfit=style.line_of_best_fit,
+                                                   legend=style.display_legend,
+                                                   width=style.linewidth,
+                                                   color=color_spec1,
+                                                   dimensions=(style.width * abs(style.scale_factor) * scale,
+                                                               style.height * abs(style.scale_factor) * scale),
+                                                   asFigure=True)
 
                         break
                     except Exception as e:

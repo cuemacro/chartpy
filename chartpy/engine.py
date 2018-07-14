@@ -1280,7 +1280,6 @@ try:
     import plotly.graph_objs as go
 
     plotly.tools.set_config_file(plotly_domain='https://type-here.com',
-                                 theme='pearl', colorscale='dflt',
                                  world_readable=cc.plotly_world_readable,
                                  sharing=cc.plotly_sharing)
 except:
@@ -1548,7 +1547,6 @@ class EnginePlotly(EngineTemplate):
                         import cufflinks as cf
 
                         plotly.tools.set_config_file(plotly_domain='https://type-here.com',
-                                                     theme='pearl', colorscale='dflt',
                                                      world_readable=cc.plotly_world_readable,
                                                      sharing=cc.plotly_sharing)
 

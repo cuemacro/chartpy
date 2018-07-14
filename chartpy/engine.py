@@ -1506,8 +1506,10 @@ class EnginePlotly(EngineTemplate):
                 else:
                     plotly_theme = style.plotly_theme
 
+                m = 0
+
                 # sometimes Plotly has issues generating figures in dash, so if fails first, try again
-                for m in range(0, 10):
+                while m < 10:
                     try:
                         fig = data_frame.iplot(kind=chart_type_ord,
                                                    title=style.title,
@@ -1529,46 +1531,53 @@ class EnginePlotly(EngineTemplate):
                                                                style.height * abs(style.scale_factor) * scale),
                                                    asFigure=True)
 
-                        break
+                        m = 10; break
                     except Exception as e:
-                        # sometimes get error eg. 'legend', 'bgcolor', 'none', ('layout',) or can be related to 'colorscale'
-                        import traceback
-                        import time
-                        import sys
-                        time.sleep(0.3)
+                        try:
+                            # sometimes get error eg. 'legend', 'bgcolor', 'none', ('layout',) or can be related to 'colorscale'
+                            import traceback
+                            import time
+                            import sys
+                            time.sleep(0.3)
 
-                        # T, V, TB = sys.exc_info()
-                        # print(''.join(traceback.format_exception(T, V, TB)))
-                        print("Will attempt to re-render: " + str(e))
+                            # T, V, TB = sys.exc_info()
+                            # print(''.join(traceback.format_exception(T, V, TB)))
+                            print("Will attempt to re-render: " + str(e))
 
-                        # try to reimport plotly and cufflinks and re-render (can sometimes have issues in multithreaded
-                        # environment with plotly)
-                        import plotly
-                        import cufflinks as cf
+                            # try to reimport plotly and cufflinks and re-render (can sometimes have issues in multithreaded
+                            # environment with plotly)
+                            import plotly
+                            import cufflinks as cf
 
-                        plotly.tools.set_config_file(plotly_domain='https://type-here.com',
-                                                     world_readable=cc.plotly_world_readable,
-                                                     sharing=cc.plotly_sharing)
+                            plotly.tools.set_config_file(plotly_domain='https://type-here.com',
+                                                         world_readable=cc.plotly_world_readable,
+                                                         sharing=cc.plotly_sharing)
 
-                        fig = data_frame.iplot(kind=chart_type_ord,
-                                               title=style.title,
-                                               xTitle=style.x_title,
-                                               yTitle=style.y_title,
-                                               x=x, y=y, z=z,
-                                               subplots=False,
-                                               sharing=style.plotly_sharing,
-                                               mode=mode,
-                                               secondary_y=style.y_axis_2_series,
-                                               size=marker_size,
-                                               theme=plotly_theme,
-                                               colorscale='dflt',
-                                               bestfit=style.line_of_best_fit,
-                                               legend=style.display_legend,
-                                               width=style.linewidth,
-                                               color=color_spec1,
-                                               dimensions=(style.width * abs(style.scale_factor) * scale,
-                                                           style.height * abs(style.scale_factor) * scale),
-                                               asFigure=True)
+                            fig = data_frame.iplot(kind=chart_type_ord,
+                                                   title=style.title,
+                                                   xTitle=style.x_title,
+                                                   yTitle=style.y_title,
+                                                   x=x, y=y, z=z,
+                                                   subplots=False,
+                                                   sharing=style.plotly_sharing,
+                                                   mode=mode,
+                                                   secondary_y=style.y_axis_2_series,
+                                                   size=marker_size,
+                                                   theme=plotly_theme,
+                                                   colorscale='dflt',
+                                                   bestfit=style.line_of_best_fit,
+                                                   legend=style.display_legend,
+                                                   width=style.linewidth,
+                                                   color=color_spec1,
+                                                   dimensions=(style.width * abs(style.scale_factor) * scale,
+                                                               style.height * abs(style.scale_factor) * scale),
+                                                   asFigure=True)
+
+                            m = 10; break
+                        except:
+                            print('Try plotting again...')
+
+                    m = m + 1
 
 
                 # for lines set the property of connectgaps (cannot specify directly in cufflinks)

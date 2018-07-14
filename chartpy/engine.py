@@ -566,7 +566,7 @@ class EngineVisPy(EngineTemplate):
 
             fig.show(run=True)
 
-            print(min_x); print(max_x)
+            # print(min_x); print(max_x)
             # fig[0, 0].view.camera.set_range(x=(min_x, max_x))
 
     def get_color_list(self, i):
@@ -1280,8 +1280,15 @@ try:
     import plotly.graph_objs as go
 
     plotly.tools.set_config_file(plotly_domain='https://type-here.com',
+                                 theme='pearl', colorscale='dflt',
                                  world_readable=cc.plotly_world_readable,
                                  sharing=cc.plotly_sharing)
+except:
+    pass
+
+try:
+    pass
+    #plotly.utils.memoize = memoize
 except:
     pass
 
@@ -1494,12 +1501,16 @@ class EnginePlotly(EngineTemplate):
                 # else:
 
                 # TODO check this!
+                # can have issues calling cufflinks with a theme which is None, so split up the cases
+                if style.plotly_theme is None:
+                    plotly_theme = 'pearl'
+                else:
+                    plotly_theme = style.plotly_theme
+
                 # sometimes Plotly has issues generating figures in dash, so if fails first, try again
                 for m in range(0, 10):
-
                     try:
-                        if style.plotly_theme is None:
-                            fig = data_frame.iplot(kind=chart_type_ord,
+                        fig = data_frame.iplot(kind=chart_type_ord,
                                                    title=style.title,
                                                    xTitle=style.x_title,
                                                    yTitle=style.y_title,
@@ -1509,26 +1520,8 @@ class EnginePlotly(EngineTemplate):
                                                    mode=mode,
                                                    secondary_y=style.y_axis_2_series,
                                                    size=marker_size,
-                                                   # theme=style.plotly_theme,
-                                                   bestfit=style.line_of_best_fit,
-                                                   legend=style.display_legend,
-                                                   width=style.linewidth,
-                                                   color=color_spec1,
-                                                   dimensions=(style.width * abs(style.scale_factor) * scale,
-                                                               style.height * abs(style.scale_factor) * scale),
-                                                   asFigure=True)
-                        else:
-                            fig = data_frame.iplot(kind=chart_type_ord,
-                                                   title=style.title,
-                                                   xTitle=style.x_title,
-                                                   yTitle=style.y_title,
-                                                   x=x, y=y, z=z,
-                                                   subplots=False,
-                                                   sharing=style.plotly_sharing,
-                                                   mode=mode,
-                                                   secondary_y=style.y_axis_2_series,
-                                                   size=marker_size,
-                                                   theme=style.plotly_theme,
+                                                   theme=plotly_theme,
+                                                   colorscale='dflt',
                                                    bestfit=style.line_of_best_fit,
                                                    legend=style.display_legend,
                                                    width=style.linewidth,
@@ -1539,12 +1532,45 @@ class EnginePlotly(EngineTemplate):
 
                         break
                     except Exception as e:
+                        # sometimes get error eg. 'legend', 'bgcolor', 'none', ('layout',) or can be related to 'colorscale'
+                        import traceback
                         import time
-                        time.sleep(.300)
+                        import sys
+                        time.sleep(0.3)
 
-                        print("Will attempt to render: "+ str(e))
+                        # T, V, TB = sys.exc_info()
+                        # print(''.join(traceback.format_exception(T, V, TB)))
+                        print("Will attempt to re-render: " + str(e))
 
-                        # self.logger.warn("Trying to plot " + str(m) + "... ")
+                        # try to reimport plotly and cufflinks and re-render (can sometimes have issues in multithreaded
+                        # environment with plotly)
+                        import plotly
+                        import cufflinks as cf
+
+                        plotly.tools.set_config_file(plotly_domain='https://type-here.com',
+                                                     theme='pearl', colorscale='dflt',
+                                                     world_readable=cc.plotly_world_readable,
+                                                     sharing=cc.plotly_sharing)
+
+                        fig = data_frame.iplot(kind=chart_type_ord,
+                                               title=style.title,
+                                               xTitle=style.x_title,
+                                               yTitle=style.y_title,
+                                               x=x, y=y, z=z,
+                                               subplots=False,
+                                               sharing=style.plotly_sharing,
+                                               mode=mode,
+                                               secondary_y=style.y_axis_2_series,
+                                               size=marker_size,
+                                               theme=plotly_theme,
+                                               colorscale='dflt',
+                                               bestfit=style.line_of_best_fit,
+                                               legend=style.display_legend,
+                                               width=style.linewidth,
+                                               color=color_spec1,
+                                               dimensions=(style.width * abs(style.scale_factor) * scale,
+                                                           style.height * abs(style.scale_factor) * scale),
+                                               asFigure=True)
 
 
                 # for lines set the property of connectgaps (cannot specify directly in cufflinks)
@@ -1659,12 +1685,14 @@ class EnginePlotly(EngineTemplate):
                 if line_shape is not None:
                     fig['data'][j].line.shape = line_shape
 
+        from plotly.graph_objs import Figure
+
         # if candlestick specified add that (needed to be appended on top of the Plotly figure's data
         if style.candlestick_series is not None and not (style.plotly_webgl):
 
             # self.logger.debug("About to create candlesticks")
 
-            if isinstance(style.candlestick_series, plotly.graph_objs.Figure):
+            if isinstance(style.candlestick_series, Figure):
                 fig_candle = style.candlestick_series
             else:
                 # from plotly.tools import FigureFactory as FF

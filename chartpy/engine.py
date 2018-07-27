@@ -1549,9 +1549,9 @@ class EnginePlotly(EngineTemplate):
                             import plotly
                             import cufflinks as cf
 
-                            plotly.tools.set_config_file(plotly_domain='https://type-here.com',
-                                                         world_readable=cc.plotly_world_readable,
-                                                         sharing=cc.plotly_sharing)
+                            # plotly.tools.set_config_file(plotly_domain='https://type-here.com',
+                            #                             world_readable=cc.plotly_world_readable,
+                            #                             sharing=cc.plotly_sharing)
 
                             fig = data_frame.iplot(kind=chart_type_ord,
                                                    title=style.title,

@@ -1574,8 +1574,10 @@ class EnginePlotly(EngineTemplate):
                                                    asFigure=True)
 
                             m = 10; break
-                        except:
+                        except Exception as e:
+                            print(str(e))
                             print('Try plotting again...')
+                            print(color_spec1)
 
                     m = m + 1
 

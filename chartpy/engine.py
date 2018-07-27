@@ -1577,7 +1577,7 @@ class EnginePlotly(EngineTemplate):
                         except Exception as e:
                             print(str(e))
                             print('Try plotting again...')
-                            print(color_spec1)
+                            # print(color_spec1)
 
                     m = m + 1
 

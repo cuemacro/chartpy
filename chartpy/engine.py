@@ -1553,6 +1553,9 @@ class EnginePlotly(EngineTemplate):
                             #                             world_readable=cc.plotly_world_readable,
                             #                             sharing=cc.plotly_sharing)
 
+                            if data_frame is None:
+                                print('Empty dataframe')
+
                             fig = data_frame.iplot(kind=chart_type_ord,
                                                    title=style.title,
                                                    xTitle=style.x_title,

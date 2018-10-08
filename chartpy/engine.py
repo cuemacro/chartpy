@@ -1508,9 +1508,13 @@ class EnginePlotly(EngineTemplate):
 
                 m = 0
 
+                if chart_type_ord == 'line':
+                    chart_type_ord == 'lines'
+
                 # sometimes Plotly has issues generating figures in dash, so if fails first, try again
                 while m < 10:
                     try:
+                        # TODO try writing this directly wiht plotly, rather than using cufflinks
                         fig = data_frame.iplot(kind=chart_type_ord,
                                                    title=style.title,
                                                    xTitle=style.x_title,
@@ -1534,6 +1538,8 @@ class EnginePlotly(EngineTemplate):
                         m = 10; break
                     except Exception as e:
                         try:
+                            print(chart_type_ord)
+
                             # sometimes get error eg. 'legend', 'bgcolor', 'none', ('layout',) or can be related to 'colorscale'
                             import traceback
                             import time

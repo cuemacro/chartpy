@@ -1466,7 +1466,6 @@ class EnginePlotly(EngineTemplate):
                     full_line = True
 
                     # chart_type_ord = 'scatter'
-                    mode = 'none'
                 elif chart_type_ord in ['dash', 'dashdot', 'dot']:
                     chart_type_ord = 'scatter'
 
@@ -1509,8 +1508,8 @@ class EnginePlotly(EngineTemplate):
 
                 m = 0
 
-                if chart_type_ord == 'line':
-                    chart_type_ord == 'lines'
+                if mode == 'line':
+                    mode == 'lines'
 
                 # sometimes Plotly has issues generating figures in dash, so if fails first, try again
                 while m < 10:

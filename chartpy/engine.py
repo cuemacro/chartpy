@@ -1508,9 +1508,6 @@ class EnginePlotly(EngineTemplate):
 
                 m = 0
 
-                if mode == 'line':
-                    mode == 'lines'
-
                 # sometimes Plotly has issues generating figures in dash, so if fails first, try again
                 while m < 10:
                     try:

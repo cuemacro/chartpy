@@ -1466,6 +1466,7 @@ class EnginePlotly(EngineTemplate):
                     full_line = True
 
                     # chart_type_ord = 'scatter'
+                    mode = 'lines'
                 elif chart_type_ord in ['dash', 'dashdot', 'dot']:
                     chart_type_ord = 'scatter'
 
@@ -1683,6 +1684,7 @@ class EnginePlotly(EngineTemplate):
                     mode = 'markers'
 
                     bubble_series = style.bubble_series[cols[j]]
+                    bubble_series = bubble_series.fillna(0)
 
                     # dash = chart_type[j]
                     # data_frame[bubble_series.name] = bubble_series
@@ -1728,9 +1730,14 @@ class EnginePlotly(EngineTemplate):
                 fig_candle['data'][1].fillcolor = cm.get_color_code(style.candlestick_decreasing_color)
                 fig_candle['data'][1].line.color = cm.get_color_code(style.candlestick_decreasing_line_color)
 
-            # append the data to the existing Plotly figure, plotted earlier
-            fig.data.append(fig_candle.data[0]);
-            fig.data.append(fig_candle.data[1])
+            try:
+                # append the data to the existing Plotly figure, plotted earlier
+                fig.data.append(fig_candle.data[0]);
+                fig.data.append(fig_candle.data[1])
+            except:
+                # plotly 3.0
+                fig.add_trace(fig_candle.data[0])
+                fig.add_trace(fig_candle.data[1])
 
             # self.logger.debug("Rendered candlesticks")
 

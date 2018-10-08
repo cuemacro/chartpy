@@ -1465,7 +1465,8 @@ class EnginePlotly(EngineTemplate):
                 if chart_type_ord == 'line':
                     full_line = True
 
-                    chart_type_ord = 'scatter'
+                    # chart_type_ord = 'scatter'
+                    mode = 'none'
                 elif chart_type_ord in ['dash', 'dashdot', 'dot']:
                     chart_type_ord = 'scatter'
 

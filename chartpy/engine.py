@@ -1578,7 +1578,8 @@ class EnginePlotly(EngineTemplate):
                                                    color=color_spec1,
                                                    dimensions=(style.width * abs(style.scale_factor) * scale,
                                                                style.height * abs(style.scale_factor) * scale),
-                                                   asFigure=True)
+                                                   asFigure=True,
+                                                   connectgaps=style.connect_line_gaps)
 
                             m = 10; break
                         except Exception as e:

@@ -1460,10 +1460,10 @@ class EnginePlotly(EngineTemplate):
             # otherwise we have a line plot (or similar such as a scatter plot)
             else:
 
-                full_line = False
+                connect_line_gaps = style.connect_line_gaps
 
                 if chart_type_ord == 'line':
-                    full_line = True
+                    connect_line_gaps = True
 
                     # chart_type_ord = 'scatter'
                     mode = 'lines'
@@ -1532,7 +1532,7 @@ class EnginePlotly(EngineTemplate):
                                                    dimensions=(style.width * abs(style.scale_factor) * scale,
                                                                style.height * abs(style.scale_factor) * scale),
                                                    asFigure=True,
-                                                   connectgaps=style.connect_line_gaps)
+                                                   connectgaps=connect_line_gaps)
 
                         m = 10; break
                     except Exception as e:

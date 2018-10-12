@@ -1470,6 +1470,11 @@ class EnginePlotly(EngineTemplate):
                 elif chart_type_ord in ['dash', 'dashdot', 'dot']:
                     chart_type_ord = 'scatter'
 
+                elif chart_type_ord == 'line+markers':
+                    full_line = True
+
+                    mode = 'lines+markers'
+                    marker_size = 5
                 elif chart_type_ord == 'scatter':
                     mode = 'markers'
                     marker_size = 5

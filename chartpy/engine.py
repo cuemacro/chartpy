@@ -1310,7 +1310,7 @@ class EnginePlotly(EngineTemplate):
         try:
             # adjust sizing if offline_html format
             if (style.plotly_plot_mode == 'offline_html' and style.scale_factor > 0):
-                scale = 2 / 3
+                scale = float(2.0 / 3.0)
         except:
             pass
 
@@ -1531,7 +1531,8 @@ class EnginePlotly(EngineTemplate):
                                                    color=color_spec1,
                                                    dimensions=(style.width * abs(style.scale_factor) * scale,
                                                                style.height * abs(style.scale_factor) * scale),
-                                                   asFigure=True)
+                                                   asFigure=True,
+                                                   connectgaps=style.connect_line_gaps)
 
                         m = 10; break
                     except Exception as e:
@@ -1591,13 +1592,13 @@ class EnginePlotly(EngineTemplate):
 
 
                 # for lines set the property of connectgaps (cannot specify directly in cufflinks)
-                if full_line:
-                    for z in range(0, len(fig['data'])):
-                        fig['data'][z].connectgaps = style.connect_line_gaps
-
-                        # for k in range(0, len(fig['data'])):
-                        #     if full_line:
-                        #         fig['data'][k].connectgaps = style.connect_line_gaps
+                # if full_line:
+                #     for z in range(0, len(fig['data'])):
+                #         fig['data'][z].connectgaps = style.connect_line_gaps
+                #
+                #         # for k in range(0, len(fig['data'])):
+                #         #     if full_line:
+                #         #         fig['data'][k].connectgaps = style.connect_line_gaps
 
                 if style.line_shape != None:
                     if isinstance(style.line_shape, str):

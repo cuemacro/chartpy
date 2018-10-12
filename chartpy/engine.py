@@ -1460,10 +1460,10 @@ class EnginePlotly(EngineTemplate):
             # otherwise we have a line plot (or similar such as a scatter plot)
             else:
 
-                connect_line_gaps = style.connect_line_gaps
+                full_line = style.connect_line_gaps
 
                 if chart_type_ord == 'line':
-                    connect_line_gaps = True
+                    full_line = True
 
                     # chart_type_ord = 'scatter'
                     mode = 'lines'
@@ -1531,8 +1531,7 @@ class EnginePlotly(EngineTemplate):
                                                    color=color_spec1,
                                                    dimensions=(style.width * abs(style.scale_factor) * scale,
                                                                style.height * abs(style.scale_factor) * scale),
-                                                   asFigure=True,
-                                                   connectgaps=connect_line_gaps)
+                                                   asFigure=True)
 
                         m = 10; break
                     except Exception as e:
@@ -1579,8 +1578,7 @@ class EnginePlotly(EngineTemplate):
                                                    color=color_spec1,
                                                    dimensions=(style.width * abs(style.scale_factor) * scale,
                                                                style.height * abs(style.scale_factor) * scale),
-                                                   asFigure=True,
-                                                   connectgaps=style.connect_line_gaps)
+                                                   asFigure=True)
 
                             m = 10; break
                         except Exception as e:
@@ -1592,13 +1590,13 @@ class EnginePlotly(EngineTemplate):
 
 
                 # for lines set the property of connectgaps (cannot specify directly in cufflinks)
-                # if full_line:
-                #     for z in range(0, len(fig['data'])):
-                #         fig['data'][z].connectgaps = style.connect_line_gaps
-                #
-                #         # for k in range(0, len(fig['data'])):
-                #         #     if full_line:
-                #         #         fig['data'][k].connectgaps = style.connect_line_gaps
+                if full_line:
+                     for z in range(0, len(fig['data'])):
+                         fig['data'][z].connectgaps = style.connect_line_gaps
+
+                         for k in range(0, len(fig['data'])):
+                              if full_line:
+                                  fig['data'][k].connectgaps = style.connect_line_gaps
 
                 if style.line_shape != None:
                     if isinstance(style.line_shape, str):

@@ -1637,7 +1637,7 @@ class EnginePlotly(EngineTemplate):
 
             # adjust margins
             if style.thin_margin:
-                fig.update(dict(layout=dict(margin=go.Margin(
+                fig.update(dict(layout=dict(margin=plotly.graph_objs.layout.Margin(
                     l=20,
                     r=20,
                     b=40,
@@ -1700,6 +1700,7 @@ class EnginePlotly(EngineTemplate):
 
                     fig['data'][j].marker.size = \
                         (style.bubble_size_scalar * (bubble_series.values / scale)).tolist()
+
 
                 if mode is not None:
                     fig['data'][j].mode = mode

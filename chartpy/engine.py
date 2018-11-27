@@ -1273,11 +1273,10 @@ class EngineMatplotlib(EngineTemplate):
 cf = None
 
 try:
-    import plotly
-    import cufflinks as cf
-
     import plotly  # JavaScript based plotting library with Python connector
     import plotly.graph_objs as go
+
+    import cufflinks as cf
 
     plotly.tools.set_config_file(plotly_domain='https://type-here.com',
                                  world_readable=cc.plotly_world_readable,
@@ -1637,7 +1636,7 @@ class EnginePlotly(EngineTemplate):
 
             # adjust margins
             if style.thin_margin:
-                fig.update(dict(layout=dict(margin=plotly.graph_objs.layout.Margin(
+                fig.update(dict(layout=dict(margin=go.layout.Margin(
                     l=20,
                     r=20,
                     b=40,

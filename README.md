@@ -128,6 +128,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 12 Feb 2019 - Fixed bug with dot/dash Plotly charts
 * 27 Nov 2018 - Fixed deprecation message for plotly.graph_objs.layout.Margin
 * 11 Oct 2018 - Added support for Plotly 3.0 (with line gaps)
 * 08 Aug 2018 - Added fixes for bubble charts

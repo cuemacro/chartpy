@@ -1294,7 +1294,7 @@ class EnginePlotly(EngineTemplate):
 
     def plot_chart(self, data_frame, style, chart_type):
 
-        mode = 'line'
+        mode = 'lines'
 
         if style is None: style = Style()
 

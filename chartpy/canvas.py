@@ -1,9 +1,9 @@
 from __future__ import division
 
-__author__ = 'saeedamen' # Saeed Amen
+__author__ = 'saeedamen'  # Saeed Amen
 
 #
-# Copyright 2016 Cuemacro
+# Copyright 2019 Cuemacro
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the
 # License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -23,20 +23,32 @@ Creates a webpage out of chart objects (and strings)
 
 from chartpy.chart import Chart
 
+# for writing PDFs
+try:
+    import pdfkit # note: requires installation of wkhtmltopdf as well
+except:
+    pass
+
 class Canvas(object):
 
     def __init__(self, elements_to_render):
         self.elements_to_render = elements_to_render
 
-    def generate_canvas(self, page_title = 'chartpy dashboard', jupyter_notebook = False, silent_display = True, output_filename = None, canvas_plotter = 'plain', render_pdf=False):
+    def generate_canvas(self, page_title='chartpy dashboard', jupyter_notebook=False, silent_display=True,
+                        output_filename=None, canvas_plotter='plain', render_pdf=False,
+                        return_html_binary=False, return_pdf_binary=False, extra_head_code=''):
 
         if canvas_plotter == 'plain':
             canvas_plotter = CanvasPlotterPlain()
         elif canvas_plotter == 'keen':
             canvas_plotter = CanvasPlotterKeen()
 
-        canvas_plotter.render_canvas(self.elements_to_render, page_title=page_title, jupyter_notebook=jupyter_notebook, silent_display=silent_display,
-                                     output_filename=output_filename, render_pdf=render_pdf)
+        return canvas_plotter.render_canvas(self.elements_to_render, page_title=page_title, jupyter_notebook=jupyter_notebook,
+                                     silent_display=silent_display,
+                                     output_filename=output_filename, render_pdf=render_pdf,
+                                     return_html_binary=return_html_binary,
+                                     return_pdf_binary=return_pdf_binary, extra_head_code=extra_head_code)
+
 
 #########################################
 import abc
@@ -49,14 +61,16 @@ import pandas
 class CanvasPlotterTemplate(ABC):
 
     @abc.abstractmethod
-    def render_canvas(self, elements_to_render, jupyter_notebook = False, silent_display = True, output_filename = None, canvas_plotter = None,
-                      page_title="chartpy dashboard", render_pdf=False):
+    def render_canvas(self, elements_to_render, jupyter_notebook=False, silent_display=True, output_filename=None,
+                      canvas_plotter=None,
+                      page_title="chartpy dashboard", render_pdf=False, return_html_binary=False, return_pdf_binary=False):
         pass
 
-    def output_page(self, html, jupyter_notebook, output_filename, silent_display, render_pdf):
+    def output_page(self, html, jupyter_notebook, output_filename, silent_display, render_pdf, return_html_binary, return_pdf_binary):
         if output_filename is None:
             import datetime
-            html_filename = str(datetime.datetime.now()).replace(':', '-').replace(' ', '-').replace(".", "-") + "-canvas.html"
+            html_filename = str(datetime.datetime.now()).replace(':', '-').replace(' ', '-').replace(".",
+                                                                                                     "-") + "-canvas.html"
         else:
             html_filename = output_filename
 
@@ -64,19 +78,22 @@ class CanvasPlotterTemplate(ABC):
         soup = BeautifulSoup(html, 'html.parser')
         html = soup.prettify()
 
-        html_file = open(html_filename, "w")
-        html_file.write(html)
-        html_file.close()
+        if not(return_html_binary):
+            html_file = open(html_filename, "w")
+            html_file.write(html)
+            html_file.close()
 
-        if (not (silent_display)):
-            import webbrowser
-            webbrowser.open(html_filename)
+            if (not (silent_display)):
+                import webbrowser
+                webbrowser.open(html_filename)
 
         if (jupyter_notebook):
             # from IPython.core.display import display, HTML
             from IPython.display import IFrame, display, HTML
 
-            html = IFrame(html_filename, width=900, height=350, onload="this.style.height=this.contentDocument.body.scrollHeight +'px'")
+            html = IFrame(html_filename, width=900, height=350,
+                          onload="this.style.height=this.contentDocument.body.scrollHeight +'px'")
+
             # html = HTML('<iframe src="' + html_filename + '" frameborder="0" scrolling="no" width=900 align="middle" '+
             #            """
             #            onload="this.style.height=this.contentDocument.body.scrollHeight +'px';"></iframe>
@@ -85,121 +102,140 @@ class CanvasPlotterTemplate(ABC):
             # print(html)
             display(html)
 
-        if(render_pdf):
+        pdf_binary = None
+
+        if (render_pdf):
             pdf_filename = html_filename.replace('html', 'pdf')
             pdf_filename = pdf_filename.replace('htm', 'pdf')
 
-            import six
+            if return_pdf_binary:
+                pdf_binary = pdfkit.from_string(html, False)
+            else:
+                pdfkit.from_string(html, pdf_filename)
 
-            from xhtml2pdf import pisa
+            # import six
 
-            pdf = six.StringIO()
-            resultFile = open(pdf_filename, "w+b")
-            from io import StringIO, BytesIO
-            pisaStatus = pisa.CreatePDF(StringIO(html), resultFile)
+            # from xhtml2pdf import pisa
+            #
+            # pdf = six.StringIO()
+            # resultFile = open(pdf_filename, "w+b")
+            # from io import StringIO, BytesIO
+            # pisaStatus = pisa.CreatePDF(StringIO(html), resultFile)
+            #
+            # # import ho.xhtml2pdf as xhtml2pdf
+            #
+            # resultFile.close()
 
-            import ho.xhtml2pdf as xhtml2pdf
+            #if not pdf.err:
+            #    xhtml2pdf.startViewer(pdf)
 
-            resultFile.close()
-
-            if not pdf.err:
-                xhtml2pdf.startViewer(pdf)
+        return html, pdf_binary
 
 class CanvasPlotterPlain(CanvasPlotterTemplate):
-    def render_canvas(self, elements_to_render, jupyter_notebook = False, silent_display=True, output_filename=None,
-                      page_title="chartpy dashboard", render_pdf=False):
+    def render_canvas(self, elements_to_render, jupyter_notebook=False, silent_display=True, output_filename=None,
+                      page_title="chartpy dashboard", render_pdf=False, return_html_binary=False, return_pdf_binary=False,
+                      extra_head_code=''):
 
         html = []
         html.append('<head><title>' + page_title + '</title>')
         html.append(plain_css)
+        html.append(extra_head_code)
         html.append('</head>')
 
         html.append('<h1>' + page_title + '</h1>')
         html.append('<table cellpadding="0">')
 
-        if not(isinstance(elements_to_render, list)):
+        if not (isinstance(elements_to_render, list)):
             elements_to_render = [elements_to_render]
 
         for i in range(0, len(elements_to_render)):
 
             row = elements_to_render[i]
 
-            if not(isinstance(row, list)):
+            if not (isinstance(row, list)):
                 row = [row]
 
-            html.append('<tr>\n')
+            if row != []:
+                if row is not None:
 
-            for j in range(0, len(row)):
-                html.append('<td>')
+                    html.append('<tr>\n')
 
-                object = row[j]
+                    for j in range(0, len(row)):
+                        html.append('<td>')
 
-                if isinstance(object, Chart):
+                        object = row[j]
 
-                    chart = object
+                        if isinstance(object, Chart):
 
-                    padding = 40
+                            chart = object
 
-                    old_margin = chart.style.thin_margin
-                    old_silent_display = chart.style.silent_display
-                    chart.style.silent_display = True
-                    chart.style.thin_margin = True
+                            padding = 40
 
-                    chart.plot()
+                            old_margin = chart.style.thin_margin
+                            old_silent_display = chart.style.silent_display
+                            chart.style.silent_display = True
+                            chart.style.thin_margin = True
 
-                    chart.style.thin_margin = old_margin
-                    chart.style.silent_display = old_silent_display
+                            chart.plot()
 
-                    # grab file name
-                    if chart.engine == 'matplotlib':
-                        # if (chart.style.file_output is None):
-                        #     import time
-                        #     chart.style.file_output = str(time.time()) + "matplotlib.png"
+                            chart.style.thin_margin = old_margin
+                            chart.style.silent_display = old_silent_display
 
-                        source_file = chart.style.file_output
-                    else:
-                        source_file = chart.style.html_file_output
+                            # grab file name
+                            if chart.engine == 'matplotlib':
+                                # if (chart.style.file_output is None):
+                                #     import time
+                                #     chart.style.file_output = str(time.time()) + "matplotlib.png"
 
-                    try:
-                        width = chart.style.width * abs(chart.style.scale_factor) + padding
-                        height = chart.style.height * abs(chart.style.scale_factor) + padding
+                                source_file = chart.style.file_output
+                            else:
+                                source_file = chart.style.html_file_output
 
-                        #html.append('<div align="center"><div>')
-                        html.append('<iframe src="' + source_file + '" width="' + str(width) + \
-                               '" height="' + str(height) + '" frameborder="0" scrolling="no"></iframe>')
+                            try:
+                                width = chart.style.width * abs(chart.style.scale_factor) + padding
+                                height = chart.style.height * abs(chart.style.scale_factor) + padding
 
-                        #html.append('</div></div>')
-                    except:
-                        pass
+                                # html.append('<div align="center"><div>')
+                                html.append('<iframe src="' + source_file + '" width="' + str(width) + \
+                                            '" height="' + str(height) + '" frameborder="0" scrolling="no"></iframe>')
 
-                    # print(chart.style.html_file_output)
-                    # print(chart)
-                elif isinstance(object, str):
-                    html.append(object)
-                elif isinstance(object, pandas.DataFrame):
-                    old_width = pandas.get_option('display.max_colwidth')
-                    pandas.set_option('display.max_colwidth', -1)
+                                # html.append('</div></div>')
+                            except:
+                                pass
 
-                    html_table = object.to_html(escape=False).replace('border="1"', 'border="0"')
-                    html_table = html_table.replace("text-align: right;", "text-align: center; vertical-align: text-top;")
+                            # print(chart.style.html_file_output)
+                            # print(chart)
+                        elif isinstance(object, pandas.DataFrame):
+                            old_width = pandas.get_option('display.max_colwidth')
+                            pandas.set_option('display.max_colwidth', -1)
 
-                    html.append(html_table)
-                    pandas.set_option('display.max_colwidth', old_width)
+                            html_table = object.to_html(escape=False).replace('border="1"', 'border="0"')
+                            html_table = html_table.replace("text-align: right;",
+                                                            "text-align: center; vertical-align: text-top;")
 
-                html.append('</td>\n')
+                            html.append(html_table)
+                            pandas.set_option('display.max_colwidth', old_width)
+                        else:
+                            # assume it's a string of some sort
+                            html.append(object)
 
-            html.append('</tr>\n')
+                        html.append('</td>\n')
+
+                    html.append('</tr>\n')
 
         html.append('</table>\n')
 
         html = '\n'.join(html)
 
-        self.output_page(html, jupyter_notebook, output_filename, silent_display, render_pdf)
+        return self.output_page(html, jupyter_notebook, output_filename, silent_display, render_pdf,
+                                return_html_binary, return_pdf_binary)
+
 
 #### based on Keen.io template at https://github.com/plotly/dashboards
 class CanvasPlotterKeen(CanvasPlotterTemplate):
-    def render_canvas(self, elements_to_render, jupyter_notebook = False, silent_display = True, output_filename = None,
-                      page_title='chartpy dashboard', render_pdf=False):
+    def render_canvas(self, elements_to_render, jupyter_notebook=False, silent_display=True, output_filename=None,
+                      page_title='chartpy dashboard', render_pdf=False, return_html_binary=False, return_pdf_binary=False,
+                      extra_head_code=''):
 
         html = []
 
@@ -214,8 +250,9 @@ class CanvasPlotterKeen(CanvasPlotterTemplate):
                   <link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css" />
                   <link rel="stylesheet" type="text/css" href="static/css/keen-dashboards.css" />
                   <!-- For slider -->
-                  <link rel="stylesheet" type="text/css" href="static/css/iThing.css" />
-                </head>
+                  <link rel="stylesheet" type="text/css" href="static/css/iThing.css" />''')
+        html.append(extra_head_code)
+        html.append('''</head>
                 <body class="application">
 
                 <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -246,97 +283,103 @@ class CanvasPlotterKeen(CanvasPlotterTemplate):
 
             row = elements_to_render[i]
 
-            if not (isinstance(row, list)):
-                row = [row]
+            if row != []:
+                if row is not None:
 
-            html.append('<div class="row">') # open row
+                    if not (isinstance(row, list)):
+                        row = [row]
 
-            for j in range(0, len(row)):
+                    html.append('<div class="row">')  # open row
 
-                object = row[j]
+                    for j in range(0, len(row)):
 
-                if isinstance(object, Chart):
+                        object = row[j]
 
-                    chart = object
-                    padding = 20
+                        if isinstance(object, Chart):
 
-                    html.append('<div style="display:inline-block; width: ' + str(
-                        chart.style.width * abs(chart.style.scale_factor) + padding) + 'px">')
+                            chart = object
+                            padding = 20
 
-                    html.append('<div class="chart-wrapper">')
-                    html.append('<div class="chart-title">' + chart.style.title + '</div>')
+                            html.append('<div style="display:inline-block; width: ' + str(
+                                chart.style.width * abs(chart.style.scale_factor) + padding) + 'px">')
 
-                    old_scale_factor = chart.style.scale_factor
-                    old_silent_display = chart.style.silent_display
-                    old_margin = chart.style.thin_margin
-                    old_title = chart.style.title
-                    old_source = chart.style.source
+                            html.append('<div class="chart-wrapper">')
+                            html.append('<div class="chart-title">' + chart.style.title + '</div>')
 
-                    chart.style.silent_display = True
-                    chart.style.title = None
-                    chart.style.source = None
-                    chart.style.thin_margin = True
+                            old_scale_factor = chart.style.scale_factor
+                            old_silent_display = chart.style.silent_display
+                            old_margin = chart.style.thin_margin
+                            old_title = chart.style.title
+                            old_source = chart.style.source
 
-                    # hack to get bokeh to fit properly in window
-                    if chart.engine == 'bokeh':
-                        chart.style.scale_factor = 0.9 * chart.style.scale_factor
+                            chart.style.silent_display = True
+                            chart.style.title = None
+                            chart.style.source = None
+                            chart.style.thin_margin = True
 
-                    chart.plot()
+                            # hack to get bokeh to fit properly in window
+                            if chart.engine == 'bokeh':
+                                chart.style.scale_factor = 0.9 * chart.style.scale_factor
 
-                    chart.style.silent_display = old_silent_display
-                    chart.style.scale_factor = old_scale_factor
-                    chart.style.thin_margin = old_margin
-                    chart.style.title = old_title
-                    chart.style.source = old_source
+                            chart.plot()
 
-                    if chart.engine == 'matplotlib':
-                        if (chart.style.file_output is None):
-                            import time
-                            chart.style.file_output = str(time.time()) + "matplotlib.png"
+                            chart.style.silent_display = old_silent_display
+                            chart.style.scale_factor = old_scale_factor
+                            chart.style.thin_margin = old_margin
+                            chart.style.title = old_title
+                            chart.style.source = old_source
 
-                        source_file = chart.style.file_output
-                    else:
-                        source_file = chart.style.html_file_output
+                            if chart.engine == 'matplotlib':
+                                if (chart.style.file_output is None):
+                                    import time
+                                    chart.style.file_output = str(time.time()) + "matplotlib.png"
 
-                    try:
-                        html.append('<div style="display:inline-block; height: '
-                                    + str(chart.style.height * abs(chart.style.scale_factor) + padding)
-                                    + 'px; vertical-align: center" class="chart-stage">')
+                                source_file = chart.style.file_output
+                            else:
+                                source_file = chart.style.html_file_output
 
-                        html.append('<iframe src="' + source_file + '" width="' + str(
-                            chart.style.width * abs(chart.style.scale_factor) + padding) + \
-                               '" height="' + str(chart.style.height * abs(
-                            chart.style.scale_factor) + padding) + '" frameborder="0" scrolling="no" align="middle"></iframe>')
+                            try:
+                                html.append('<div style="display:inline-block; height: '
+                                            + str(chart.style.height * abs(chart.style.scale_factor) + padding)
+                                            + 'px; vertical-align: center" class="chart-stage">')
+
+                                html.append('<iframe src="' + source_file + '" width="' + str(
+                                    chart.style.width * abs(chart.style.scale_factor) + padding) + \
+                                            '" height="' + str(chart.style.height * abs(
+                                    chart.style.scale_factor) + padding) + '" frameborder="0" scrolling="no" align="middle"></iframe>')
+
+                                html.append('</div>')
+
+                                html.append('<div class="chart-notes">' + old_source + '</div>')
+
+                            except:
+                                pass
+
+                            html.append('</div>')
+
+                            # print(chart.style.html_file_output)
+                            # print(chart)
+                        elif isinstance(object, pandas.DataFrame):
+                            html.append('<div style="display:inline-block;>')
+                            html.append(object.to_html())
+                            html.append('</div>')
+                        else:
+                            # assume it's a string otherwise
+                            html.append('<div style="display:inline-block;>')
+                            html.append(object)
+                            html.append('</div>')
 
                         html.append('</div>')
 
-                        html.append('<div class="chart-notes">' + old_source + '</div>')
-
-                    except:
-                        pass
-
                     html.append('</div>')
-
-                    # print(chart.style.html_file_output)
-                    # print(chart)
-                elif isinstance(object, str):
-                    html.append('<div style="display:inline-block;>')
-                    html.append(object)
-                    html.append('</div>')
-                elif isinstance(object, pandas.DataFrame):
-                    html.append('<div style="display:inline-block;>')
-                    html.append(object.to_html())
-                    html.append('</div>')
-
-                html.append('</div>')
-
-            html.append('</div>')
 
         html.append('</div>')
 
         html = '\n'.join(html)
 
-        self.output_page(html, jupyter_notebook, output_filename, silent_display, render_pdf)
+        return self.output_page(html, jupyter_notebook, output_filename, silent_display, render_pdf,
+                                return_html_binary, return_pdf_binary)
+
 
 plain_css = '''
 <style>

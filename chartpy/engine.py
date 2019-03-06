@@ -1285,14 +1285,26 @@ except:
     pass
 
 try:
-    pass
+    import base64
     #plotly.utils.memoize = memoize
 except:
     pass
 
 class EnginePlotly(EngineTemplate):
 
+    def start_orca(self, path=None):
+        # orca is a seperate plotly application for converting Plotly figures to PNG format
+        if path is not None:
+            plotly.io.orca.config.executable = path
+
+        plotly.io.orca.ensure_server()
+
     def plot_chart(self, data_frame, style, chart_type):
+
+        # special case if we have a precreated Plotly object
+        if isinstance(data_frame, go.Figure):
+
+            return self.publish_plot(data_frame, style)
 
         mode = 'lines'
 
@@ -1796,6 +1808,8 @@ class EnginePlotly(EngineTemplate):
         fig.update(dict(layout=dict(paper_bgcolor='rgba(0,0,0,0)')))
         fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))
 
+        if style is None: style = Style()
+
         style = self.generate_file_names(style, 'plotly')
 
         if style.plotly_plot_mode == 'dash':
@@ -1811,6 +1825,22 @@ class EnginePlotly(EngineTemplate):
 
         elif style.plotly_plot_mode == 'offline_html':
             plotly.offline.plot(fig, filename=style.html_file_output, auto_open = not(style.silent_display))
+
+        elif style.plotly_plot_mode == 'offline_embed_js_div':
+            return plotly.offline.plot(fig, include_plotlyjs=True, output_type='div') # HTML string
+
+        elif style.plotly_plot_mode == 'offline_div':
+            return plotly.offline.plot(fig, include_plotlyjs=False, output_type='div') # HTML string
+
+        elif style.plotly_plot_mode == 'offline_image_png_bytes':
+            return plotly.io.to_image(fig, format='png') # PNG as bytes
+
+        elif style.plotly_plot_mode == 'offline_image_png_in_html':
+            # TODO also add Python 3 support for this
+            return '<img src="data:image/png;base64,' + \
+                   base64.b64encode(plotly.io.to_image(fig, format='png')).decode('utf8')  + '">'  # PNG as bytes in HTML image
+
+            # can display in HTML as <img src="data:image/png;base64,[ENCODED STRING GOES HERE]">
 
         elif style.plotly_plot_mode == 'offline_jupyter':
 

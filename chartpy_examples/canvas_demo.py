@@ -21,7 +21,7 @@ except:
 
 from chartpy import Chart, Style, Canvas
 
-# get your own free bQuandl API key from https://www.quandl.com/
+# get your own free Quandl API key from https://www.quandl.com/
 try:
     from chartpy.chartcred import ChartCred
 

@@ -128,6 +128,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 06 Aug 2019 - Refactored Plotly code, adding Plotly 4.0 support (not complete yet)
 * 06 Mar 2019 - Changed library for PDF generation
 * 12 Feb 2019 - Fixed bug with dot/dash Plotly charts
 * 27 Nov 2018 - Fixed deprecation message for plotly.graph_objs.layout.Margin

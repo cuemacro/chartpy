@@ -132,6 +132,7 @@ class Style(object):
                  plotly_theme=None,
                  plotly_plot_mode=cc.plotly_plot_mode,
                  plotly_webgl=cc.plotly_webgl,
+                 plotly_helper=cc.plotly_helper,
 
                  # bokeh
                  bokeh_plot_mode=cc.bokeh_plot_mode,
@@ -249,6 +250,7 @@ class Style(object):
         self.plotly_as_image = plotly_as_image
         self.plotly_username = plotly_username
         self.plotly_webgl = plotly_webgl
+        self.plotly_helper = plotly_helper
 
         # try to get API key from GraphicsConstants file
         try:
@@ -849,6 +851,14 @@ class Style(object):
     @plotly_webgl.setter
     def plotly_webgl(self, plotly_webgl):
         self.__plotly_webgl = plotly_webgl
+        
+    @property
+    def plotly_helper(self):
+        return self.__plotly_helper
+
+    @plotly_helper.setter
+    def plotly_helper(self, plotly_helper):
+        self.__plotly_helper = plotly_helper
 
     ###### bokeh specific settings
     @property

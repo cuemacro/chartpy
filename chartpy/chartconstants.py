@@ -88,7 +88,7 @@ class ChartConstants(object):
                        '#8EBA42',
                        '#FFB5B8']
     plotly_webgl = False
-
+    plotly_helper = 'cufflinks' # cufflinks or plotly_express
 
     ########## API KEYS
 

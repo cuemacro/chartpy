@@ -1,4 +1,4 @@
-__author__ = 'saeedamen' # Saeed Amen
+__author__ = 'saeedamen'  # Saeed Amen
 
 #
 # Copyright 2016 Cuemacro
@@ -32,6 +32,7 @@ cc = ChartConstants()
 
 # compatible with Python 2 *and* 3:
 ABC = abc.ABCMeta('ABC', (object,), {'__slots__': ()})
+
 
 class EngineTemplate(ABC):
 
@@ -144,7 +145,7 @@ class EngineTemplate(ABC):
             Minimum and maximum values
         """
 
-        if not(isinstance(data_frame_list, list)):
+        if not (isinstance(data_frame_list, list)):
             data_frame_list = [data_frame_list]
 
         import sys
@@ -162,7 +163,6 @@ class EngineTemplate(ABC):
 
             if maxz_1 != numpy.nan:
                 maxz = max(maxz, maxz_1)
-
 
         return minz, maxz
 
@@ -197,17 +197,18 @@ class EngineTemplate(ABC):
             if maxz_1 != numpy.nan:
                 maxz = max(maxz, maxz_1)
 
-
         return minz, maxz
+
 
 #######################################################################################################################
 
 try:
     from bokeh.plotting import figure, output_file, show, gridplot, save
     from bokeh.models import Range1d
-    from bokeh.charts import HeatMap    # TODO deprecated need to redo
+    from bokeh.charts import HeatMap  # TODO deprecated need to redo
 except:
     pass
+
 
 class EngineBokeh(EngineTemplate):
 
@@ -216,7 +217,7 @@ class EngineBokeh(EngineTemplate):
         cm = ColorMaster()
 
         if style.scale_factor > 0:
-            scale_factor = abs(style.scale_factor) * 2/3
+            scale_factor = abs(style.scale_factor) * 2 / 3
         else:
             scale_factor = abs(style.scale_factor)
 
@@ -231,7 +232,8 @@ class EngineBokeh(EngineTemplate):
             style = self.generate_file_names(style, 'bokeh')
 
             output_file(style.html_file_output)
-        except: pass
+        except:
+            pass
 
         data_frame_list = self.split_data_frame_to_list(data_frame, style)
 
@@ -251,36 +253,37 @@ class EngineBokeh(EngineTemplate):
                 # TODO
 
                 p1 = HeatMap(data_frame,
-                             title='Random', plot_width = plot_width, plot_height = plot_height)
+                             title='Random', plot_width=plot_width, plot_height=plot_height)
 
                 separate_chart = True
 
             # if has a vertical bar than categorical x-axis
             elif has_bar == 'barv':
                 p1 = figure(
-                    plot_width = plot_width,
-                    plot_height = plot_height,
-                    x_range=[str(x).replace(':','.') for x in data_frame.index]
-                    )
+                    plot_width=plot_width,
+                    plot_height=plot_height,
+                    x_range=[str(x).replace(':', '.') for x in data_frame.index]
+                )
 
                 from math import pi
-                p1.xaxis.major_label_orientation = pi/2
-            elif type(data_frame.index) == pandas.Timestamp or (type(xd[0]) == pandas.Timestamp and type(xd[-1]) == pandas.Timestamp)\
+                p1.xaxis.major_label_orientation = pi / 2
+            elif type(data_frame.index) == pandas.Timestamp or (
+                    type(xd[0]) == pandas.Timestamp and type(xd[-1]) == pandas.Timestamp) \
                     or type(data_frame.index) == pandas.DatetimeIndex:
                 p1 = figure(
-                    x_axis_type = "datetime",
-                    plot_width = plot_width,
-                    plot_height = plot_height,
+                    x_axis_type="datetime",
+                    plot_width=plot_width,
+                    plot_height=plot_height,
                     # x_range=(xd[0], xd[-1])   # at present Bokeh doesn't like to set limits with datetime, hopefully will change!
                 )
 
             # otherwise numerical axis
             else:
                 p1 = figure(
-                    plot_width = plot_width,
-                    plot_height = plot_height,
+                    plot_width=plot_width,
+                    plot_height=plot_height,
                     x_range=(xd[0], xd[-1])
-                    )
+                )
 
             # set the fonts
             p1.axis.major_label_text_font_size = str(10) + "pt"
@@ -326,9 +329,9 @@ class EngineBokeh(EngineTemplate):
             bar_width = (1 - bar_space) / (no_of_bars)
             bar_index = 0
 
-            has_bar ='no-bar'
+            has_bar = 'no-bar'
 
-            if not(separate_chart):
+            if not (separate_chart):
 
                 # plot each series in the dataframe separately
                 for i in range(0, len(data_frame.columns)):
@@ -336,8 +339,10 @@ class EngineBokeh(EngineTemplate):
                     glyph_name = 'glpyh' + str(i)
 
                     # set chart type which can differ for each time series
-                    if isinstance(chart_type, list): chart_type_ord = chart_type[i]
-                    else: chart_type_ord = chart_type
+                    if isinstance(chart_type, list):
+                        chart_type_ord = chart_type[i]
+                    else:
+                        chart_type_ord = chart_type
 
                     # get the color
                     if color_spec[i] is None:
@@ -345,30 +350,33 @@ class EngineBokeh(EngineTemplate):
 
                     try:
                         color_spec[i] = matplotlib.colors.rgb2hex(color_spec[i])
-                    except: pass
+                    except:
+                        pass
 
-                    yd = data_frame.ix[:,i]
+                    yd = data_frame.ix[:, i]
 
                     # plot each time series as appropriate line, scatter etc.
                     if chart_type_ord == 'line':
                         linewidth_t = self.get_linewidth(label,
-                            style.linewidth, style.linewidth_2, style.linewidth_2_series)
+                                                         style.linewidth, style.linewidth_2, style.linewidth_2_series)
 
                         if linewidth_t is None: linewidth_t = 1
 
                         if style.display_legend:
-                            p1.line(xd, yd, color = color_spec[i], line_width=linewidth_t, name = glyph_name,
-                                    legend = label,
-                            )
+                            p1.line(xd, yd, color=color_spec[i], line_width=linewidth_t, name=glyph_name,
+                                    legend=label,
+                                    )
                         else:
-                            p1.line(xd, data_frame.ix[:,i], color = color_spec[i], line_width=linewidth_t, name = glyph_name)
+                            p1.line(xd, data_frame.ix[:, i], color=color_spec[i], line_width=linewidth_t,
+                                    name=glyph_name)
 
-                    elif(chart_type_ord == 'bar'):
-                        bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(1,len(bar_ind) + 1)]
+                    elif (chart_type_ord == 'bar'):
+                        bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(1, len(bar_ind) + 1)]
                         bar_pos_right = [x + bar_width for x in bar_pos]
 
                         if style.display_legend:
-                            p1.quad(top=yd, bottom=0 * yd, left=bar_pos, right=bar_pos_right, color=color_spec[i], legend=label)
+                            p1.quad(top=yd, bottom=0 * yd, left=bar_pos, right=bar_pos_right, color=color_spec[i],
+                                    legend=label)
                         else:
                             p1.quad(top=yd, bottom=0 * yd, left=bar_pos, right=bar_pos_right, color=color_spec[i])
 
@@ -380,16 +388,16 @@ class EngineBokeh(EngineTemplate):
 
                     elif chart_type_ord == 'scatter':
                         linewidth_t = self.get_linewidth(label,
-                            style.linewidth, style.linewidth_2, style.linewidth_2_series)
+                                                         style.linewidth, style.linewidth_2, style.linewidth_2_series)
 
                         if linewidth_t is None: linewidth_t = 1
 
                         if style.display_legend:
-                            p1.circle(xd, yd, color = color_spec[i], line_width=linewidth_t, name = glyph_name,
-                                    legend = label,
-                            )
+                            p1.circle(xd, yd, color=color_spec[i], line_width=linewidth_t, name=glyph_name,
+                                      legend=label,
+                                      )
                         else:
-                            p1.circle(xd, yd, color = color_spec[i], line_width=linewidth_t, name = glyph_name)
+                            p1.circle(xd, yd, color=color_spec[i], line_width=linewidth_t, name=glyph_name)
 
                 p1.grid.grid_line_alpha = 0.3
 
@@ -406,7 +414,8 @@ class EngineBokeh(EngineTemplate):
 
         try:
             p_final.title.text = style.title
-        except: pass
+        except:
+            pass
 
         if style.silent_display:
             save(p_final)
@@ -421,6 +430,7 @@ class EngineBokeh(EngineTemplate):
     def generic_settings(self):
         return
 
+
 ######################################################################################################################
 
 # TODO bqplot interface not implemented yet
@@ -431,6 +441,7 @@ try:
     )
 except:
     pass
+
 
 class EngineBqplot(EngineTemplate):
     def plot_chart(self, data_frame, style, chart_type):
@@ -444,6 +455,7 @@ class EngineBqplot(EngineTemplate):
     def generic_settings(self):
         return
 
+
 #######################################################################################################################
 
 # vispy based plots
@@ -452,6 +464,7 @@ try:
     from vispy import plot as vp
 except:
     pass
+
 
 class EngineVisPy(EngineTemplate):
     def plot_chart(self, data_frame, style, chart_type):
@@ -556,7 +569,6 @@ class EngineVisPy(EngineTemplate):
                         # TODO
                         pass
 
-
         if style.silent_display:
             pass
         else:
@@ -592,7 +604,7 @@ except:
     pass
 
 try:
-    from mpl_toolkits.mplot3d import Axes3D # need to import in order to do 3D plots (even if not called)
+    from mpl_toolkits.mplot3d import Axes3D  # need to import in order to do 3D plots (even if not called)
 except:
     pass
 
@@ -601,6 +613,7 @@ try:
     from matplotlib.ticker import MultipleLocator
 except:
     pass
+
 
 class EngineMatplotlib(EngineTemplate):
 
@@ -612,13 +625,13 @@ class EngineMatplotlib(EngineTemplate):
             plt.xkcd()
 
         # create figure & add a subplot
-        fig = plt.figure(figsize = ((style.width * abs(style.scale_factor))/style.dpi,
-                                    (style.height * abs(style.scale_factor))/style.dpi), dpi = style.dpi)
+        fig = plt.figure(figsize=((style.width * abs(style.scale_factor)) / style.dpi,
+                                  (style.height * abs(style.scale_factor)) / style.dpi), dpi=style.dpi)
 
         # matplotlib 1.5
         try:
             cyc = matplotlib.rcParams['axes.prop_cycle']
-            color_cycle =  [x['color'] for x in cyc]
+            color_cycle = [x['color'] for x in cyc]
         except KeyError:
             # pre 1.5
             pass
@@ -645,7 +658,7 @@ class EngineMatplotlib(EngineTemplate):
             xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame, style, chart_type, bar_ind)
 
             try:
-               xd = xd.to_pydatetime()
+                xd = xd.to_pydatetime()
             except:
                 pass
 
@@ -665,7 +678,7 @@ class EngineMatplotlib(EngineTemplate):
             try:
                 has_matrix = 'no'
 
-                if not(isinstance(chart_type, list)):
+                if not (isinstance(chart_type, list)):
 
                     ax_temp = ax
 
@@ -685,7 +698,8 @@ class EngineMatplotlib(EngineTemplate):
                         data_frame = data_frame.iloc[::-1]
 
                         if style.normalize_colormap:
-                            movie_frame.append(ax_temp.pcolor(data_frame.values, cmap=color, alpha=0.8, vmax=maxz, vmin=minz))
+                            movie_frame.append(
+                                ax_temp.pcolor(data_frame.values, cmap=color, alpha=0.8, vmax=maxz, vmin=minz))
                         else:
                             movie_frame.append(ax_temp.pcolor(data_frame.values, cmap=color, alpha=0.8))
 
@@ -711,32 +725,35 @@ class EngineMatplotlib(EngineTemplate):
                     # some lines we should exclude from the color and use the default palette
                     for i in range(0, len(data_frame.columns.values)):
 
-                        if isinstance(chart_type, list): chart_type_ord = chart_type[i]
-                        else: chart_type_ord = chart_type
+                        if isinstance(chart_type, list):
+                            chart_type_ord = chart_type[i]
+                        else:
+                            chart_type_ord = chart_type
 
                         label = str(data_frame.columns[i])
 
                         ax_temp = self.get_axis(ax, ax2, label, style.y_axis_2_series)
 
-                        yd = data_frame.ix[:,i]
+                        yd = data_frame.ix[:, i]
 
                         if color_spec[i] is None:
                             color_spec[i] = color_cycle[i % len(color_cycle)]
 
                         if (chart_type_ord == 'line'):
                             linewidth_t = self.get_linewidth(label,
-                                                             style.linewidth, style.linewidth_2, style.linewidth_2_series)
+                                                             style.linewidth, style.linewidth_2,
+                                                             style.linewidth_2_series)
 
                             if linewidth_t is None: linewidth_t = matplotlib.rcParams['axes.linewidth']
 
-                            movie_frame.append(ax_temp.plot(xd, yd, label = label, color = color_spec[i],
-                                         linewidth = linewidth_t),)
+                            movie_frame.append(ax_temp.plot(xd, yd, label=label, color=color_spec[i],
+                                                            linewidth=linewidth_t), )
 
-                        elif(chart_type_ord == 'bar'):
+                        elif (chart_type_ord == 'bar'):
                             # for multiple bars we need to allocate space properly
-                            bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0,len(bar_ind))]
+                            bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0, len(bar_ind))]
 
-                            movie_frame.append(ax_temp.bar(bar_pos, yd, bar_width, label = label, color = color_spec[i]))
+                            movie_frame.append(ax_temp.bar(bar_pos, yd, bar_width, label=label, color=color_spec[i]))
 
                             bar_index = bar_index + 1
 
@@ -748,24 +765,24 @@ class EngineMatplotlib(EngineTemplate):
 
                             bar_index = bar_index + 1
 
-                        elif(chart_type_ord == 'stacked'):
-                            bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0,len(bar_ind))]
+                        elif (chart_type_ord == 'stacked'):
+                            bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0, len(bar_ind))]
 
                             yoff = np.where(yd > 0, yoff_pos, yoff_neg)
 
-                            movie_frame.append(ax_temp.bar(bar_pos, yd, label = label, color = color_spec[i], bottom = yoff))
+                            movie_frame.append(ax_temp.bar(bar_pos, yd, label=label, color=color_spec[i], bottom=yoff))
 
                             yoff_pos = yoff_pos + np.maximum(yd, zeros)
                             yoff_neg = yoff_neg + np.minimum(yd, zeros)
 
                             # bar_index = bar_index + 1
 
-                        elif(chart_type_ord == 'scatter'):
-                            movie_frame.append(ax_temp.scatter(xd, yd, label = label, color = color_spec[i]))
+                        elif (chart_type_ord == 'scatter'):
+                            movie_frame.append(ax_temp.scatter(xd, yd, label=label, color=color_spec[i]))
 
                             if style.line_of_best_fit is True:
-                                self.trendline(ax_temp, xd.values, yd.values, order=1, color= color_spec[i], alpha=1,
-                                               scale_factor = abs(style.scale_factor))
+                                self.trendline(ax_temp, xd.values, yd.values, order=1, color=color_spec[i], alpha=1,
+                                               scale_factor=abs(style.scale_factor))
 
                 # format X axis
                 self.format_x_axis(ax_temp, data_frame, style, has_bar, bar_ind, bar_width, has_matrix)
@@ -837,8 +854,7 @@ class EngineMatplotlib(EngineTemplate):
 
                 plt.savefig(style.file_output, transparent=False)
         except Exception as e:
-             print(str(e))
-
+            print(str(e))
 
         ####### various matplotlib converters are unstable
         # convert to D3 format with mpld3
@@ -849,7 +865,8 @@ class EngineMatplotlib(EngineTemplate):
             if style.display_mpld3 == True:
                 mpld3.save_d3_html(fig, style.html_file_output)
                 mpld3.show(fig)
-        except: pass
+        except:
+            pass
 
         # FRAGILE! convert to Bokeh format
         # better to use direct Bokeh renderer
@@ -860,7 +877,8 @@ class EngineMatplotlib(EngineTemplate):
 
                 output_file(style.html_file_output)
                 show(mpl.to_bokeh())
-        except: pass
+        except:
+            pass
 
         # FRAGILE! convert matplotlib chart to Plotly format
         # recommend using AdapterCufflinks instead to directly plot to Plotly
@@ -870,11 +888,11 @@ class EngineMatplotlib(EngineTemplate):
             import plotly.tools as tls
 
             if style.convert_matplotlib_to_plotly == True:
-                plotly.tools.set_credentials_file(username = style.plotly_username,
-                                                  api_key = style.plotly_api_key)
+                plotly.tools.set_credentials_file(username=style.plotly_username,
+                                                  api_key=style.plotly_api_key)
 
-                py_fig = tls.mpl_to_plotly(fig, strip_style = True)
-                plot_url = py.plot_mpl(py_fig, filename = style.plotly_url)
+                py_fig = tls.mpl_to_plotly(fig, strip_style=True)
+                plot_url = py.plot_mpl(py_fig, filename=style.plotly_url)
         except:
             pass
 
@@ -885,7 +903,7 @@ class EngineMatplotlib(EngineTemplate):
 
                 return fig
             elif style.silent_display == False:
-                if not(style.block_new_plots):
+                if not (style.block_new_plots):
                     # TODO
                     pass
 
@@ -902,8 +920,10 @@ class EngineMatplotlib(EngineTemplate):
         matplotlib.rcdefaults()
 
         # first search ChartPy styles, then try matplotlib
-        try: plt.style.use(cc.chartfactory_style_sheet[style.style_sheet])
-        except: plt.style.use(style.style_sheet)
+        try:
+            plt.style.use(cc.chartfactory_style_sheet[style.style_sheet])
+        except:
+            plt.style.use(style.style_sheet)
 
         # adjust font size for scale factor
         matplotlib.rcParams.update({'font.size': matplotlib.rcParams['font.size'] * abs(style.scale_factor)})
@@ -932,17 +952,16 @@ class EngineMatplotlib(EngineTemplate):
 
             for x in range(len(data_frame.index)):
                 for y in range(len(data_frame.columns)):
-
-                    plt.text(x +  offset, y +  offset, '%.0f' % data_frame.ix[x, y],
-                         horizontalalignment='center',
-                         verticalalignment='center',
-                         )
+                    plt.text(x + offset, y + offset, '%.0f' % data_frame.ix[x, y],
+                             horizontalalignment='center',
+                             verticalalignment='center',
+                             )
 
             return
 
         if has_bar == 'barv':
             if matplotlib.__version__ > '1.9':
-                offset = bar_width / 2.0    # for matplotlib 2
+                offset = bar_width / 2.0  # for matplotlib 2
             else:
                 offset = 0
 
@@ -971,7 +990,7 @@ class EngineMatplotlib(EngineTemplate):
 
             # if lots of labels make text smaller and rotate
             if len(bar_ind) > 6:
-                #plt.setp(plt.yticks()[1])
+                # plt.setp(plt.yticks()[1])
                 # plt.gca().tight_layout()
                 # matplotlib.rcParams.update({'figure.autolayout': True})
                 # plt.gcf().subplots_adjust(bottom=5)
@@ -984,15 +1003,14 @@ class EngineMatplotlib(EngineTemplate):
                 # ax.tick_params(axis='x', labelsize=matplotlib.rcParams['font.size'] * 0.5)
             return
 
-
         # format X axis
         dates = data_frame.index
 
         # scaling for time series plots with hours and minutes only (and no dates)
-        if hasattr(data_frame.index[0], 'hour') and not(hasattr(data_frame.index[0], 'month')):
-            ax.xaxis.set_major_locator(MultipleLocator(86400./3.))
-            ax.xaxis.set_minor_locator(MultipleLocator(86400./24.))
-            ax.grid(b = style.x_axis_showgrid, which='minor', color='w', linewidth=0.5)
+        if hasattr(data_frame.index[0], 'hour') and not (hasattr(data_frame.index[0], 'month')):
+            ax.xaxis.set_major_locator(MultipleLocator(86400. / 3.))
+            ax.xaxis.set_minor_locator(MultipleLocator(86400. / 24.))
+            ax.grid(b=style.x_axis_showgrid, which='minor', color='w', linewidth=0.5)
 
         # TODO have more refined way of formating time series x-axis!
 
@@ -1024,7 +1042,7 @@ class EngineMatplotlib(EngineTemplate):
                     # ax.xaxis.set_major_formatter(formatter)
 
                     ax.xaxis.set_major_formatter(md.DateFormatter(style.date_formatter))
-                elif diff < timedelta(days = 4):
+                elif diff < timedelta(days=4):
 
                     date_formatter = '%H:%M'
                     xfmt = md.DateFormatter(date_formatter)
@@ -1076,12 +1094,12 @@ class EngineMatplotlib(EngineTemplate):
                     months_locator = MonthLocator(interval=1)
                     ax.xaxis.set_minor_locator(months_locator)
 
-                elif diff < timedelta(days = 365 * 5):
+                elif diff < timedelta(days=365 * 5):
                     locator = YearLocator()
                     ax.xaxis.set_major_locator(locator)
                     ax.xaxis.set_major_formatter(md.DateFormatter('%Y'))
                 else:
-                    years = floor(diff.days/365.0/5.0)
+                    years = floor(diff.days / 365.0 / 5.0)
                     locator = YearLocator(years)
                     ax.xaxis.set_major_locator(locator)
                     ax.xaxis.set_major_formatter(md.DateFormatter('%Y'))
@@ -1099,7 +1117,7 @@ class EngineMatplotlib(EngineTemplate):
                     max = dates.max()
                     min = dates.min()
 
-                    big_step = self.round_to_1((max - min)/10)
+                    big_step = self.round_to_1((max - min) / 10)
 
                     small_step = big_step / 5
 
@@ -1107,7 +1125,8 @@ class EngineMatplotlib(EngineTemplate):
                     ax.xaxis.set_minor_locator(MultipleLocator(small_step))
 
                     plt.xlim(min, max)
-                except: pass
+                except:
+                    pass
 
     def get_axis(self, ax, ax2, label, y_axis_2_series):
 
@@ -1115,7 +1134,7 @@ class EngineMatplotlib(EngineTemplate):
 
         return ax
 
-    def trendline(self, ax, xd, yd, order=1, color='red', alpha=1, Rval=False, scale_factor = 1):
+    def trendline(self, ax, xd, yd, order=1, color='red', alpha=1, Rval=False, scale_factor=1):
         """ Make a line of best fit """
 
         # Calculate trendline
@@ -1126,8 +1145,10 @@ class EngineMatplotlib(EngineTemplate):
 
         intercept = coeffs[-1]
         slope = coeffs[-2]
-        if order == 2: power = coeffs[0]
-        else: power = 0
+        if order == 2:
+            power = coeffs[0]
+        else:
+            power = 0
 
         minxd = np.min(xd)
         maxxd = np.max(xd)
@@ -1136,7 +1157,7 @@ class EngineMatplotlib(EngineTemplate):
         yl = power * xl ** 2 + slope * xl + intercept
 
         # plot trendline
-        ax.plot(xl, yl, color = color, alpha = alpha)
+        ax.plot(xl, yl, color=color, alpha=alpha)
 
         # calculate R squared
         p = np.poly1d(coeffs)
@@ -1147,11 +1168,11 @@ class EngineMatplotlib(EngineTemplate):
         Rsqr = ssreg / sstot
 
         if Rval == False:
-            text = 'R^2 = %0.2f, m = %0.4f, c = %0.4f' %(Rsqr, slope, intercept)
+            text = 'R^2 = %0.2f, m = %0.4f, c = %0.4f' % (Rsqr, slope, intercept)
 
             ax.annotate(text, xy=(1, 1), xycoords='axes fraction', fontsize=8 * abs(scale_factor),
-                    xytext=(-5 * abs(scale_factor), 10 * abs(scale_factor)), textcoords='offset points',
-                    ha='right', va='top')
+                        xytext=(-5 * abs(scale_factor), 10 * abs(scale_factor)), textcoords='offset points',
+                        ha='right', va='top')
 
             # Plot R^2 value
             # ax.text(0.65, 0.95, text, fontsize = 10 * scale_factor,
@@ -1163,16 +1184,16 @@ class EngineMatplotlib(EngineTemplate):
             return Rsqr
 
     def _create_brand_label(self, ax, anno, scale_factor):
-        ax.annotate(anno, xy = (1, 1), xycoords = 'axes fraction',
-                    fontsize = 10 * abs(scale_factor), color = 'white',
-                    xytext = (0 * abs(scale_factor), 15 * abs(scale_factor)), textcoords = 'offset points',
-                    va = "center", ha = "center",
-                    bbox = dict(boxstyle = "round,pad=0.0", facecolor = cc.chartfactory_brand_color))
+        ax.annotate(anno, xy=(1, 1), xycoords='axes fraction',
+                    fontsize=10 * abs(scale_factor), color='white',
+                    xytext=(0 * abs(scale_factor), 15 * abs(scale_factor)), textcoords='offset points',
+                    va="center", ha="center",
+                    bbox=dict(boxstyle="round,pad=0.0", facecolor=cc.chartfactory_brand_color))
 
     def _create_subplot(self, fig, chart_type, style, subplot_no, first_ax, ordinal):
 
         if style.title is not None:
-            fig.suptitle(style.title, fontsize = 14 * abs(style.scale_factor))
+            fig.suptitle(style.title, fontsize=14 * abs(style.scale_factor))
 
         chart_projection = '2d'
 
@@ -1230,7 +1251,6 @@ class EngineMatplotlib(EngineTemplate):
 
         return ax, ax2, subplot_no, ordinal + 1
 
-
     def _create_legend(self, ax, ax2, style):
         if style.display_source_label == True and style.source is not None:
             ax.annotate('Source: ' + style.source, xy=(1, 0), xycoords='axes fraction',
@@ -1274,7 +1294,7 @@ cf = None
 
 try:
     import plotly  # JavaScript based plotting library with Python connector
-    import plotly.graph_objs as go
+    import plotly.offline as py_offline
 
     import cufflinks as cf
 
@@ -1285,10 +1305,24 @@ except:
     pass
 
 try:
+
+    from plotly.graph_objs import Figure
+    import plotly.graph_objs as go
+
+    import plotly.plotly as py_online
+except:
+    # plotly 4
+    from plotly.graph_objects import Figure
+    import plotly.graph_objects as go
+
+    import chart_studio.plotly as py_online
+
+try:
     import base64
-    #plotly.utils.memoize = memoize
+    # plotly.utils.memoize = memoize
 except:
     pass
+
 
 class EnginePlotly(EngineTemplate):
 
@@ -1303,7 +1337,6 @@ class EnginePlotly(EngineTemplate):
 
         # special case if we have a precreated Plotly object
         if isinstance(data_frame, go.Figure):
-
             return self.publish_plot(data_frame, style)
 
         mode = 'lines'
@@ -1379,46 +1412,10 @@ class EnginePlotly(EngineTemplate):
             color_spec1 = color_spec[start:start + end]
             start = end
 
-            # special call for surface and heatmaps
-
-            # NOTE: we use cufflinks library, which simplifies plotting DataFrames in plotly
-            if chart_type_ord == 'surface':
-                fig = data_frame.iplot(kind=chart_type,
-                                       title=style.title,
-                                       xTitle=style.x_title,
-                                       yTitle=style.y_title,
-                                       x=x, y=y, z=z,
-                                       mode=mode,
-                                       size=marker_size,
-                                       sharing=style.plotly_sharing,
-                                       theme=style.plotly_theme,
-                                       bestfit=style.line_of_best_fit,
-                                       legend=style.display_legend,
-                                       colorscale=style.color,
-                                       dimensions=(style.width * abs(style.scale_factor) * scale,
-                                                   style.height * abs(style.scale_factor) * scale),
-                                       asFigure=True)
-
-            elif chart_type_ord == 'heatmap':
-                fig = data_frame.iplot(kind=chart_type,
-                                       title=style.title,
-                                       xTitle=style.x_title,
-                                       yTitle=style.y_title,
-                                       x=x, y=y,
-                                       mode=mode,
-                                       size=marker_size,
-                                       sharing=style.plotly_sharing,
-                                       theme=style.plotly_theme,
-                                       bestfit=style.line_of_best_fit,
-                                       legend=style.display_legend,
-                                       colorscale=style.color,
-                                       dimensions=(style.width * abs(style.scale_factor) * scale,
-                                                   style.height * abs(style.scale_factor) * scale),
-                                       asFigure=True)
-
-                # special case for map/choropleth which has yet to be implemented in Cufflinks
-                            # will likely remove this in the future
-            elif chart_type_ord == 'choropleth':
+            # special call for choropleth (uses Plotly API directly)
+            # special case for map/choropleth which has yet to be implemented in Cufflinks
+            # will likely remove this in the future
+            if chart_type_ord == 'choropleth':
 
                 for col in data_frame.columns:
                     try:
@@ -1468,115 +1465,83 @@ class EnginePlotly(EngineTemplate):
 
                 fig = dict(data=data, layout=layout)
 
-            # otherwise we have a line plot (or similar such as a scatter plot)
-            else:
+            # otherwise underlying Cufflinks library underneath
+            elif style.plotly_helper == 'cufflinks':
 
-                full_line = style.connect_line_gaps
+                # NOTE: we use cufflinks library, which simplifies plotting DataFrames in plotly
+                if chart_type_ord == 'surface':
+                        fig = data_frame.iplot(kind=chart_type,
+                                               title=style.title,
+                                               xTitle=style.x_title,
+                                               yTitle=style.y_title,
+                                               x=x, y=y, z=z,
+                                               mode=mode,
+                                               size=marker_size,
+                                               sharing=style.plotly_sharing,
+                                               theme=style.plotly_theme,
+                                               bestfit=style.line_of_best_fit,
+                                               legend=style.display_legend,
+                                               colorscale=style.color,
+                                               dimensions=(style.width * abs(style.scale_factor) * scale,
+                                                           style.height * abs(style.scale_factor) * scale),
+                                               asFigure=True)
 
-                if chart_type_ord == 'line':
-                    full_line = True
+                elif chart_type_ord == 'heatmap':
+                    fig = data_frame.iplot(kind=chart_type,
+                                           title=style.title,
+                                           xTitle=style.x_title,
+                                           yTitle=style.y_title,
+                                           x=x, y=y,
+                                           mode=mode,
+                                           size=marker_size,
+                                           sharing=style.plotly_sharing,
+                                           theme=style.plotly_theme,
+                                           bestfit=style.line_of_best_fit,
+                                           legend=style.display_legend,
+                                           colorscale=style.color,
+                                           dimensions=(style.width * abs(style.scale_factor) * scale,
+                                                       style.height * abs(style.scale_factor) * scale),
+                                           asFigure=True)
 
-                    # chart_type_ord = 'scatter'
-                    mode = 'lines'
-                elif chart_type_ord in ['dash', 'dashdot', 'dot']:
-                    chart_type_ord = 'scatter'
-
-                elif chart_type_ord == 'line+markers':
-                    full_line = True
-
-                    chart_type_ord = 'line'
-                    mode = 'lines+markers'
-                    marker_size = 5
-                elif chart_type_ord == 'scatter':
-                    mode = 'markers'
-                    marker_size = 5
-                elif chart_type_ord == 'bubble':
-                    chart_type_ord = 'scatter'
-
-                    mode = 'markers'
-
-                    # x = data_frame.columns[0]
-                    # y = data_frame.columns[1]
-                    # z = data_frame.columns[2]
-
-                # using WebGL
-                # if len(data_frame.index) > 500:
-                #     import plotly.graph_objs as go
-                #
-                #     import numpy as np
-                #
-                #     data = []
-                #
-                #     for col in data_frame.columns:
-                #         data.append(go.Scattergl(
-                #             x=data_frame.index,
-                #             y=data_frame[col]
-                #             )
-                #         )
-                #     layout = dict(showlegend=False)
-                #     fig = dict(data=data, layout=layout)
-                # else:
-
-                # TODO check this!
-                # can have issues calling cufflinks with a theme which is None, so split up the cases
-                if style.plotly_theme is None:
-                    plotly_theme = 'pearl'
+                # otherwise we have a line plot (or similar such as a scatter plot, or bar chart etc)
                 else:
-                    plotly_theme = style.plotly_theme
 
-                m = 0
+                    full_line = style.connect_line_gaps
 
-                # sometimes Plotly has issues generating figures in dash, so if fails first, try again
-                while m < 10:
-                    try:
-                        # TODO try writing this directly wiht plotly, rather than using cufflinks
-                        fig = data_frame.iplot(kind=chart_type_ord,
-                                                   title=style.title,
-                                                   xTitle=style.x_title,
-                                                   yTitle=style.y_title,
-                                                   x=x, y=y, z=z,
-                                                   subplots=False,
-                                                   sharing=style.plotly_sharing,
-                                                   mode=mode,
-                                                   secondary_y=style.y_axis_2_series,
-                                                   size=marker_size,
-                                                   theme=plotly_theme,
-                                                   colorscale='dflt',
-                                                   bestfit=style.line_of_best_fit,
-                                                   legend=style.display_legend,
-                                                   width=style.linewidth,
-                                                   color=color_spec1,
-                                                   dimensions=(style.width * abs(style.scale_factor) * scale,
-                                                               style.height * abs(style.scale_factor) * scale),
-                                                   asFigure=True)
+                    if chart_type_ord == 'line':
+                        full_line = True
 
-                        m = 10; break
-                    except Exception as e:
+                        # chart_type_ord = 'scatter'
+                        mode = 'lines'
+                    elif chart_type_ord in ['dash', 'dashdot', 'dot']:
+                        chart_type_ord = 'scatter'
+
+                    elif chart_type_ord == 'line+markers':
+                        full_line = True
+
+                        chart_type_ord = 'line'
+                        mode = 'lines+markers'
+                        marker_size = 5
+                    elif chart_type_ord == 'scatter':
+                        mode = 'markers'
+                        marker_size = 5
+                    elif chart_type_ord == 'bubble':
+                        chart_type_ord = 'scatter'
+
+                        mode = 'markers'
+
+                    # TODO check this!
+                    # can have issues calling cufflinks with a theme which is None, so split up the cases
+                    if style.plotly_theme is None:
+                        plotly_theme = 'pearl'
+                    else:
+                        plotly_theme = style.plotly_theme
+
+                    m = 0
+
+                    # sometimes Plotly has issues generating figures in dash, so if fails first, try again
+                    while m < 10:
                         try:
-                            print(chart_type_ord)
-
-                            # sometimes get error eg. 'legend', 'bgcolor', 'none', ('layout',) or can be related to 'colorscale'
-                            import traceback
-                            import time
-                            import sys
-                            time.sleep(0.3)
-
-                            # T, V, TB = sys.exc_info()
-                            # print(''.join(traceback.format_exception(T, V, TB)))
-                            print("Will attempt to re-render: " + str(e))
-
-                            # try to reimport plotly and cufflinks and re-render (can sometimes have issues in multithreaded
-                            # environment with plotly)
-                            import plotly
-                            import cufflinks as cf
-
-                            # plotly.tools.set_config_file(plotly_domain='https://type-here.com',
-                            #                             world_readable=cc.plotly_world_readable,
-                            #                             sharing=cc.plotly_sharing)
-
-                            if data_frame is None:
-                                print('Empty dataframe')
-
                             fig = data_frame.iplot(kind=chart_type_ord,
                                                    title=style.title,
                                                    xTitle=style.x_title,
@@ -1597,37 +1562,43 @@ class EnginePlotly(EngineTemplate):
                                                                style.height * abs(style.scale_factor) * scale),
                                                    asFigure=True)
 
-                            m = 10; break
+                            m = 10;
+                            break
                         except Exception as e:
-                            print(str(e))
-                            print('Try plotting again...')
-                            # print(color_spec1)
+                            print("Will attempt to re-render: " + str(e))
 
-                    m = m + 1
+                            import time
+                            time.sleep(0.3)
 
+                        m = m + 1
 
-                # for lines set the property of connectgaps (cannot specify directly in cufflinks)
-                if full_line:
-                     for z in range(0, len(fig['data'])):
-                         fig['data'][z].connectgaps = style.connect_line_gaps
+                    # for lines set the property of connectgaps (cannot specify directly in cufflinks)
+                    if full_line:
+                        for z in range(0, len(fig['data'])):
+                            fig['data'][z].connectgaps = style.connect_line_gaps
 
-                         for k in range(0, len(fig['data'])):
-                              if full_line:
-                                  fig['data'][k].connectgaps = style.connect_line_gaps
+                            for k in range(0, len(fig['data'])):
+                                if full_line:
+                                    fig['data'][k].connectgaps = style.connect_line_gaps
 
-                if style.line_shape != None:
-                    if isinstance(style.line_shape, str):
-                        line_shape = [style.line_shape] * len(fig['data'])
-                    else:
-                        line_shape = style.line_shape
+                    if style.line_shape != None:
+                        if isinstance(style.line_shape, str):
+                            line_shape = [style.line_shape] * len(fig['data'])
+                        else:
+                            line_shape = style.line_shape
 
-                    for k in range(0, len(fig['data'])):
-                        fig['data'][k].line.shape = line_shape[k]
+                        for k in range(0, len(fig['data'])):
+                            fig['data'][k].line.shape = line_shape[k]
 
-                if style.plotly_webgl:
-                    for k in range(0, len(fig['data'])):
-                        if fig['data'][k].type == 'scatter':
-                            fig['data'][k].type = 'scattergl'
+                    if style.plotly_webgl:
+                        for k in range(0, len(fig['data'])):
+                            if fig['data'][k].type == 'scatter':
+                                fig['data'][k].type = 'scattergl'
+
+            # use plotly express (not implemented yet)
+            elif style.plotly_helper == 'plotly_express':
+                # TODO
+                pass
 
             if style.y_axis_range is not None:
                 # override other properties, which cannot be set directly by cufflinks
@@ -1712,7 +1683,6 @@ class EnginePlotly(EngineTemplate):
                     fig['data'][j].marker.size = \
                         (style.bubble_size_scalar * (bubble_series.values / scale)).tolist()
 
-
                 if mode is not None:
                     fig['data'][j].mode = mode
 
@@ -1721,8 +1691,6 @@ class EnginePlotly(EngineTemplate):
 
                 if line_shape is not None:
                     fig['data'][j].line.shape = line_shape
-
-        from plotly.graph_objs import Figure
 
         # if candlestick specified add that (needed to be appended on top of the Plotly figure's data
         if style.candlestick_series is not None and not (style.plotly_webgl):
@@ -1734,11 +1702,11 @@ class EnginePlotly(EngineTemplate):
             else:
                 # from plotly.tools import FigureFactory as FF
                 fig_candle = create_candlestick(style.candlestick_series['open'],
-                                                               style.candlestick_series['high'],
-                                                               style.candlestick_series['low'],
-                                                               style.candlestick_series['close'],
-                                                               dates=style.candlestick_series['close'].index
-                                                               )
+                                                style.candlestick_series['high'],
+                                                style.candlestick_series['low'],
+                                                style.candlestick_series['close'],
+                                                dates=style.candlestick_series['close'].index
+                                                )
 
             if style.candlestick_increasing_color is not None:
                 # increasing
@@ -1818,43 +1786,46 @@ class EnginePlotly(EngineTemplate):
         elif style.plotly_plot_mode == 'online':
             plotly.tools.set_credentials_file(username=style.plotly_username, api_key=style.plotly_api_key)
 
-            plotly.plotly.plot(fig, filename=style.plotly_url,
-                    world_readable=style.plotly_world_readable,
-                    auto_open = not(style.silent_display),
-                    asImage=style.plotly_as_image)
+            py_online.plot(fig, filename=style.plotly_url,
+                           world_readable=style.plotly_world_readable,
+                           auto_open=not (style.silent_display),
+                           asImage=style.plotly_as_image)
 
         elif style.plotly_plot_mode == 'offline_html':
-            plotly.offline.plot(fig, filename=style.html_file_output, auto_open = not(style.silent_display))
+            py_offline.plot(fig, filename=style.html_file_output, auto_open=not(style.silent_display))
 
         elif style.plotly_plot_mode == 'offline_embed_js_div':
-            return plotly.offline.plot(fig, include_plotlyjs=True, output_type='div') # HTML string
+            return py_offline.plot(fig, include_plotlyjs=True, output_type='div')  # HTML string
 
         elif style.plotly_plot_mode == 'offline_div':
-            return plotly.offline.plot(fig, include_plotlyjs=False, output_type='div') # HTML string
+            return py_offline.plot(fig, include_plotlyjs=False, output_type='div')  # HTML string
 
         elif style.plotly_plot_mode == 'offline_image_png_bytes':
-            return plotly.io.to_image(fig, format='png') # PNG as bytes
+            return plotly.io.to_image(fig, format='png')  # PNG as bytes
 
         elif style.plotly_plot_mode == 'offline_image_png_in_html':
             # TODO also add Python 3 support for this
             return '<img src="data:image/png;base64,' + \
-                   base64.b64encode(plotly.io.to_image(fig, format='png')).decode('utf8')  + '">'  # PNG as bytes in HTML image
+                   base64.b64encode(plotly.io.to_image(fig, format='png')).decode(
+                       'utf8') + '">'  # PNG as bytes in HTML image
 
             # can display in HTML as <img src="data:image/png;base64,[ENCODED STRING GOES HERE]">
 
         elif style.plotly_plot_mode == 'offline_jupyter':
 
             # plot in IPython notebook
-            plotly.offline.init_notebook_mode()
-            plotly.offline.iplot(fig)
+            py_offline.init_notebook_mode()
+            py_offline.iplot(fig)
 
         # plotly.offline.plot(fig, filename=style.file_output, format='png',
         #         width=style.width * style.scale_factor, height=style.height * style.scale_factor)
-        if style.plotly_plot_mode != 'dash':
+        elif style.plotly_plot_mode != 'dash':
             try:
-                plotly.plotly.image.save_as(fig, filename=style.file_output, format='png',
-                                    width=style.width * abs(style.scale_factor), height=style.height * abs(style.scale_factor))
-            except: pass
+                py_online.image.save_as(fig, filename=style.file_output, format='png',
+                                        width=style.width * abs(style.scale_factor),
+                                        height=style.height * abs(style.scale_factor))
+            except:
+                pass
 
         return fig
 
@@ -1863,13 +1834,14 @@ class EnginePlotly(EngineTemplate):
 
         return color_palette[i % len(color_palette)]
 
+
 #######################################################################################################################
 
 # create color lists to be used in plots
 
 class ColorMaster:
 
-    def create_color_list(self, style, data_frame, cols = None):
+    def create_color_list(self, style, data_frame, cols=None):
         if cols is None:
             cols = data_frame.columns
 
@@ -1954,6 +1926,7 @@ class ColorMaster:
 
         return [cm(1. * i / num_colors) for i in range(num_colors)]
 
+
 ########################################################################################################################
 
 ## faster version of Plotly's candlestick drawing module (assumes NumPy) ###############################################
@@ -1962,8 +1935,6 @@ from plotly.figure_factory import utils
 from plotly.figure_factory._ohlc import (_DEFAULT_INCREASING_COLOR,
                                          _DEFAULT_DECREASING_COLOR,
                                          validate_ohlc)
-from plotly.graph_objs import graph_objs
-
 
 def make_increasing_candle(open, high, low, close, dates, **kwargs):
     """
@@ -2185,14 +2156,15 @@ def create_candlestick(open, high, low, close, dates=None, direction='both',
                                                   dates, **kwargs)
         data = candle_incr_data + candle_decr_data
 
-    layout = graph_objs.Layout()
-    return graph_objs.Figure(data=data, layout=layout)
+    layout = go.Layout()
+    return go.Figure(data=data, layout=layout)
 
 
 class _Candlestick(object):
     """
     Refer to FigureFactory.create_candlestick() for docstring.
     """
+
     def __init__(self, open, high, low, close, dates, **kwargs):
         # assume we can get NumPy arrays (much quicker than ordinary arrays)
         self.open = open.values

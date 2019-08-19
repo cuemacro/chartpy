@@ -79,7 +79,7 @@ and text, with just a few lines of Python! The HTML file can then be uploaded to
 # Requirements
 
 Major requirements
-* Required: Python 3.4, 3.5
+* Required: Python 3.4, 3.5, 3.6
 * Required: pandas, matplotlib, plotly, cufflinks, bokeh, numpy etc.
 
 # To install Open Sans font
@@ -128,6 +128,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 19 Aug 2019 - Removed .ix usage, which is now deprecated in Pandas
 * 06 Aug 2019 - Refactored Plotly code, adding Plotly 4.0 support (not complete yet)
 * 06 Mar 2019 - Changed library for PDF generation
 * 12 Feb 2019 - Fixed bug with dot/dash Plotly charts

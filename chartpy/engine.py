@@ -353,7 +353,7 @@ class EngineBokeh(EngineTemplate):
                     except:
                         pass
 
-                    yd = data_frame.ix[:, i]
+                    yd = data_frame.iloc[:, i]
 
                     # plot each time series as appropriate line, scatter etc.
                     if chart_type_ord == 'line':
@@ -367,7 +367,7 @@ class EngineBokeh(EngineTemplate):
                                     legend=label,
                                     )
                         else:
-                            p1.line(xd, data_frame.ix[:, i], color=color_spec[i], line_width=linewidth_t,
+                            p1.line(xd, data_frame.iloc[:, i], color=color_spec[i], line_width=linewidth_t,
                                     name=glyph_name)
 
                     elif (chart_type_ord == 'bar'):
@@ -548,7 +548,7 @@ class EngineVisPy(EngineTemplate):
                     except:
                         pass
 
-                    yd = data_frame.ix[:, i]
+                    yd = data_frame.iloc[:, i]
 
                     # plot each time series as appropriate line, scatter etc.
                     if chart_type_ord == 'line':
@@ -734,7 +734,7 @@ class EngineMatplotlib(EngineTemplate):
 
                         ax_temp = self.get_axis(ax, ax2, label, style.y_axis_2_series)
 
-                        yd = data_frame.ix[:, i]
+                        yd = data_frame.iloc[:, i]
 
                         if color_spec[i] is None:
                             color_spec[i] = color_cycle[i % len(color_cycle)]
@@ -952,7 +952,7 @@ class EngineMatplotlib(EngineTemplate):
 
             for x in range(len(data_frame.index)):
                 for y in range(len(data_frame.columns)):
-                    plt.text(x + offset, y + offset, '%.0f' % data_frame.ix[x, y],
+                    plt.text(x + offset, y + offset, '%.0f' % data_frame.iloc[x, y],
                              horizontalalignment='center',
                              verticalalignment='center',
                              )

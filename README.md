@@ -101,6 +101,13 @@ You can install the library using the below. After installation:
 pip install git+https://github.com/cuemacro/chartpy.git
 ```
 
+Note that at present chartpy does not support Plotly 4.0. We recommend installing Plotly 3.10 with Cufflinks 0.16 after installing
+chartpy
+
+```
+pip install cufflinks==0.16 plotly==3.10.0
+```
+
 # Why did I write chartpy?
 
 There are many good charting libraries. However, they all have different APIs. It took me a lot of time to learn a new API,
@@ -128,6 +135,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 23 Oct 2019 - Added advisory on Plotly 3.10 and Cufflinks 0.16
 * 19 Aug 2019 - Removed .ix usage, which is now deprecated in Pandas
 * 06 Aug 2019 - Refactored Plotly code, adding Plotly 4.0 support (not complete yet)
 * 06 Mar 2019 - Changed library for PDF generation

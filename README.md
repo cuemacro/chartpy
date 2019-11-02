@@ -94,18 +94,24 @@ on your computer
 
 # Installation
 
-You can install the library using the below. After installation:
-* Make sure you edit the ChartConstants class for the correct Plotly API and Twitter API keys
+You can install the library using the below (latest version). After installation:
+* Make sure you edit the chartconstants.py file for the correct Plotly API and Twitter API keys 
+(or create a chartcred.py file)
 
 ```
 pip install git+https://github.com/cuemacro/chartpy.git
 ```
 
-Note that at present chartpy does not support Plotly 4.0. We recommend installing Plotly 3.10 with Cufflinks 0.16 after installing
-chartpy
+You can also install chartpy from PyPI (but this will usually be a slightly older version)
 
 ```
-pip install cufflinks==0.16 plotly==3.10.0
+pip install chartpy
+```
+
+Note that chartpy now supports Plotly 4, because Cufflinks 0.17 now works with Plotly 4!
+
+```
+pip install cufflinks==0.17 plotly==4.2.1
 ```
 
 # Why did I write chartpy?
@@ -135,6 +141,7 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 02 Nov 2019 - Now supports Plotly 4.x with Cufflinks 0.17)
 * 23 Oct 2019 - Added advisory on Plotly 3.10 and Cufflinks 0.16
 * 19 Aug 2019 - Removed .ix usage, which is now deprecated in Pandas
 * 06 Aug 2019 - Refactored Plotly code, adding Plotly 4.0 support (not complete yet)

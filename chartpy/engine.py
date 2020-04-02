@@ -1804,10 +1804,13 @@ class EnginePlotly(EngineTemplate):
             return plotly.io.to_image(fig, format='png')  # PNG as bytes
 
         elif style.plotly_plot_mode == 'offline_image_png_in_html':
-            # TODO also add Python 3 support for this
             return '<img src="data:image/png;base64,' + \
                    base64.b64encode(plotly.io.to_image(fig, format='png')).decode(
                        'utf8') + '">'  # PNG as bytes in HTML image
+        elif style.plotly_plot_mode == 'offline_image_svg_in_html':
+            return '<img src="data:image/svg;base64,' + \
+                   base64.b64encode(plotly.io.to_image(fig, format='svg')).decode(
+                       'utf8') + '">'  # SVG as bytes in HTML image
 
             # can display in HTML as <img src="data:image/png;base64,[ENCODED STRING GOES HERE]">
 
@@ -1815,6 +1818,12 @@ class EnginePlotly(EngineTemplate):
 
             # plot in IPython notebook
             py_offline.init_notebook_mode()
+            py_offline.iplot(fig)
+
+        elif style.plotly_plot_mode == 'offline_jupyter_connected':
+
+            # plot in IPython notebook
+            py_offline.init_notebook_mode(connected=True)
             py_offline.iplot(fig)
 
         # plotly.offline.plot(fig, filename=style.file_output, format='png',

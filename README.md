@@ -128,19 +128,21 @@ relatively small changes to your code base.
 # Contributors
 
 Contributors are always welcome for finmarketpy, findatapy and chartpy. If you'd like to contribute, have a look at
-[Planned Features](https://github.com/cuemacro/finmarketpy/blob/master/PLANNED_FEATURES.md) for areas we're looking for help on. Or if you have any ideas for improvements
-to the libriares please let us know too!
+[Planned Features](https://github.com/cuemacro/finmarketpy/blob/master/PLANNED_FEATURES.md) for areas we're looking for help on. 
+Or if you have any ideas for improvements to the libriares please let us know too!
 
 # chartpy examples
 
 In chartpy/examples you will find several demos
 
-# Release Notes
+# Recent Release Notes
 
-* No formal releases yet
+* 02 Apr 2020 - v0.1.5
+* 23 Oct 2019 - v0.1.4 
 
 # Coding log
 
+* 02 Apr 2020 - Plotly can now produce SVG
 * 02 Nov 2019 - Now supports Plotly 4.x with Cufflinks 0.17)
 * 23 Oct 2019 - Added advisory on Plotly 3.10 and Cufflinks 0.16
 * 19 Aug 2019 - Removed .ix usage, which is now deprecated in Pandas

@@ -1793,6 +1793,9 @@ class EnginePlotly(EngineTemplate):
 
         elif style.plotly_plot_mode == 'offline_html':
             py_offline.plot(fig, filename=style.html_file_output, auto_open=not(style.silent_display))
+        elif style.plotly_plot_mode == 'offline_png':
+            # Needs orca
+            fig.write_image(style.file_output)
 
         elif style.plotly_plot_mode == 'offline_embed_js_div':
             return py_offline.plot(fig, include_plotlyjs=True, output_type='div')  # HTML string

@@ -137,11 +137,13 @@ In chartpy/examples you will find several demos
 
 # Recent Release Notes
 
+* 06 Apr 2020 - v0.1.6
 * 02 Apr 2020 - v0.1.5
 * 23 Oct 2019 - v0.1.4 
 
 # Coding log
 
+* 06 May 2020 - Plotly can now export to PNG
 * 02 Apr 2020 - Plotly can now produce SVG
 * 02 Nov 2019 - Now supports Plotly 4.x with Cufflinks 0.17)
 * 23 Oct 2019 - Added advisory on Plotly 3.10 and Cufflinks 0.16

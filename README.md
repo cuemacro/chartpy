@@ -143,9 +143,12 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 08 Jun 2020
+    * Now requires Plotly >=4.5.1
+    * Fixed setup.py to install chart-studio
 * 06 May 2020 - Plotly can now export to PNG
 * 02 Apr 2020 - Plotly can now produce SVG
-* 02 Nov 2019 - Now supports Plotly 4.x with Cufflinks 0.17)
+* 02 Nov 2019 - Now supports Plotly 4.x with Cufflinks 0.17
 * 23 Oct 2019 - Added advisory on Plotly 3.10 and Cufflinks 0.16
 * 19 Aug 2019 - Removed .ix usage, which is now deprecated in Pandas
 * 06 Aug 2019 - Refactored Plotly code, adding Plotly 4.0 support (not complete yet)

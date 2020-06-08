@@ -1304,18 +1304,18 @@ try:
 except:
     pass
 
+# Requires plotly 4
 try:
-
-    from plotly.graph_objs import Figure
-    import plotly.graph_objs as go
-
-    import plotly.plotly as py_online
-except:
-    # plotly 4
     from plotly.graph_objects import Figure
     import plotly.graph_objects as go
+except:
+    pass
 
+# For online plotting (optional)
+try:
     import chart_studio.plotly as py_online
+except:
+    pass
 
 try:
     import base64

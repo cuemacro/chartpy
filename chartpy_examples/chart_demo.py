@@ -15,7 +15,7 @@ __author__ = 'saeedamen'  # Saeed Amen
 
 import pandas
 
-# support Quandl 3.x.x
+# support Quandl 3.x.x - note you will need to install quandl separately as it isn't a dependency
 try:
     import quandl as Quandl
 except:

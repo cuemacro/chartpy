@@ -79,7 +79,7 @@ and text, with just a few lines of Python! The HTML file can then be uploaded to
 # Requirements
 
 Major requirements
-* Required: Python 3.4, 3.5, 3.6
+* Required: Python 3.7
 * Required: pandas, matplotlib, plotly, cufflinks, bokeh, numpy etc.
 
 # To install Open Sans font
@@ -145,6 +145,8 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 02 Dec 2020
+    * Added animation for Plotly
 * 08 Jun 2020
     * Now requires Plotly >=4.5.1
     * Fixed setup.py to install chart-studio

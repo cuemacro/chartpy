@@ -33,6 +33,7 @@ class Style(object):
                  title='',
                  x_title='',
                  y_title='',
+                 z_title='',
                  units='',
 
                  # type of plot (can be defined as list)
@@ -90,11 +91,13 @@ class Style(object):
                  x_axis_showgrid = True,
                  y_axis_showgrid = True,
                  y_axis_2_showgrid = True,
+                 z_axis_showgrid=True,
 
                  # vertical and horizontal lines from axis
                  x_y_line=[],
                  x_axis_range=None,
                  y_axis_range=None,
+                 z_axis_range=None,
 
                  # connect gaps
                  connect_line_gaps=False,
@@ -151,6 +154,7 @@ class Style(object):
         self.title = title
         self.x_title = x_title
         self.y_title = y_title
+        self.z_title = z_title
         self.units = units
 
         # chart type
@@ -206,12 +210,14 @@ class Style(object):
         # grids
         self.x_axis_showgrid = x_axis_showgrid
         self.y_axis_showgrid = y_axis_showgrid
+        self.z_axis_showgrid = z_axis_showgrid
         self.y_axis_2_showgrid = y_axis_2_showgrid
 
         # arbitrary line
         self.x_y_line = x_y_line
         self.x_axis_range = x_axis_range
         self.y_axis_range = y_axis_range
+        self.z_axis_range = z_axis_range
 
         # connect line gaps
         self.connect_line_gaps = connect_line_gaps
@@ -314,6 +320,14 @@ class Style(object):
     @y_title.setter
     def y_title(self, y_title):
         self.__y_title = y_title
+
+    @property
+    def z_title(self):
+        return self.__z_title
+
+    @y_title.setter
+    def z_title(self, z_title):
+        self.__z_title = z_title
 
     @property
     def units(self):
@@ -606,6 +620,14 @@ class Style(object):
     @y_axis_showgrid.setter
     def y_axis_showgrid(self, y_axis_showgrid):
         self.__y_axis_showgrid = y_axis_showgrid
+        
+    @property
+    def z_axis_showgrid(self):
+        return self.__z_axis_showgrid
+
+    @z_axis_showgrid.setter
+    def z_axis_showgrid(self, z_axis_showgrid):
+        self.__z_axis_showgrid = z_axis_showgrid
 
     @property
     def y_axis_2_showgrid(self):
@@ -639,6 +661,14 @@ class Style(object):
     @y_axis_range.setter
     def y_axis_range(self, y_axis_range):
         self.__y_axis_range = y_axis_range
+
+    @property
+    def z_axis_range(self):
+        return self.__z_axis_range
+
+    @y_axis_range.setter
+    def z_axis_range(self, z_axis_range):
+        self.__z_axis_range = z_axis_range
 
     ###### connect line gaps
     @property

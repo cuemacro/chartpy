@@ -608,12 +608,18 @@ try:
 except:
     pass
 
+# Later version of Pandas will need to register converters
+try:
+    from pandas.plotting import register_matplotlib_converters
+    register_matplotlib_converters()
+except:
+    pass
+
 try:
     from matplotlib.dates import YearLocator, MonthLocator, DayLocator, HourLocator, MinuteLocator
     from matplotlib.ticker import MultipleLocator
 except:
     pass
-
 
 class EngineMatplotlib(EngineTemplate):
 
@@ -1328,6 +1334,8 @@ class EnginePlotly(EngineTemplate):
 
     def start_orca(self, path=None):
         # orca is a seperate plotly application for converting Plotly figures to PNG format
+        # Note, now recommended to use kaleido https://github.com/plotly/Kaleido, which is
+        # much easier to install
         if path is not None:
             plotly.io.orca.config.executable = path
 
@@ -1335,7 +1343,7 @@ class EnginePlotly(EngineTemplate):
 
     def plot_chart(self, data_frame, style, chart_type):
 
-        # special case if we have a precreated Plotly object
+        # Special case if we have a precreated Plotly object
         if isinstance(data_frame, go.Figure):
             return self.publish_plot(data_frame, style)
 
@@ -1352,16 +1360,16 @@ class EnginePlotly(EngineTemplate):
         scale = 1
 
         try:
-            # adjust sizing if offline_html format
+            # Adjust sizing if offline_html format
             if (style.plotly_plot_mode == 'offline_html' and style.scale_factor > 0):
                 scale = float(2.0 / 3.0)
         except:
             pass
 
-        # check other plots implemented by Cufflinks
+        # Check other plots implemented by Cufflinks
         cm = ColorMaster()
 
-        # create figure
+        # Create figure
         data_frame_list = self.split_data_frame_to_list(data_frame, style)
         fig_list = []
         cols = []
@@ -1371,18 +1379,18 @@ class EnginePlotly(EngineTemplate):
 
         cols = list(numpy.array(cols).flat)
 
-        # get all the correct colors (and construct gradients if necessary eg. from 'Blues')
+        # Get all the correct colors (and construct gradients if necessary eg. from 'Blues')
         # need to change to strings for cufflinks
         color_list = cm.create_color_list(style, [], cols=cols)
         color_spec = []
 
-        # if no colors are specified then just use our default color set from chart constants
+        # If no colors are specified then just use our default color set from chart constants
         if color_list == [None] * len(color_list):
             color_spec = [None] * len(color_list)
 
             for i in range(0, len(color_list)):
 
-                # get the color
+                # Get the color
                 if color_spec[i] is None:
                     color_spec[i] = self.get_color_list(i)
 
@@ -1392,14 +1400,14 @@ class EnginePlotly(EngineTemplate):
                     pass
 
         else:
-            # otherwise assume all the colors are rgba
+            # Otherwise assume all the colors are rgba
             for color in color_list:
                 color = 'rgba' + str(color)
                 color_spec.append(color)
 
         start = 0
 
-        # go through each data_frame in the list and plot
+        # Go through each data_frame in the list and plot
         for i in range(0, len(data_frame_list)):
             data_frame = data_frame_list[i]
 
@@ -1412,8 +1420,8 @@ class EnginePlotly(EngineTemplate):
             color_spec1 = color_spec[start:start + end]
             start = end
 
-            # special call for choropleth (uses Plotly API directly)
-            # special case for map/choropleth which has yet to be implemented in Cufflinks
+            # Special call for choropleth (uses Plotly API directly)
+            # Special case for map/choropleth which has yet to be implemented in Cufflinks
             # will likely remove this in the future
             if chart_type_ord == 'choropleth':
 
@@ -1465,7 +1473,7 @@ class EnginePlotly(EngineTemplate):
 
                 fig = dict(data=data, layout=layout)
 
-            # otherwise underlying Cufflinks library underneath
+            # Otherwise underlying Cufflinks library underneath
             elif style.plotly_helper == 'cufflinks':
 
                 # NOTE: we use cufflinks library, which simplifies plotting DataFrames in plotly
@@ -1503,7 +1511,7 @@ class EnginePlotly(EngineTemplate):
                                                        style.height * abs(style.scale_factor) * scale),
                                            asFigure=True)
 
-                # otherwise we have a line plot (or similar such as a scatter plot, or bar chart etc)
+                # Otherwise we have a line plot (or similar such as a scatter plot, or bar chart etc)
                 else:
 
                     full_line = style.connect_line_gaps
@@ -1531,7 +1539,7 @@ class EnginePlotly(EngineTemplate):
                         mode = 'markers'
 
                     # TODO check this!
-                    # can have issues calling cufflinks with a theme which is None, so split up the cases
+                    # Can have issues calling cufflinks with a theme which is None, so split up the cases
                     if style.plotly_theme is None:
                         plotly_theme = 'pearl'
                     else:
@@ -1572,7 +1580,7 @@ class EnginePlotly(EngineTemplate):
 
                         m = m + 1
 
-                    # for lines set the property of connectgaps (cannot specify directly in cufflinks)
+                    # For lines set the property of connectgaps (cannot specify directly in cufflinks)
                     if full_line:
                         for z in range(0, len(fig['data'])):
                             fig['data'][z].connectgaps = style.connect_line_gaps
@@ -1595,30 +1603,125 @@ class EnginePlotly(EngineTemplate):
                             if fig['data'][k].type == 'scatter':
                                 fig['data'][k].type = 'scattergl'
 
-            # use plotly express (not implemented yet)
+            # Use plotly express (not implemented yet)
             elif style.plotly_helper == 'plotly_express':
                 # TODO
                 pass
 
-            if style.y_axis_range is not None:
-                # override other properties, which cannot be set directly by cufflinks
-                fig.update(dict(layout=dict(yaxis=dict(
-                    range=style.y_axis_range
-                ))))
-
+            # Common properties
+            # Override other properties, which cannot be set directly by cufflinks
             if style.x_axis_range is not None:
-                # override other properties, which cannot be set directly by cufflinks
-                fig.update(dict(layout=dict(xaxis=dict(
-                    range=style.x_axis_range
-                ))))
+                fig['layout'].update(xaxis=dict(range=style.x_axis_range, autorange=False))
 
-            fig.update(dict(layout=dict(legend=dict(
+            if style.y_axis_range is not None:
+                fig['layout'].update(yaxis=dict(range=style.y_axis_range, autorange=False))
+
+            if style.z_axis_range is not None:
+                fig['layout'].update(zaxis=dict(range=style.z_axis_range, autorange=False))
+
+            fig_list.append(fig)
+
+        #### Plotted all the lines
+
+        if len(fig_list) > 1 and style.animate_figure == False:
+            fig = cf.subplots(fig_list)
+
+            fig['layout'].update(title=style.title)
+
+        elif style.animate_figure:
+
+            fig = fig_list[0]
+
+            # Add buttons to play/pause
+            fig["layout"]["updatemenus"] = [
+                {
+                    "buttons": [
+                        {
+                            "args": [None, {"frame": {"duration": style.animate_frame_ms, "redraw": True},
+                                            "fromcurrent": True, "transition": {"duration": style.animate_frame_ms,
+                                                                                "easing": "quadratic-in-out"}}],
+                            "label": "Play",
+                            "method": "animate"
+                        },
+                        {
+                            "args": [[None], {"frame": {"duration": 0, "redraw": True},
+                                              "mode": "immediate",
+                                              "transition": {"duration": 0}}],
+                            "label": "Pause",
+                            "method": "animate"
+                        }
+                    ],
+                    "direction": "left",
+                    "pad": {"r": 10, "t": 87},
+                    "showactive": False,
+                    "type": "buttons",
+                    "x": 0.1,
+                    "xanchor": "right",
+                    "y": 0,
+                    "yanchor": "top"
+                }
+            ]
+
+            if style.animate_titles is not None:
+                animate_titles = style.animate_titles
+            else:
+                animate_titles = list(range(0, len(fig_list)))
+
+            # Add an animation frame for each data frame
+            frames = []
+
+            for fig_temp, title_temp in zip(fig_list, animate_titles):
+                frames.append(go.Frame(data=fig_temp['data'],
+                                           name=title_temp,
+                                           layout=go.Layout(title=title_temp)))
+
+            fig.update(frames=frames)
+
+            # Add a slider, with the frame labels
+            sliders_dict = {
+                    "active": 0,
+                    "yanchor": "top",
+                    "xanchor": "left",
+                    "currentvalue": {
+                        "visible": True,
+                        "xanchor": "right"
+                    },
+                    "transition": {"duration": style.animate_frame_ms, "easing": "cubic-in-out"},
+                    "pad": {"b": 10, "t": 50},
+                    "len": 0.9,
+                    "x": 0.1,
+                    "y": 0,
+                    "steps": []
+            }
+
+            for i in range(0, len(fig_list)):
+                slider_step = {"args": [
+                    [animate_titles[i]],
+                    {"frame" : {"duration": style.animate_frame_ms, "redraw": True},
+                    "mode" : "immediate",
+                    "transition" : {"duration": style.animate_frame_ms}}
+                ],
+                    "label" : animate_titles[i],
+                    "method" : "animate"}
+
+                sliders_dict["steps"].append(slider_step)
+
+            fig["layout"]["sliders"] = [sliders_dict]
+
+            #else:
+                # Add an animation frame for each data frame
+            #    fig.update(frames=[go.Frame(data=fig_temp['data']) for fig_temp in fig_list])
+
+        else:
+            fig = fig_list[0]
+
+        fig.update(dict(layout=dict(legend=dict(
                 x=0.05,
                 y=1
             ))))
 
-            # adjust margins
-            if style.thin_margin:
+        # Adjust margins
+        if style.thin_margin:
                 fig.update(dict(layout=dict(margin=go.layout.Margin(
                     l=20,
                     r=20,
@@ -1627,31 +1730,20 @@ class EnginePlotly(EngineTemplate):
                     pad=0
                 ))))
 
-            # change background color
-            fig.update(dict(layout=dict(paper_bgcolor='rgba(0,0,0,0)')))
-            fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))
+        # Change background color
+        fig.update(dict(layout=dict(paper_bgcolor='rgba(0,0,0,0)')))
+        fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))
 
-            # deal with grids
-            if (not (style.x_axis_showgrid)): fig.update(dict(layout=dict(xaxis=dict(showgrid=style.x_axis_showgrid))))
-            if (not (style.y_axis_showgrid)): fig.update(dict(layout=dict(yaxis=dict(showgrid=style.y_axis_showgrid))))
-            if (not (style.y_axis_2_showgrid)): fig.update(
+        # Deal with grids
+        if (not (style.x_axis_showgrid)): fig.update(dict(layout=dict(xaxis=dict(showgrid=style.x_axis_showgrid))))
+        if (not (style.y_axis_showgrid)): fig.update(dict(layout=dict(yaxis=dict(showgrid=style.y_axis_showgrid))))
+        if (not (style.y_axis_2_showgrid)): fig.update(
                 dict(layout=dict(yaxis2=dict(showgrid=style.y_axis_2_showgrid))))
 
-            fig_list.append(fig)
+        # Override properties, which cannot be set directly by cufflinks
 
-        #### plotted all the lines
-
-        if len(fig_list) > 1:
-            fig = cf.subplots(fig_list)
-
-            fig['layout'].update(title=style.title)
-        else:
-            fig = fig_list[0]
-
-        # override properties, which cannot be set directly by cufflinks
-
-        # for the type of line (ie. line or scatter)
-        # for making the lined dashed, dotted etc.
+        # For the type of line (ie. line or scatter)
+        # For making the lined dashed, dotted etc.
         if style.subplots == False and isinstance(chart_type, list):
             for j in range(0, len(fig['data'])):
                 mode = None;
@@ -1692,7 +1784,7 @@ class EnginePlotly(EngineTemplate):
                 if line_shape is not None:
                     fig['data'][j].line.shape = line_shape
 
-        # if candlestick specified add that (needed to be appended on top of the Plotly figure's data
+        # If candlestick specified add that (needed to be appended on top of the Plotly figure's data
         if style.candlestick_series is not None and not (style.plotly_webgl):
 
             # self.logger.debug("About to create candlesticks")

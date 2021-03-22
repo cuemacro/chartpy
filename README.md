@@ -145,6 +145,8 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 22 Mar 2020
+    * Added more formatting for Plotly (eg. text font etc.)
 * 02 Dec 2020
     * Added animation for Plotly
 * 08 Jun 2020

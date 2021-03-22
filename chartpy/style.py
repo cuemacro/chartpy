@@ -29,40 +29,42 @@ class Style(object):
     cc = ChartConstants()
 
     def __init__(self,
-                 # captions
+                 # Captions
                  title='',
                  x_title='',
                  y_title='',
                  z_title='',
                  units='',
 
-                 # type of plot (can be defined as list)
+                 font_family=None,
+
+                 # Type of plot (can be defined as list)
                  engine=None,
                  chart_type=None,
 
-                 # colors
+                 # Colors
                  color=[],
                  color_2=[],
                  color_2_series=[],
                  exclude_from_color=[],
                  normalize_colormap=True,
 
-                 # bubble charts
+                 # Bubble charts
                  bubble_series=None,
                  bubble_size_scalar=cc.chartfactory_bubble_size_scalar,
 
-                 # candlestick charts
+                 # Candlestick charts
                  candlestick_series=None,
                  candlestick_increasing_color=None,
                  candlestick_increasing_line_color=None,
                  candlestick_decreasing_color=None,
                  candlestick_decreasing_line_color=None,
 
-                 # subplot
+                 # Subplot
                  subplots=False,
                  share_subplot_x=False,
 
-                 # display sizes
+                 # Display sizes
                  scale_factor=cc.chartfactory_scale_factor,
                  dpi=cc.chartfactory_dpi,
                  width=cc.chartfactory_width,
@@ -70,7 +72,7 @@ class Style(object):
                  resample=None,
                  thin_margin=False,
 
-                 # should we block display of new screens?
+                 # Should we block display of new screens?
                  block_new_plots=False,
 
                  # show this be an animation?
@@ -78,7 +80,7 @@ class Style(object):
                  animate_titles=None,
                  animate_frame_ms=250,
 
-                 # lines and multiple y-axis
+                 # Lines and multiple y-axis
                  y_axis_2_series=[],
                  linewidth_2_series=[],
                  linewidth=None,
@@ -93,16 +95,23 @@ class Style(object):
                  y_axis_2_showgrid = True,
                  z_axis_showgrid=True,
 
-                 # vertical and horizontal lines from axis
+                 # Vertical and horizontal lines from axis
                  x_y_line=[],
                  x_axis_range=None,
                  y_axis_range=None,
                  z_axis_range=None,
 
-                 # connect gaps
+                 # Are x-axis of style category?
+                 x_axis_type=None,
+                 y_axis_type=None,
+
+                 x_dtick=None,
+                 y_dtick=None,
+
+                 # Connect gaps
                  connect_line_gaps=False,
 
-                 # labelling of sources
+                 # Labelling of sources
                  brand_label=cc.chartfactory_brand_label,
                  display_brand_label=cc.chartfactory_display_brand_label,
                  source=cc.chartfactory_source,
@@ -110,15 +119,23 @@ class Style(object):
                  display_source_label=cc.chartfactory_display_source_label,
                  display_legend=True,
 
+                 # Legend properties
+                 legend_x_anchor=None,
+                 legend_y_anchor=None,
+                 legend_x_pos=None,
+                 legend_y_pos=None,
+                 legend_bgcolor=None,
+                 legend_orientation=None,
+
                  # matplotlib only
                  xkcd=False,
 
-                 # display output
+                 # Display output
                  silent_display=False,
                  file_output=None,
                  date_formatter=None,
 
-                 # output
+                 # Output
                  html_file_output=None,
                  display_mpld3=False,
                  auto_generate_filename=False,
@@ -137,52 +154,54 @@ class Style(object):
                  plotly_webgl=cc.plotly_webgl,
                  plotly_helper=cc.plotly_helper,
 
-                 # bokeh
+                 # Bokeh
                  bokeh_plot_mode=cc.bokeh_plot_mode,
 
                  # plotly choropleth fields
 
 
-                 # matplotlib only
+                 # Matplotlib only
                  style_sheet=cc.chartfactory_default_stylesheet,
                  convert_matplotlib_to_plotly=False
                  ):
 
         self.engine = engine
 
-        # captions
+        # Captions
         self.title = title
         self.x_title = x_title
         self.y_title = y_title
         self.z_title = z_title
         self.units = units
 
-        # chart type
+        self.font_family = font_family
+
+        # Chart type
         self.chart_type = chart_type
 
-        # colors
+        # Colors
         self.color = color
         self.color_2 = color_2
         self.color_2_series = color_2_series
         self.exclude_from_color = exclude_from_color
         self.normalize_colormap = normalize_colormap
 
-        # bubble specific fields
+        # Bubble specific fields
         self.bubble_series = bubble_series
         self.bubble_size_scalar = bubble_size_scalar
 
-        # candlestick specific fields
+        # Candlestick specific fields
         self.candlestick_series = candlestick_series
         self.candlestick_increasing_color = candlestick_increasing_color
         self.candlestick_increasing_line_color = candlestick_increasing_line_color
         self.candlestick_decreasing_color = candlestick_decreasing_color
         self.candlestick_decreasing_line_color = candlestick_decreasing_line_color
 
-        # subplots
+        # Subplots
         self.subplots = subplots
         self.share_subplot_x = share_subplot_x
 
-        # display sizes
+        # Display sizes
         self.scale_factor = scale_factor
         self.dpi = dpi
         self.width = width
@@ -190,15 +209,15 @@ class Style(object):
         self.resample = resample
         self.thin_margin = thin_margin
 
-        # block display
+        # Block display
         self.block_new_plots = block_new_plots
         
-        # animation parameters
+        # Animation parameters
         self.animate_figure = animate_figure
         self.animate_titles = animate_titles
         self.animate_frame_ms = animate_frame_ms
 
-        # lines and multiple y-axis
+        # Lines and multiple y-axis
         self.y_axis_2_series = y_axis_2_series
         self.linewidth_2_series = linewidth_2_series
         self.linewidth = linewidth
@@ -207,22 +226,30 @@ class Style(object):
         self.line_of_best_fit = line_of_best_fit
         self.line_shape = line_shape
 
-        # grids
+        # Grids
         self.x_axis_showgrid = x_axis_showgrid
         self.y_axis_showgrid = y_axis_showgrid
         self.z_axis_showgrid = z_axis_showgrid
         self.y_axis_2_showgrid = y_axis_2_showgrid
 
-        # arbitrary line
+        # Arbitrary line
         self.x_y_line = x_y_line
         self.x_axis_range = x_axis_range
         self.y_axis_range = y_axis_range
         self.z_axis_range = z_axis_range
 
-        # connect line gaps
+        # x and y axis type (eg. category)
+        self.x_axis_type = x_axis_type
+        self.y_axis_type = y_axis_type
+        
+        # Gaps between tick labels
+        self.x_dtick = x_dtick
+        self.y_dtick = y_dtick
+
+        # Connect line gaps
         self.connect_line_gaps = connect_line_gaps
 
-        # labelling of sources
+        # Labelling of sources
         self.brand_label = brand_label
         self.display_brand_label = display_brand_label
         self.source = source
@@ -230,16 +257,24 @@ class Style(object):
         self.display_source_label = display_source_label
         self.display_legend = display_legend
 
+        # Legend Properties
+        self.legend_x_anchor = legend_x_anchor
+        self.legend_y_anchor = legend_y_anchor
+        self.legend_x_pos = legend_x_pos
+        self.legend_y_pos = legend_y_pos
+        self.legend_bgcolor = legend_bgcolor
+        self.legend_orientation = legend_orientation
+
         # matplotlib only
         self.xkcd = xkcd
 
-        # display output
+        # Display output
         self.silent_display = silent_display
         self.file_output = file_output
         self.save_fig = save_fig
         self.date_formatter = date_formatter
 
-        # output
+        # Output
         self.html_file_output = html_file_output
         self.display_mpld3 = display_mpld3
         self.auto_generate_filename = auto_generate_filename
@@ -250,7 +285,12 @@ class Style(object):
 
         # plotly only
         if plotly_url is None:
-            plotly_url = title + datetime.datetime.utcnow().strftime("%b-%d-%Y-%H-%M-%S")
+            if isinstance(title, list):
+                plotly_url = str(title[0])
+            else:
+                plotly_url = title
+
+            plotly_url = plotly_url +  datetime.datetime.utcnow().strftime("%b-%d-%Y-%H-%M-%S")
 
         self.plotly_url = plotly_url
         self.plotly_as_image = plotly_as_image
@@ -336,6 +376,14 @@ class Style(object):
     @units.setter
     def units(self, units):
         self.__units = units
+        
+    @property
+    def font_family(self):
+        return self.__font_family
+
+    @font_family.setter
+    def font_family(self, font_family):
+        self.__font_family = font_family
 
     ###### chart type
     @property
@@ -666,9 +714,44 @@ class Style(object):
     def z_axis_range(self):
         return self.__z_axis_range
 
-    @y_axis_range.setter
+    @z_axis_range.setter
     def z_axis_range(self, z_axis_range):
         self.__z_axis_range = z_axis_range
+        
+    ###### axis type
+
+    @property
+    def x_axis_type(self):
+        return self.__x_axis_type
+
+    @x_axis_type.setter
+    def x_axis_type(self, x_axis_type):
+        self.__x_axis_type = x_axis_type
+
+    @property
+    def y_axis_type(self):
+        return self.__y_axis_type
+
+    @y_axis_type.setter
+    def y_axis_type(self, y_axis_type):
+        self.__y_axis_type = y_axis_type
+    
+    ###### gaps between tick labels
+    @property
+    def x_dtick(self):
+        return self.__x_dtick
+
+    @x_dtick.setter
+    def x_dtick(self, x_dtick):
+        self.__x_dtick = x_dtick
+
+    @property
+    def y_dtick(self):
+        return self.__y_dtick
+
+    @y_dtick.setter
+    def y_dtick(self, y_dtick):
+        self.__y_dtick = y_dtick
 
     ###### connect line gaps
     @property
@@ -728,8 +811,57 @@ class Style(object):
     @display_legend.setter
     def display_legend(self, display_legend):
         self.__display_legend = display_legend
+    
+    ###### Legend properties
+    
+    @property
+    def legend_x_anchor(self):
+        return self.__legend_x_anchor
 
+    @legend_x_anchor.setter
+    def legend_x_anchor(self, legend_x_anchor):
+        self.__legend_x_anchor = legend_x_anchor
+        
+    @property
+    def legend_y_anchor(self):
+        return self.__legend_y_anchor
 
+    @legend_y_anchor.setter
+    def legend_y_anchor(self, legend_y_anchor):
+        self.__legend_y_anchor = legend_y_anchor
+
+    @property
+    def legend_x_pos(self):
+        return self.__legend_x_pos
+
+    @legend_x_pos.setter
+    def legend_x_pos(self, legend_x_pos):
+        self.__legend_x_pos = legend_x_pos
+
+    @property
+    def legend_y_pos(self):
+        return self.__legend_y_pos
+
+    @legend_y_pos.setter
+    def legend_y_pos(self, legend_y_pos):
+        self.__legend_y_pos = legend_y_pos
+        
+    @property
+    def legend_bgcolor(self):
+        return self.__legend_bgcolor
+
+    @legend_bgcolor.setter
+    def legend_bgcolor(self, legend_bgcolor):
+        self.__legend_bgcolor = legend_bgcolor
+
+    @property
+    def legend_orientation(self):
+        return self.__legend_orientation
+
+    @legend_orientation.setter
+    def legend_orientation(self, legend_orientation):
+        self.__legend_orientation = legend_orientation
+        
     ###### matplotlib only
     @property
     def xkcd(self):

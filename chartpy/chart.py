@@ -1,6 +1,6 @@
 from __future__ import division
 
-__author__ = 'saeedamen' # Saeed Amen
+__author__ = 'saeedamen'  # Saeed Amen
 
 #
 # Copyright 2016 Cuemacro
@@ -14,13 +14,6 @@ __author__ = 'saeedamen' # Saeed Amen
 # See the License for the specific language governing permissions and limitations under the License.
 #
 
-"""
-Chart
-
-Creates chart using several underlying plotting libraries (Matplotlib, Plotly and Bokeh) using the same interface
-
-"""
-
 from chartpy.twitter import Twitter
 from chartpy.chartconstants import ChartConstants
 from chartpy.style import Style
@@ -28,9 +21,12 @@ from chartpy.engine import EngineMatplotlib, EngineBokeh, EngineBqplot, EnginePl
 
 import pandas
 
-class Chart(object):
 
-    def __init__(self, df = None, engine = None, chart_type = None, style = None):
+class Chart(object):
+    """Creates chart using several underlying plotting libraries (Matplotlib, Plotly and Bokeh) using the same interface
+    """
+
+    def __init__(self, df=None, engine=None, chart_type=None, style=None):
 
         self.df = None
         self.engine = ChartConstants().chartfactory_default_engine
@@ -51,7 +47,7 @@ class Chart(object):
     ##### bar (Bokeh, Matplotlib, Plotly)
     ##### stacked (Bokeh, Matplotlib, Plotly)
     ##### surface (Plotly)
-    def plot(self, df = None, engine = None, chart_type = None, style = None, twitter_msg = None, twitter_on = False):
+    def plot(self, df=None, engine=None, chart_type=None, style=None, twitter_msg=None, twitter_on=False):
 
         if style is None: style = self.style
         if df is None: df = self.df
@@ -98,12 +94,18 @@ class Chart(object):
 
     def get_engine(self, engine):
 
-        if engine is None:          return self.get_engine(self.engine)
-        elif engine == 'matplotlib':  return EngineMatplotlib()
-        elif engine == 'bokeh':     return EngineBokeh()
-        elif engine == 'bqplot':    return EngineBqplot()
-        elif engine == 'vispy':     return EngineVisPy()
-        elif engine == 'plotly':    return EnginePlotly()
+        if engine is None:
+            return self.get_engine(self.engine)
+        elif engine == 'matplotlib':
+            return EngineMatplotlib()
+        elif engine == 'bokeh':
+            return EngineBokeh()
+        elif engine == 'bqplot':
+            return EngineBqplot()
+        elif engine == 'vispy':
+            return EngineVisPy()
+        elif engine == 'plotly':
+            return EnginePlotly()
 
         return None
 
@@ -112,4 +114,3 @@ class Chart(object):
         return Chart.get_engine(engine).plot_chart(data_frame, style, chart_type)
 
 #######################################################################################################################
-

@@ -103,7 +103,7 @@ class EngineTemplate(ABC):
         if isinstance(data_frame, list):
             data_frame_list = data_frame
         else:
-            if style.subplots == True:
+            if style.subplots == True and isinstance(data_frame, pandas.DataFrame):
 
                 for col in data_frame.columns:
                     data_frame_list.append(
@@ -465,7 +465,6 @@ try:
 except:
     pass
 
-
 class EngineVisPy(EngineTemplate):
     def plot_chart(self, data_frame, style, chart_type):
 
@@ -725,10 +724,10 @@ class EngineMatplotlib(EngineTemplate):
                         has_matrix = '3d-matrix'
 
                 if (has_matrix == 'no'):
-                    # plot the lines (using custom palettes as appropriate)
+                    # Plot the lines (using custom palettes as appropriate)
                     color_spec = cm.create_color_list(style, data_frame)
 
-                    # some lines we should exclude from the color and use the default palette
+                    # Some lines we should exclude from the color and use the default palette
                     for i in range(0, len(data_frame.columns.values)):
 
                         if isinstance(chart_type, list):
@@ -806,7 +805,7 @@ class EngineMatplotlib(EngineTemplate):
 
         anim = None
 
-        # should we animate the figure?
+        # Should we animate the figure?
         if style.animate_figure:
 
             if style.animate_titles is None:
@@ -814,7 +813,7 @@ class EngineMatplotlib(EngineTemplate):
             else:
                 titles = style.animate_titles
 
-            # initialization function: weirdly need to plot the last one (otherwise get ghosting!)
+            # Initialization function: weirdly need to plot the last one (otherwise get ghosting!)
             def init():
                 return [movie_frame[-1]]
 
@@ -1343,8 +1342,8 @@ class EnginePlotly(EngineTemplate):
 
     def plot_chart(self, data_frame, style, chart_type):
 
-        # Special case if we have a precreated Plotly object
-        if isinstance(data_frame, go.Figure):
+        # Special case if we have a pre-created Plotly object
+        if isinstance(data_frame, Figure):
             return self.publish_plot(data_frame, style)
 
         mode = 'lines'
@@ -1374,115 +1373,156 @@ class EnginePlotly(EngineTemplate):
         fig_list = []
         cols = []
 
-        for data_frame in data_frame_list:
-            cols.append(data_frame.columns)
+        # If we provide a list of Figures this will get ignored
+        try:
+            for data_frame in data_frame_list:
+                cols.append(data_frame.columns)
 
-        cols = list(numpy.array(cols).flat)
+            cols = list(numpy.array(cols).flat)
 
-        # Get all the correct colors (and construct gradients if necessary eg. from 'Blues')
-        # need to change to strings for cufflinks
-        color_list = cm.create_color_list(style, [], cols=cols)
-        color_spec = []
+            # Get all the correct colors (and construct gradients if necessary eg. from 'Blues')
+            # need to change to strings for cufflinks
+            color_list = cm.create_color_list(style, [], cols=cols)
+            color_spec = []
 
-        # If no colors are specified then just use our default color set from chart constants
-        if color_list == [None] * len(color_list):
-            color_spec = [None] * len(color_list)
+            # If no colors are specified then just use our default color set from chart constants
+            if color_list == [None] * len(color_list):
+                color_spec = [None] * len(color_list)
 
-            for i in range(0, len(color_list)):
+                for i in range(0, len(color_list)):
 
-                # Get the color
-                if color_spec[i] is None:
-                    color_spec[i] = self.get_color_list(i)
+                    # Get the color
+                    if color_spec[i] is None:
+                        color_spec[i] = self.get_color_list(i)
 
-                try:
-                    color_spec[i] = matplotlib.colors.rgb2hex(color_spec[i])
-                except:
-                    pass
+                    try:
+                        color_spec[i] = matplotlib.colors.rgb2hex(color_spec[i])
+                    except:
+                        pass
 
-        else:
-            # Otherwise assume all the colors are rgba
-            for color in color_list:
-                color = 'rgba' + str(color)
-                color_spec.append(color)
+            else:
+                # Otherwise assume all the colors are rgba
+                for color in color_list:
+                    color = 'rgba' + str(color)
+                    color_spec.append(color)
+        except Exception as e:
+            pass
 
         start = 0
+
+        title_list = style.title
+
+        if not(isinstance(title_list, list)):
+            title_list = [style.title] * len(data_frame_list)
 
         # Go through each data_frame in the list and plot
         for i in range(0, len(data_frame_list)):
             data_frame = data_frame_list[i]
+            title = title_list[i]
 
-            if isinstance(chart_type, list):
-                chart_type_ord = chart_type[i]
+            if isinstance(data_frame, Figure):
+                fig = data_frame
             else:
-                chart_type_ord = chart_type
 
-            end = start + len(data_frame.columns)
-            color_spec1 = color_spec[start:start + end]
-            start = end
-
-            # Special call for choropleth (uses Plotly API directly)
-            # Special case for map/choropleth which has yet to be implemented in Cufflinks
-            # will likely remove this in the future
-            if chart_type_ord == 'choropleth':
-
-                for col in data_frame.columns:
-                    try:
-                        data_frame[col] = data_frame[col].astype(str)
-                    except:
-                        pass
-
-                if style.color != []:
-                    color = style.color
+                if isinstance(chart_type, list):
+                    chart_type_ord = chart_type[i]
                 else:
-                    color = [[0.0, 'rgb(242,240,247)'], [0.2, 'rgb(218,218,235)'], [0.4, 'rgb(188,189,220)'], \
-                             [0.6, 'rgb(158,154,200)'], [0.8, 'rgb(117,107,177)'], [1.0, 'rgb(84,39,143)']]
+                    chart_type_ord = chart_type
 
-                text = ''
+                end = start + len(data_frame.columns)
+                color_spec1 = color_spec[start:start + end]
+                start = end
 
-                if 'text' in data_frame.columns:
-                    text = data_frame['Text']
+                # Special call for choropleth (uses Plotly API directly)
+                # Special case for map/choropleth which has yet to be implemented in Cufflinks
+                # will likely remove this in the future
+                if chart_type_ord == 'choropleth':
 
-                data = [dict(
-                    type='choropleth',
-                    colorscale=color,
-                    autocolorscale=False,
-                    locations=data_frame['Code'],
-                    z=data_frame[style.plotly_choropleth_field].astype(float),
-                    locationmode=style.plotly_location_mode,
-                    text=text,
-                    marker=dict(
-                        line=dict(
-                            color='rgb(255,255,255)',
-                            width=1
+                    for col in data_frame.columns:
+                        try:
+                            data_frame[col] = data_frame[col].astype(str)
+                        except:
+                            pass
+
+                    if style.color != []:
+                        color = style.color
+                    else:
+                        color = [[0.0, 'rgb(242,240,247)'], [0.2, 'rgb(218,218,235)'], [0.4, 'rgb(188,189,220)'], \
+                                 [0.6, 'rgb(158,154,200)'], [0.8, 'rgb(117,107,177)'], [1.0, 'rgb(84,39,143)']]
+
+                    text = ''
+
+                    if 'text' in data_frame.columns:
+                        text = data_frame['Text']
+
+                    data = [dict(
+                        type='choropleth',
+                        colorscale=color,
+                        autocolorscale=False,
+                        locations=data_frame['Code'],
+                        z=data_frame[style.plotly_choropleth_field].astype(float),
+                        locationmode=style.plotly_location_mode,
+                        text=text,
+                        marker=dict(
+                            line=dict(
+                                color='rgb(255,255,255)',
+                                width=1
+                            )
+                        ),
+                        colorbar=dict(
+                            title=style.units
                         )
-                    ),
-                    colorbar=dict(
-                        title=style.units
+                    )]
+
+                    layout = dict(
+                        title=title,
+                        geo=dict(
+                            scope=style.plotly_scope,
+                            projection=dict(type=style.plotly_projection),
+                            showlakes=True,
+                            lakecolor='rgb(255, 255, 255)',
+                        ),
                     )
-                )]
 
-                layout = dict(
-                    title=style.title,
-                    geo=dict(
-                        scope=style.plotly_scope,
-                        projection=dict(type=style.plotly_projection),
-                        showlakes=True,
-                        lakecolor='rgb(255, 255, 255)',
-                    ),
-                )
+                    fig = dict(data=data, layout=layout)
 
-                fig = dict(data=data, layout=layout)
+                # Otherwise underlying Cufflinks library underneath
+                elif style.plotly_helper == 'cufflinks':
 
-            # Otherwise underlying Cufflinks library underneath
-            elif style.plotly_helper == 'cufflinks':
-
-                # NOTE: we use cufflinks library, which simplifies plotting DataFrames in plotly
-                if chart_type_ord == 'surface':
+                    # NOTE: we use cufflinks library, which simplifies plotting DataFrames in plotly
+                    if chart_type_ord == 'surface':
                         fig = data_frame.iplot(kind=chart_type,
-                                               title=style.title,
+                                                title=title,
+                                                xTitle=style.x_title,
+                                                yTitle=style.y_title,
+                                                x=x, y=y, z=z,
+                                                mode=mode,
+                                                size=marker_size,
+                                                sharing=style.plotly_sharing,
+                                                theme=style.plotly_theme,
+                                                bestfit=style.line_of_best_fit,
+                                                legend=style.display_legend,
+                                                colorscale=style.color,
+                                                dimensions=(style.width * abs(style.scale_factor) * scale,
+                                                               style.height * abs(style.scale_factor) * scale),
+                                                asFigure=True)
+
+                        # Setting axis is different with a surface
+                        if style.x_axis_range is not None:
+                            fig.update_layout(scene=dict(xaxis=dict(range=style.x_axis_range)))
+
+                        if style.y_axis_range is not None:
+                            fig.update_layout(scene=dict(xaxis=dict(range=style.y_axis_range)))
+
+                        if style.z_axis_range is not None:
+                            fig.update_layout(scene=dict(xaxis=dict(range=style.z_axis_range)))
+
+                    elif chart_type_ord == 'heatmap':
+                        fig = data_frame.iplot(kind=chart_type,
+                                               title=title,
                                                xTitle=style.x_title,
                                                yTitle=style.y_title,
-                                               x=x, y=y, z=z,
+                                               x=x, y=y,
                                                mode=mode,
                                                size=marker_size,
                                                sharing=style.plotly_sharing,
@@ -1494,139 +1534,195 @@ class EnginePlotly(EngineTemplate):
                                                            style.height * abs(style.scale_factor) * scale),
                                                asFigure=True)
 
-                elif chart_type_ord == 'heatmap':
-                    fig = data_frame.iplot(kind=chart_type,
-                                           title=style.title,
-                                           xTitle=style.x_title,
-                                           yTitle=style.y_title,
-                                           x=x, y=y,
-                                           mode=mode,
-                                           size=marker_size,
-                                           sharing=style.plotly_sharing,
-                                           theme=style.plotly_theme,
-                                           bestfit=style.line_of_best_fit,
-                                           legend=style.display_legend,
-                                           colorscale=style.color,
-                                           dimensions=(style.width * abs(style.scale_factor) * scale,
-                                                       style.height * abs(style.scale_factor) * scale),
-                                           asFigure=True)
-
-                # Otherwise we have a line plot (or similar such as a scatter plot, or bar chart etc)
-                else:
-
-                    full_line = style.connect_line_gaps
-
-                    if chart_type_ord == 'line':
-                        full_line = True
-
-                        # chart_type_ord = 'scatter'
-                        mode = 'lines'
-                    elif chart_type_ord in ['dash', 'dashdot', 'dot']:
-                        chart_type_ord = 'scatter'
-
-                    elif chart_type_ord == 'line+markers':
-                        full_line = True
-
-                        chart_type_ord = 'line'
-                        mode = 'lines+markers'
-                        marker_size = 5
-                    elif chart_type_ord == 'scatter':
-                        mode = 'markers'
-                        marker_size = 5
-                    elif chart_type_ord == 'bubble':
-                        chart_type_ord = 'scatter'
-
-                        mode = 'markers'
-
-                    # TODO check this!
-                    # Can have issues calling cufflinks with a theme which is None, so split up the cases
-                    if style.plotly_theme is None:
-                        plotly_theme = 'pearl'
+                    # Otherwise we have a line plot (or similar such as a scatter plot, or bar chart etc)
                     else:
-                        plotly_theme = style.plotly_theme
 
-                    m = 0
+                        full_line = style.connect_line_gaps
 
-                    # sometimes Plotly has issues generating figures in dash, so if fails first, try again
-                    while m < 10:
-                        try:
-                            fig = data_frame.iplot(kind=chart_type_ord,
-                                                   title=style.title,
-                                                   xTitle=style.x_title,
-                                                   yTitle=style.y_title,
-                                                   x=x, y=y, z=z,
-                                                   subplots=False,
-                                                   sharing=style.plotly_sharing,
-                                                   mode=mode,
-                                                   secondary_y=style.y_axis_2_series,
-                                                   size=marker_size,
-                                                   theme=plotly_theme,
-                                                   colorscale='dflt',
-                                                   bestfit=style.line_of_best_fit,
-                                                   legend=style.display_legend,
-                                                   width=style.linewidth,
-                                                   color=color_spec1,
-                                                   dimensions=(style.width * abs(style.scale_factor) * scale,
-                                                               style.height * abs(style.scale_factor) * scale),
-                                                   asFigure=True)
+                        if chart_type_ord == 'line':
+                            full_line = True
 
-                            m = 10;
-                            break
-                        except Exception as e:
-                            print("Will attempt to re-render: " + str(e))
+                            # chart_type_ord = 'scatter'
+                            mode = 'lines'
+                        elif chart_type_ord in ['dash', 'dashdot', 'dot']:
+                            chart_type_ord = 'scatter'
 
-                            import time
-                            time.sleep(0.3)
+                        elif chart_type_ord == 'line+markers':
+                            full_line = True
 
-                        m = m + 1
+                            chart_type_ord = 'line'
+                            mode = 'lines+markers'
+                            marker_size = 5
+                        elif chart_type_ord == 'scatter':
+                            mode = 'markers'
+                            marker_size = 5
+                        elif chart_type_ord == 'bubble':
+                            chart_type_ord = 'scatter'
 
-                    # For lines set the property of connectgaps (cannot specify directly in cufflinks)
-                    if full_line:
-                        for z in range(0, len(fig['data'])):
-                            fig['data'][z].connectgaps = style.connect_line_gaps
+                            mode = 'markers'
+
+                        # TODO check this!
+                        # Can have issues calling cufflinks with a theme which is None, so split up the cases
+                        if style.plotly_theme is None:
+                            plotly_theme = 'pearl'
+                        else:
+                            plotly_theme = style.plotly_theme
+
+                        m = 0
+
+                        # sometimes Plotly has issues generating figures in dash, so if fails first, try again
+                        while m < 10:
+                            try:
+                                fig = data_frame.iplot(kind=chart_type_ord,
+                                                       title=title,
+                                                       xTitle=style.x_title,
+                                                       yTitle=style.y_title,
+                                                       x=x, y=y, z=z,
+                                                       subplots=False,
+                                                       sharing=style.plotly_sharing,
+                                                       mode=mode,
+                                                       secondary_y=style.y_axis_2_series,
+                                                       size=marker_size,
+                                                       theme=plotly_theme,
+                                                       colorscale='dflt',
+                                                       bestfit=style.line_of_best_fit,
+                                                       legend=style.display_legend,
+                                                       width=style.linewidth,
+                                                       color=color_spec1,
+                                                       dimensions=(style.width * abs(style.scale_factor) * scale,
+                                                                   style.height * abs(style.scale_factor) * scale),
+                                                       asFigure=True)
+
+                                m = 10;
+                                break
+                            except Exception as e:
+                                print("Will attempt to re-render: " + str(e))
+
+                                import time
+                                time.sleep(0.3)
+
+                            m = m + 1
+
+                        # For lines set the property of connectgaps (cannot specify directly in cufflinks)
+                        if full_line:
+                            for z in range(0, len(fig['data'])):
+                                fig['data'][z].connectgaps = style.connect_line_gaps
+
+                                for k in range(0, len(fig['data'])):
+                                    if full_line:
+                                        fig['data'][k].connectgaps = style.connect_line_gaps
+
+                        if style.line_shape != None:
+                            if isinstance(style.line_shape, str):
+                                line_shape = [style.line_shape] * len(fig['data'])
+                            else:
+                                line_shape = style.line_shape
 
                             for k in range(0, len(fig['data'])):
-                                if full_line:
-                                    fig['data'][k].connectgaps = style.connect_line_gaps
+                                fig['data'][k].line.shape = line_shape[k]
 
-                    if style.line_shape != None:
-                        if isinstance(style.line_shape, str):
-                            line_shape = [style.line_shape] * len(fig['data'])
-                        else:
-                            line_shape = style.line_shape
+                        if style.plotly_webgl:
+                            for k in range(0, len(fig['data'])):
+                                if fig['data'][k].type == 'scatter':
+                                    fig['data'][k].type = 'scattergl'
 
-                        for k in range(0, len(fig['data'])):
-                            fig['data'][k].line.shape = line_shape[k]
-
-                    if style.plotly_webgl:
-                        for k in range(0, len(fig['data'])):
-                            if fig['data'][k].type == 'scatter':
-                                fig['data'][k].type = 'scattergl'
-
-            # Use plotly express (not implemented yet)
-            elif style.plotly_helper == 'plotly_express':
-                # TODO
-                pass
+                # Use plotly express (not implemented yet)
+                elif style.plotly_helper == 'plotly_express':
+                    # TODO
+                    pass
 
             # Common properties
-            # Override other properties, which cannot be set directly by cufflinks
+            # Override other properties, which cannot be set directly by cufflinks/or you want to reset later
+            if style.title is not None:
+                try:
+                    fig.update_layout(title=style.title)
+                except:
+                    pass
+
             if style.x_axis_range is not None:
-                fig['layout'].update(xaxis=dict(range=style.x_axis_range, autorange=False))
+                try:
+                    fig['layout'].update(xaxis=dict(range=style.x_axis_range, autorange=False))
+                except:
+                    pass
 
             if style.y_axis_range is not None:
-                fig['layout'].update(yaxis=dict(range=style.y_axis_range, autorange=False))
+                try:
+                    fig['layout'].update(yaxis=dict(range=style.y_axis_range, autorange=False))
+                except:
+                    pass
 
             if style.z_axis_range is not None:
-                fig['layout'].update(zaxis=dict(range=style.z_axis_range, autorange=False))
+                try:
+                    fig['layout'].update(zaxis=dict(range=style.z_axis_range, autorange=False))
+                except:
+                    pass
+
+            if style.font_family is not None:
+                try:
+                    fig.update_layout(font_family=style.font_family)
+                except:
+                    pass
+
+            if style.x_axis_type is not None:
+                try:
+                    fig.update_xaxes(type=style.x_axis_type)
+                except:
+                    pass
+
+            if style.y_axis_type is not None:
+                try:
+                    fig.update_yaxes(type=style.y_axis_type)
+                except:
+                    pass
+
+            if style.x_dtick is not None:
+                try:
+                    fig.update_layout(xaxis=dict(tickmode='linear', dtick=style.x_dtick))
+                except:
+                    pass
+
+            if style.y_dtick is not None:
+                try:
+                    fig.update_layout(yaxis=dict(tickmode='linear', dtick=style.y_dtick))
+                except:
+                    pass
+
+            # Legend Properties
+            if style.legend_x_anchor is not None:
+                try: fig.update_layout(legend=dict(xanchor=style.legend_x_anchor))
+                except: pass
+
+            if style.legend_y_anchor is not None:
+                try: fig.update_layout(legend=dict(yanchor=style.legend_y_anchor))
+                except: pass
+                
+            if style.legend_x_pos is not None:
+                try: fig.update_layout(legend=dict(x=style.legend_x_pos))
+                except: pass
+
+            if style.legend_y_pos is not None:
+                try: fig.update_layout(legend=dict(y=style.legend_y_pos))
+                except: pass
+
+            if style.legend_bgcolor is not None:
+                try: fig.update_layout(legend=dict(bgcolor=style.legend_bgcolor))
+                except: pass
+
+            if style.legend_orientation is not None:
+                try: fig.update_layout(legend=dict(orientation=style.legend_orientation))
+                except: pass
 
             fig_list.append(fig)
 
         #### Plotted all the lines
 
+        # Create subplots if more than one figure
         if len(fig_list) > 1 and style.animate_figure == False:
-            fig = cf.subplots(fig_list)
+            fig = cf.subplots(fig_list, base_layout=fig_list[0].to_dict()['layout'], shape=(1, len(fig_list)),
+                              shared_xaxes=False, shared_yaxes=False)
 
-            fig['layout'].update(title=style.title)
+            if not(isinstance(style.title, list)):
+                fig['layout'].update(title=style.title)
 
         elif style.animate_figure:
 
@@ -1672,8 +1768,8 @@ class EnginePlotly(EngineTemplate):
 
             for fig_temp, title_temp in zip(fig_list, animate_titles):
                 frames.append(go.Frame(data=fig_temp['data'],
-                                           name=title_temp,
-                                           layout=go.Layout(title=title_temp)))
+                                           name=str(title_temp),
+                                           layout=go.Layout(title=str(title_temp))))
 
             fig.update(frames=frames)
 
@@ -1701,7 +1797,7 @@ class EnginePlotly(EngineTemplate):
                     "mode" : "immediate",
                     "transition" : {"duration": style.animate_frame_ms}}
                 ],
-                    "label" : animate_titles[i],
+                    "label" : str(animate_titles[i]),
                     "method" : "animate"}
 
                 sliders_dict["steps"].append(slider_step)

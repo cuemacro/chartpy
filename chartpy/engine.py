@@ -1570,7 +1570,7 @@ class EnginePlotly(EngineTemplate):
 
                         m = 0
 
-                        # sometimes Plotly has issues generating figures in dash, so if fails first, try again
+                        # Sometimes Plotly has issues generating figures in dash, so if fails first, try again
                         while m < 10:
                             try:
                                 fig = data_frame.iplot(kind=chart_type_ord,
@@ -1638,6 +1638,14 @@ class EnginePlotly(EngineTemplate):
                     fig.update_layout(title=style.title)
                 except:
                     pass
+
+            # Add second y axis title
+            if style.y_2_title is not None:
+                if style.y_2_title != '':
+                    try:
+                        fig['layout'].update(yaxis2=dict(title=style.y_2_title))
+                    except:
+                        pass
 
             if style.x_axis_range is not None:
                 try:
@@ -1831,9 +1839,9 @@ class EnginePlotly(EngineTemplate):
         fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))
 
         # Deal with grids
-        if (not (style.x_axis_showgrid)): fig.update(dict(layout=dict(xaxis=dict(showgrid=style.x_axis_showgrid))))
-        if (not (style.y_axis_showgrid)): fig.update(dict(layout=dict(yaxis=dict(showgrid=style.y_axis_showgrid))))
-        if (not (style.y_axis_2_showgrid)): fig.update(
+        if (not(style.x_axis_showgrid)): fig.update(dict(layout=dict(xaxis=dict(showgrid=style.x_axis_showgrid))))
+        if (not(style.y_axis_showgrid)): fig.update(dict(layout=dict(yaxis=dict(showgrid=style.y_axis_showgrid))))
+        if (not(style.y_axis_2_showgrid)): fig.update(
                 dict(layout=dict(yaxis2=dict(showgrid=style.y_axis_2_showgrid))))
 
         # Override properties, which cannot be set directly by cufflinks
@@ -1897,25 +1905,29 @@ class EnginePlotly(EngineTemplate):
                                                 )
 
             if style.candlestick_increasing_color is not None:
-                # increasing
+                # Increasing
                 fig_candle['data'][0].fillcolor = cm.get_color_code(style.candlestick_increasing_color)
                 fig_candle['data'][0].line.color = cm.get_color_code(style.candlestick_increasing_line_color)
 
             if style.candlestick_decreasing_color is not None:
-                # descreasing
+                # Decreasing
                 fig_candle['data'][1].fillcolor = cm.get_color_code(style.candlestick_decreasing_color)
                 fig_candle['data'][1].line.color = cm.get_color_code(style.candlestick_decreasing_line_color)
 
             try:
-                # append the data to the existing Plotly figure, plotted earlier
+                # Append the data to the existing Plotly figure, plotted earlier
                 fig.data.append(fig_candle.data[0]);
                 fig.data.append(fig_candle.data[1])
             except:
-                # plotly 3.0
+                # Later version of Plotly
                 fig.add_trace(fig_candle.data[0])
                 fig.add_trace(fig_candle.data[1])
 
-            # self.logger.debug("Rendered candlesticks")
+        # Overlay other Plotly figures on top of
+        if style.overlay_fig is not None:
+
+            for d in style.overlay_fig.data:
+                fig.add_trace(d)
 
         x_y_line_list = []
 
@@ -2037,15 +2049,15 @@ class EnginePlotly(EngineTemplate):
 
 #######################################################################################################################
 
-# create color lists to be used in plots
+# Create color lists to be used in plots
 
-class ColorMaster:
+class ColorMaster(object):
 
     def create_color_list(self, style, data_frame, cols=None):
         if cols is None:
             cols = data_frame.columns
 
-        # get all the correct colors (and construct gradients if necessary eg. from 'blues')
+        # Get all the correct colors (and construct gradients if necessary eg. from 'blues')
         color = self.construct_color(style, 'color', len(cols) - len(style.color_2_series))
         color_2 = self.construct_color(style, 'color_2', len(style.color_2_series))
 
@@ -2341,11 +2353,11 @@ def create_candlestick(open, high, low, close, dates=None, direction='both',
     #     utils.validate_equal_length(open, high, low, close)
     # validate_ohlc(open, high, low, close, direction, **kwargs)
 
-    if direction is 'increasing':
+    if direction == 'increasing':
         candle_incr_data = make_increasing_candle(open, high, low, close,
                                                   dates, **kwargs)
         data = candle_incr_data
-    elif direction is 'decreasing':
+    elif direction == 'decreasing':
         candle_decr_data = make_decreasing_candle(open, high, low, close,
                                                   dates, **kwargs)
         data = candle_decr_data

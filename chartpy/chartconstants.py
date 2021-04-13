@@ -311,8 +311,8 @@ class ChartConstants(object):
 
     # or we can store credentials in a file "chartcred.py" in the same folder, which will overwrite the above
     # eg. TWITTER_APP_KEY, TWITTER_APP_SECRET, TWITTER_OAUTH_TOKEN, TWITTER_TOKEN_SECRET
-    # overwrite field variables with those listed in ChartCred
-    def __init__(self):
+    # overwrite field variables with those listed in ChartCred or we can pass through an dictionary to override any fields
+    def __init__(self, override_fields={}):
         try:
             from chartpy.util.chartcred import ChartCred
             cred_keys = ChartCred.__dict__.keys()
@@ -322,3 +322,7 @@ class ChartConstants(object):
                     setattr(ChartConstants, k, getattr(ChartCred, k))
         except:
             pass
+
+        for k in override_fields.keys():
+            if '__' not in k:
+                setattr(ChartConstants, k, override_fields[k])

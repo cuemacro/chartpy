@@ -145,7 +145,9 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
-* 22 Mar 2020
+* 13 Apr 2021
+    * Can add second y-axis labels for Plotly
+* 22 Mar 2021
     * Added more formatting for Plotly (eg. text font etc.)
 * 02 Dec 2020
     * Added animation for Plotly

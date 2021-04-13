@@ -33,6 +33,7 @@ class Style(object):
                  title='',
                  x_title='',
                  y_title='',
+                 y_2_title='',
                  z_title='',
                  units='',
 
@@ -59,6 +60,9 @@ class Style(object):
                  candlestick_increasing_line_color=None,
                  candlestick_decreasing_color=None,
                  candlestick_decreasing_line_color=None,
+                 
+                 # Overlay figures
+                 overlay_fig=None,
 
                  # Subplot
                  subplots=False,
@@ -171,6 +175,7 @@ class Style(object):
         self.title = title
         self.x_title = x_title
         self.y_title = y_title
+        self.y_2_title = y_2_title
         self.z_title = z_title
         self.units = units
 
@@ -196,7 +201,10 @@ class Style(object):
         self.candlestick_increasing_line_color = candlestick_increasing_line_color
         self.candlestick_decreasing_color = candlestick_decreasing_color
         self.candlestick_decreasing_line_color = candlestick_decreasing_line_color
-
+        
+        # Overlay plots
+        self.overlay_fig = overlay_fig
+        
         # Subplots
         self.subplots = subplots
         self.share_subplot_x = share_subplot_x
@@ -360,6 +368,14 @@ class Style(object):
     @y_title.setter
     def y_title(self, y_title):
         self.__y_title = y_title
+        
+    @property
+    def y_2_title(self):
+        return self.__y_2_title
+
+    @y_2_title.setter
+    def y_2_title(self, y_2_title):
+        self.__y_2_title = y_2_title
 
     @property
     def z_title(self):
@@ -493,8 +509,17 @@ class Style(object):
     @candlestick_decreasing_line_color.setter
     def candlestick_decreasing_line_color(self, candlestick_decreasing_line_color):
         self.__candlestick_decreasing_line_color = candlestick_decreasing_line_color
+    
+    ###### Overlay figures
+    @property
+    def overlay_fig(self):
+        return self.__overlay_fig
 
-    ###### subplots
+    @overlay_fig.setter
+    def overlay_fig(self, overlay_fig):
+        self.__overlay_fig = overlay_fig
+    
+    ###### Subplots
     @property
     def subplots(self):
         return self.__subplots

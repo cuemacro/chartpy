@@ -145,6 +145,8 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 15 Apr 2021
+  * Constant overrides now persist
 * 13 Apr 2021
     * Can add second y-axis labels for Plotly
 * 22 Mar 2021

@@ -309,6 +309,8 @@ class ChartConstants(object):
         'yellowgreen':		 '#9ACD32'
     }
 
+    override_fields = {}
+
     # or we can store credentials in a file "chartcred.py" in the same folder, which will overwrite the above
     # eg. TWITTER_APP_KEY, TWITTER_APP_SECRET, TWITTER_OAUTH_TOKEN, TWITTER_TOKEN_SECRET
     # overwrite field variables with those listed in ChartCred or we can pass through an dictionary to override any fields
@@ -322,6 +324,12 @@ class ChartConstants(object):
                     setattr(ChartConstants, k, getattr(ChartCred, k))
         except:
             pass
+
+        # Store overrided fields
+        if override_fields == {}:
+            override_fields = ChartConstants.override_fields
+        else:
+            ChartConstants.override_fields = override_fields
 
         for k in override_fields.keys():
             if '__' not in k:

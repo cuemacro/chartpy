@@ -145,6 +145,8 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 19 Apr 2021
+  * Add region plot
 * 15 Apr 2021
   * Constant overrides now persist
 * 13 Apr 2021

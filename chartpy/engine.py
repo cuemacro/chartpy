@@ -1424,6 +1424,9 @@ class EnginePlotly(EngineTemplate):
                 fig = data_frame
             else:
 
+                if style.drop_na:
+                    data_frame = data_frame.dropna()
+
                 if isinstance(chart_type, list):
                     chart_type_ord = chart_type[i]
                 else:
@@ -1570,32 +1573,64 @@ class EnginePlotly(EngineTemplate):
 
                         m = 0
 
+                        y_axis_2_series = [x for x in style.y_axis_2_series if x in data_frame.columns]
+
+                        vspan = None
+
+                        if style.x_shade_dates is not None:
+                            vspan = {'x0': data_frame.index[0].strftime("%Y-%m-%d"),
+                                     'x1': data_frame.index[-1].strftime("%Y-%m-%d"), 'color': 'rgba(30,30,30,0.3)',
+                                     'fill': True, 'opacity': .4}
+
                         # Sometimes Plotly has issues generating figures in dash, so if fails first, try again
                         while m < 10:
-                            try:
-                                fig = data_frame.iplot(kind=chart_type_ord,
-                                                       title=title,
-                                                       xTitle=style.x_title,
-                                                       yTitle=style.y_title,
-                                                       x=x, y=y, z=z,
-                                                       subplots=False,
-                                                       sharing=style.plotly_sharing,
-                                                       mode=mode,
-                                                       secondary_y=style.y_axis_2_series,
-                                                       size=marker_size,
-                                                       theme=plotly_theme,
-                                                       colorscale='dflt',
-                                                       bestfit=style.line_of_best_fit,
-                                                       legend=style.display_legend,
-                                                       width=style.linewidth,
-                                                       color=color_spec1,
-                                                       dimensions=(style.width * abs(style.scale_factor) * scale,
-                                                                   style.height * abs(style.scale_factor) * scale),
-                                                       asFigure=True)
+
+                            if True:
+                                if vspan is None:
+                                    fig = data_frame.iplot(kind=chart_type_ord,
+                                                           title=title,
+                                                           xTitle=style.x_title,
+                                                           yTitle=style.y_title,
+                                                           x=x, y=y, z=z,
+                                                           subplots=False,
+                                                           sharing=style.plotly_sharing,
+                                                           mode=mode,
+                                                           secondary_y=y_axis_2_series,
+                                                           size=marker_size,
+                                                           theme=plotly_theme,
+                                                           colorscale='dflt',
+                                                           bestfit=style.line_of_best_fit,
+                                                           legend=style.display_legend,
+                                                           width=style.linewidth,
+                                                           color=color_spec1,
+                                                           dimensions=(style.width * abs(style.scale_factor) * scale,
+                                                                       style.height * abs(style.scale_factor) * scale),
+                                                           asFigure=True)
+                                else:
+                                    fig = data_frame.iplot(kind=chart_type_ord,
+                                                           title=title,
+                                                           xTitle=style.x_title,
+                                                           yTitle=style.y_title,
+                                                           x=x, y=y, z=z,
+                                                           subplots=False,
+                                                           sharing=style.plotly_sharing,
+                                                           mode=mode,
+                                                           secondary_y=y_axis_2_series,
+                                                           size=marker_size,
+                                                           theme=plotly_theme,
+                                                           colorscale='dflt',
+                                                           bestfit=style.line_of_best_fit,
+                                                           legend=style.display_legend,
+                                                           width=style.linewidth,
+                                                           color=color_spec1,
+                                                           dimensions=(style.width * abs(style.scale_factor) * scale,
+                                                                       style.height * abs(style.scale_factor) * scale),
+                                                           vspan=vspan,
+                                                           asFigure=True)
 
                                 m = 10;
                                 break
-                            except Exception as e:
+                            #except Exception as e:
                                 print("Will attempt to re-render: " + str(e))
 
                                 import time
@@ -1654,8 +1689,15 @@ class EnginePlotly(EngineTemplate):
                     pass
 
             if style.y_axis_range is not None:
+
                 try:
                     fig['layout'].update(yaxis=dict(range=style.y_axis_range, autorange=False))
+                except:
+                    pass
+
+            if style.y_axis_2_range is not None:
+                try:
+                    fig['layout'].update(yaxis2=dict(range=style.y_axis_2_range, autorange=False))
                 except:
                     pass
 
@@ -1694,6 +1736,9 @@ class EnginePlotly(EngineTemplate):
                     fig.update_layout(yaxis=dict(tickmode='linear', dtick=style.y_dtick))
                 except:
                     pass
+
+            # Add shaded regions
+            fig = self._multi_shade(fig, style)
 
             # Legend Properties
             if style.legend_x_anchor is not None:
@@ -1970,6 +2015,41 @@ class EnginePlotly(EngineTemplate):
         # publish the plot (depending on the output mode eg. to HTML file/Jupyter notebook)
         # also return as a Figure object for plotting by a web server app (eg. Flask/Dash)
         return self.publish_plot(fig, style)
+
+    def _multi_shade(self, fig, style):
+        """ Adds shaded areas for specified dates in a plotly plot.
+            The lines of the areas are set to transparent using rgba(0,0,0,0)
+        """
+        import copy
+
+        if style.x_shade_dates is None:
+            return fig
+
+        if isinstance(style.x_shade_dates, list):
+            x0 = style.x_shade_dates[0]
+            x1 = style.x_shade_dates[1]
+        else:
+            x0 = list(style.x_shade_dates.keys())
+            x1 = list(style.x_shade_dates.values())
+
+        # Get dict from tuple made by vspan()
+        x_elem = fig['layout']['shapes'][0]
+
+        # Container (list) for dicts / shapes
+        shp_lst = []
+
+        # Make dicts according to x0 and X1
+        # and edit elements of those dicts
+        for i in range(0,len(x0)):
+            shp_lst.append(copy.deepcopy(x_elem))
+            shp_lst[i]['x0'] = x0[i]
+            shp_lst[i]['x1'] = x1[i]
+            shp_lst[i]['line']['color'] = 'rgba(0,0,0,0)'
+
+        # Replace shape in fig with multiple new shapes
+        fig['layout']['shapes']= tuple(shp_lst)
+
+        return fig
 
     def publish_plot(self, fig, style):
         # change background color

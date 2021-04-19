@@ -42,6 +42,9 @@ class Style(object):
                  # Type of plot (can be defined as list)
                  engine=None,
                  chart_type=None,
+                 
+                 # Drop NaN points before plotting
+                 drop_na=False,
 
                  # Colors
                  color=[],
@@ -93,7 +96,10 @@ class Style(object):
                  line_of_best_fit=False,
                  line_shape=None,
 
-                 # grid
+                 # Shaded regions
+                 x_shade_dates=None,
+
+                 # Grid
                  x_axis_showgrid = True,
                  y_axis_showgrid = True,
                  y_axis_2_showgrid = True,
@@ -104,6 +110,7 @@ class Style(object):
                  x_axis_range=None,
                  y_axis_range=None,
                  z_axis_range=None,
+                 y_axis_2_range=None,
 
                  # Are x-axis of style category?
                  x_axis_type=None,
@@ -183,6 +190,9 @@ class Style(object):
 
         # Chart type
         self.chart_type = chart_type
+        
+        # Drop NaN before plotting
+        self.drop_na = drop_na
 
         # Colors
         self.color = color
@@ -234,6 +244,9 @@ class Style(object):
         self.line_of_best_fit = line_of_best_fit
         self.line_shape = line_shape
 
+        # Shaded regions
+        self.x_shade_dates = x_shade_dates
+
         # Grids
         self.x_axis_showgrid = x_axis_showgrid
         self.y_axis_showgrid = y_axis_showgrid
@@ -244,6 +257,7 @@ class Style(object):
         self.x_y_line = x_y_line
         self.x_axis_range = x_axis_range
         self.y_axis_range = y_axis_range
+        self.y_axis_2_range = y_axis_2_range
         self.z_axis_range = z_axis_range
 
         # x and y axis type (eg. category)
@@ -409,6 +423,15 @@ class Style(object):
     @chart_type.setter
     def chart_type(self, chart_type):
         self.__chart_type = chart_type
+        
+    ###### drop na
+    @property
+    def drop_na(self):
+        return self.__drop_na
+
+    @drop_na.setter
+    def drop_na(self, drop_na):
+        self.__drop_na = drop_na
 
     ###### colors
     @property
@@ -675,9 +698,19 @@ class Style(object):
     @line_shape.setter
     def line_shape(self, line_shape):
         self.__line_shape = line_shape
-
         
-    ###### grids
+    
+    ###### Shaded regions
+    
+    @property
+    def x_shade_dates(self):
+        return self.__x_shade_dates
+
+    @x_shade_dates.setter
+    def x_shade_dates(self, x_shade_dates):
+        self.__x_shade_dates = x_shade_dates
+        
+    ###### Grids
     @property
     def x_axis_showgrid(self):
         return self.__x_axis_showgrid
@@ -734,6 +767,14 @@ class Style(object):
     @y_axis_range.setter
     def y_axis_range(self, y_axis_range):
         self.__y_axis_range = y_axis_range
+        
+    @property
+    def y_axis_2_range(self):
+        return self.__y_axis_2_range
+
+    @y_axis_2_range.setter
+    def y_axis_2_range(self, y_axis_2_range):
+        self.__y_axis_2_range = y_axis_2_range
 
     @property
     def z_axis_range(self):

@@ -145,6 +145,8 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 03 May 2021
+  * Spinning out some Dash visualization tools from tcapy to chartpy
 * 19 Apr 2021
   * Add region plot
 * 15 Apr 2021

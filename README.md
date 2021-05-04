@@ -125,9 +125,16 @@ I've also tried to design the library so that adding a new plotting engine is fa
 and edit the get_engine method in Chart), so it's basically future proof for whatever new chart libraries come along, with
 relatively small changes to your code base.
 
-# Dashboard
+# Interactive Web Dashboards with chartpy/dash
 
-chartpy also has interactive dashboards based on Plotly's Dash package. You'll need to install Dash as an extra
+chartpy also has interactive dashboards based on Plotly's Dash package, but with a lot less of the boilerplate code
+which Dash uses. Users extend `LayoutCanvas` to create their own Dash layouts and `SketchComponents` can be used
+to quickly create Dash components/HTML components, with relatively few lines of code.
+
+Hence, it's a lot quicker to create Dash based dashboards in chartpy! In the future, we want
+to also support other Python dashboards like [H2O Wave](https://www.h2o.ai/products/h2o-wave/).
+
+You'll need to install Dash as an extra
 to use them as they aren't part of the default installation, which we can see below:
 
     pip install cufflinks==0.17.3 plotly==4.14.3 kaleido dash==1.20.0 \

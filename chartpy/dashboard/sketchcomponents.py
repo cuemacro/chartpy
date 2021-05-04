@@ -36,11 +36,31 @@ class SketchComponents(object):
         self._constants = constants
         self._app = app
 
-        self._url_prefix = ''
+        self._url_prefix = url_prefix
 
+        # Read these from constants
         self._width = 1000
 
-    def header_bar(self, title, img=None, description=None, id=None, prefix_id='', width=1000, logo_height=100, logo_width=100, img_full_path=None):
+        self._logo_width = 100
+        self._logo_height = 100
+
+        self._link_bar_width = self._width - 20
+        self._drop_down_width = 155
+        self._inputbox_width = 155
+        self._date_picker_width = 155
+        self._download_width = self._width - 20
+        self._timeline_width = self._width - 20
+        self._markdown_width = 1000
+        self._table_width = 1000
+        self._file_link_width = self._width - 20
+
+        self._plot_width = 1000
+        self._plot_height = 1000
+        self._uploadbox_width = self._width - 20
+        self._button_width = 155
+
+    def header_bar(self, title, img=None, description=None, id=None, prefix_id='', width=None, logo_height=None, logo_width=None,
+                   img_full_path=None):
         """Creates HTML for the header bar
 
         Parameters
@@ -61,6 +81,10 @@ class SketchComponents(object):
         -------
         html.Div
         """
+
+        if width is None: width = self._width
+        if logo_height is None: logo_height = self._logo_height
+        if logo_width is None: logo_width = self._logo_width
 
         div_list = [html.H2(title, className='eight columns')]
 
@@ -91,7 +115,7 @@ class SketchComponents(object):
             style={'width': str(width) + 'px', 'marginBottom': 0, 'marginTop': 5, 'marginLeft': 5,
                    'marginRight': 5})
 
-    def button(self, caption=None, id=None, prefix_id='', className=None, upload=False):
+    def button(self, caption=None, id=None, prefix_id='', className=None, upload=False, button_width=None, width=None):
         """Creates an HTML button
 
         Parameters
@@ -115,6 +139,8 @@ class SketchComponents(object):
         -------
         html.Div
         """
+        if width is None: width = self._width
+        if button_width is None: button_width = self._button_width
 
         if prefix_id != '':
             id = prefix_id + '-' + id
@@ -127,7 +153,7 @@ class SketchComponents(object):
 
             return html.Div([
                 button
-            ], style={'width': '150px', 'display': 'inline-block', 'marginBottom': 0, 'marginTop': 0, 'marginLeft': 5,
+            ], style={'width': str(button_width) + 'px', 'display': 'inline-block', 'marginBottom': 0, 'marginTop': 0, 'marginLeft': 5,
                       'marginRight': 5})
 
         else:
@@ -138,10 +164,10 @@ class SketchComponents(object):
 
             return html.Div([
                 button, " "
-            ], style={'width': '800px', 'display': 'inline-block', 'marginBottom': 0, 'marginTop': 0, 'marginLeft': 5,
+            ], style={'width': str(width) + 'px', 'display': 'inline-block', 'marginBottom': 0, 'marginTop': 0, 'marginLeft': 5,
                       'marginRight': 5})
 
-    def uploadbox(self, caption=None, id=None, prefix_id='', className=None, width=980):
+    def uploadbox(self, caption=None, id=None, prefix_id='', className=None, width=None):
         """Creates an HTML button
 
         Parameters
@@ -165,6 +191,8 @@ class SketchComponents(object):
         -------
         html.Div
         """
+
+        if width is None: width = self._uploadbox_width
 
         if prefix_id != '':
             id = prefix_id + '-' + id
@@ -188,7 +216,7 @@ class SketchComponents(object):
                       'marginRight': 5})
 
     def plot(self, caption=None, id=None, prefix_id='', figure=None, element_add=None, downloadplot_caption=None,
-             downloadplot_tag=None, download_file=None, width=1000, height=1000, wrap_in_div=True):
+             downloadplot_tag=None, download_file=None, width=None, height=None, wrap_in_div=True):
         """Creates a Plotly plot object (Dash component)
 
         Parameters
@@ -218,6 +246,8 @@ class SketchComponents(object):
         -------
         html.Div
         """
+        if width is None: width = self._plot_width
+        if height is None: height = self._plot_height
 
         if prefix_id != '':
             prefix_id = prefix_id + '-'
@@ -269,7 +299,7 @@ class SketchComponents(object):
         return html_tags
 
     def download_file_link(self, html_tags, prefix_id, downloadplot_caption_list, downloadplot_tag_list, download_file_list,
-                           width=980):
+                           width=None):
         """Creates links for downloading CSV files (typically associated with plots and tables)
 
         Parameters
@@ -293,6 +323,7 @@ class SketchComponents(object):
         -------
         html.Div (list)
         """
+        if width is None: width = self._download_width
 
         if html_tags is None:
             html_tags = []
@@ -327,7 +358,7 @@ class SketchComponents(object):
 
 
     def table(self, caption=None, id=None, prefix_id='', element_add=None, columns=None, downloadplot_caption=None,
-             downloadplot_tag=None, download_file=None, width=1000):
+             downloadplot_tag=None, download_file=None, width=None):
         """
 
         Parameters
@@ -360,6 +391,7 @@ class SketchComponents(object):
         -------
         html.Div
         """
+        if width is None: width = self._table_width
 
         if prefix_id != '':
             prefix_id = prefix_id + '-'
@@ -373,6 +405,13 @@ class SketchComponents(object):
         if isinstance(id, str):
             id = [id]
 
+        is_dash_table = True
+
+        try:
+            is_dash_table = self._constants.gui_table_type == 'dash'
+        except:
+            pass
+
         for i in range(0, len(id)):
 
             id_ = id[i]
@@ -384,7 +423,7 @@ class SketchComponents(object):
 
             if columns is None:
 
-                if self._constants.gui_table_type == 'dash':
+                if is_dash_table:
                     data_table = dt.DataTable(
                         # data=[{}],
                         #row_selectable='single',
@@ -405,7 +444,7 @@ class SketchComponents(object):
                 if isinstance(columns, dict):
                     col = columns[id_]
 
-                if self._constants.gui_table_type == 'dash':
+                if is_dash_table:
                     data_table = dt.DataTable(
                         # data=[{}],
                         #row_selectable='single',
@@ -525,6 +564,7 @@ class SketchComponents(object):
         html.Div
         """
         # create a whole width table cell
+        if width is None: width = self._width
 
         if id is not None:
             if prefix_id != '':
@@ -545,9 +585,11 @@ class SketchComponents(object):
                    'marginLeft': margin_left,
                    'marginRight': 0, 'className': 'row'})
 
-    def extra_width_row_cell(self, html_obj, id=None, prefix_id='', width=1000):
+    def extra_width_row_cell(self, html_obj, id=None, prefix_id='', width=None):
 
-        # creates drop down style HTML controls
+        if width is None: width = self._width
+
+        # Creates drop down style HTML controls
         if id is not None:
             if prefix_id != '':
                 id = prefix_id + '-' + id
@@ -564,7 +606,7 @@ class SketchComponents(object):
             style={'width': str(width) + 'px', 'display': 'inline-block', 'marginBottom': 5, 'marginTop': 5, 'marginLeft': 20,
                      'marginRight': 20})
 
-    def link_bar(self, labels_links_dict, add=None, width=980):
+    def link_bar(self, labels_links_dict, add=None, width=None):
         """Creates an link bar of Dash components, typically used as a menu on the top of a Dash based web page.
 
         Parameters
@@ -579,15 +621,15 @@ class SketchComponents(object):
         -------
         html.Div
         """
+        if width is None: width = self._link_bar_width
 
-        # creates a link bar
+        # Creates a link bar
         key_list = self.dict_key_list(labels_links_dict.keys())
 
         if self._url_prefix == '':
             url_prefix = '/'
         else:
             url_prefix = '/' + self._url_prefix + '/'
-
 
         if len(labels_links_dict) == 1:
             list = [dcc.Link(key_list[0], href=url_prefix)]
@@ -613,7 +655,7 @@ class SketchComponents(object):
                                'marginLeft': 5,
                                'marginRight': 5, 'className': 'row'})
 
-    def drop_down(self, caption=None, id=None, prefix_id='', drop_down_values=None, multiselect=False, width=155,
+    def drop_down(self, caption=None, id=None, prefix_id='', drop_down_values=None, multiselect=False, width=None,
                   multiselect_start_values=None, start_values_index=0, clearable=False):
         """Creates a Dash drop down object, wrapped in HTML table
 
@@ -644,6 +686,8 @@ class SketchComponents(object):
         -------
         html.Div
         """
+        if width is None: width = self._drop_down_width
+
         # Creates drop down style HTML controls
         if prefix_id != '':
             prefix_id = prefix_id + '-'
@@ -689,7 +733,7 @@ class SketchComponents(object):
                                'marginRight': 5})
 
 
-    def timeline_dropdown(self, prefix, available_plot_lines, width=980):
+    def timeline_dropdown(self, prefix, available_plot_lines, width=None):
         """Create a dropdown for timelines (with multiple selectable values)
 
         Parameters
@@ -702,13 +746,15 @@ class SketchComponents(object):
         -------
         html.Div
         """
+        if width is None: width = self._drop_down_width
+
         return html.Div([
             self.drop_down(caption=None, id=prefix + '-lines-val',
                            drop_down_values=available_plot_lines,
                            multiselect=True, multiselect_start_values=available_plot_lines, width=width)
         ])
 
-    def inputbox(self, caption=None, id=None, prefix_id='', width=155, start_values=None):
+    def inputbox(self, caption=None, id=None, prefix_id='', width=None, start_values=None):
         """Creates a Dash input box, wrapped in HTML table
 
         Parameters
@@ -729,6 +775,8 @@ class SketchComponents(object):
         -------
         html.Div
         """
+        if width is None: width = self._inputbox_width
+
         # creates drop down style HTML controls
         if prefix_id != '':
             prefix_id = prefix_id + '-'
@@ -773,7 +821,8 @@ class SketchComponents(object):
                                'marginLeft': 5,
                                'marginRight': 5})
 
-    def date_picker(self, caption=None, id=None, prefix_id='', initial_date=datetime.date.today(), offset=None, width=155):
+    def date_picker(self, caption=None, id=None, prefix_id='', initial_date=datetime.date.today(), offset=None, width=None):
+        if width is None: width = self._date_picker_width
 
         if isinstance(id, str):
             id = [id]
@@ -817,7 +866,8 @@ class SketchComponents(object):
     #          'marginLeft': 5,
     #          'marginRight': 5}
 
-    def date_picker_range(self, caption=None, id=None, prefix_id='', initial_date=datetime.date.today(), width=155, offset=[-7, -1]):
+    def date_picker_range(self, caption=None, id=None, prefix_id='', initial_date=datetime.date.today(), width=None, offset=[-7, -1]):
+        if width is None: width = self._drop_down_width
 
         date_picker_list = []
         date_picker_list.append(caption + '      ')
@@ -848,7 +898,9 @@ class SketchComponents(object):
 
             return html.P(text, id=id)
 
-    def markdown(self, text, id=None, prefix_id='', height=None, width=1000, wrap_in_div=True):
+    def markdown(self, text, id=None, prefix_id='', height=None, width=None, wrap_in_div=True):
+        if width is None: width = self._markdown_width
+
         if id is None:
             html_tags = dcc.Markdown(text)
         else:

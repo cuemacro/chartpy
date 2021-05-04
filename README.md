@@ -125,6 +125,15 @@ I've also tried to design the library so that adding a new plotting engine is fa
 and edit the get_engine method in Chart), so it's basically future proof for whatever new chart libraries come along, with
 relatively small changes to your code base.
 
+# Dashboard
+
+chartpy also has interactive dashboards based on Plotly's Dash package. You'll need to install Dash as an extra
+to use them as they aren't part of the default installation, which we can see below:
+
+    pip install cufflinks==0.17.3 plotly==4.14.3 kaleido dash==1.20.0 \
+      dash-html-components==1.1.3 dash-core-components==1.16.0 dash-table==4.11.3 \
+      jupyter-dash==0.4.0 chart_studio==1.1.0
+
 # Contributors
 
 Contributors are always welcome for finmarketpy, findatapy and chartpy. If you'd like to contribute, have a look at
@@ -145,6 +154,8 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 04 May 2021
+  * Changed default widths for dashboard
 * 03 May 2021
   * Spinning out some Dash visualization tools from tcapy to chartpy
 * 19 Apr 2021

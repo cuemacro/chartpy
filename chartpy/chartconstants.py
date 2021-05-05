@@ -314,7 +314,7 @@ class ChartConstants(object):
     # overwrite field variables with those listed in ChartCred or we can pass through an dictionary to override any fields
     def __init__(self, override_fields={}):
         try:
-            from chartpy.util.chartcred import ChartCred
+            from chartpy.chartcred import ChartCred
             cred_keys = ChartCred.__dict__.keys()
 
             for k in ChartConstants.__dict__.keys():

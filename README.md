@@ -135,10 +135,14 @@ Hence, it's a lot quicker to create Dash based dashboards in chartpy! In the fut
 to also support other Python dashboards like [H2O Wave](https://www.h2o.ai/products/h2o-wave/).
 
 You'll need to install Dash as an extra
-to use them as they aren't part of the default installation, which we can see below:
+to use them as they aren't part of the default installation, which we can see below (Linux at top, Windows on bottom):
 
     pip install cufflinks==0.17.3 plotly==4.14.3 kaleido dash==1.20.0 \
       dash-html-components==1.1.3 dash-core-components==1.16.0 dash-table==4.11.3 \
+      jupyter-dash==0.4.0 chart_studio==1.1.0
+
+    pip install cufflinks==0.17.3 plotly==4.14.3 kaleido dash==1.20.0 ^
+      dash-html-components==1.1.3 dash-core-components==1.16.0 dash-table==4.11.3 ^
       jupyter-dash==0.4.0 chart_studio==1.1.0
 
 # Contributors
@@ -162,6 +166,8 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 05 May 2021
+  * Add simple dashboard example for downloading Quandl data
 * 04 May 2021
   * Changed default widths for dashboard
 * 03 May 2021

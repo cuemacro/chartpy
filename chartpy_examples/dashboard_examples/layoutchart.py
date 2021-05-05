@@ -20,15 +20,10 @@ import quandl
 from chartpy import Chart, Style
 from chartpy.dashboard import LayoutCanvas, CallbackManager
 
-from findatapy.timeseries import Filter, Calculations
-
 class LayoutChart(LayoutCanvas):
 
     def __init__(self, app=None, constants=None, quandl_api_key=None):
         super().__init__(app=app, constants=constants)
-
-        self._filter = Filter()
-        self._calculations = Calculations()
 
         self._callback_manager = CallbackManager(constants=constants)
 

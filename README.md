@@ -168,6 +168,7 @@ In chartpy/examples you will find several demos
 
 * 06 May 2021
   * Fixed subplots with plotly
+  * Added realized vol to dashboard example
 * 05 May 2021
   * Add simple dashboard example for downloading Quandl data
 * 04 May 2021

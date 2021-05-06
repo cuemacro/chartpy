@@ -14,6 +14,7 @@ __author__ = 'saeedamen'  # Saeed Amen
 
 import pandas as pd
 import datetime
+import math
 
 import quandl
 
@@ -37,7 +38,8 @@ class LayoutChart(LayoutCanvas):
     def attach_callbacks(self):
 
         output = self._callback_manager.output_callback(self.page_id(),
-                                                        ['quandl-fig',
+                                                        ['spot-fig',
+                                                         'vol-fig',
                                                          'msg-status'])
         input = self._callback_manager.input_callback(self.page_id(), 'calculate-button')
         state = self._callback_manager.state_callback(self.page_id(), ['ticker-val'])
@@ -53,9 +55,17 @@ class LayoutChart(LayoutCanvas):
         try:
             df = pd.DataFrame(quandl.get(ticker))
 
-            return Chart(engine="plotly").plot(df,
-                                               style=Style(plotly_plot_mode='dash', width=980, height=480, scale_factor=-1)), \
-                   "Plotted " + ticker + " at " + datetime.datetime.utcnow().strftime("%b %d %Y %H:%M:%S")
+            df_vol = (df / df.shift(1)).rolling(window=20).std()* math.sqrt(252) * 100.0
+
+            spot_fig = Chart(engine="plotly").plot(df,
+                            style=Style(title='Spot', plotly_plot_mode='dash', width=980, height=480, scale_factor=-1))
+
+            vol_fig = Chart(engine="plotly").plot(df_vol,
+                                                     style=Style(title='Realized Vol 1M', plotly_plot_mode='dash', width=980,
+                                                                 height=480, scale_factor=-1))
+            msg = "Plotted " + ticker + " at " + datetime.datetime.utcnow().strftime("%b %d %Y %H:%M:%S")
+
+            return spot_fig, vol_fig, msg
         except Exception as e:
             print(str(e))
             pass
@@ -90,7 +100,7 @@ class LayoutChart(LayoutCanvas):
 
                 self._sc.horizontal_bar(),
 
-                self._sc.plot("Quandl Plot", id=['quandl-fig'], prefix_id=self.page_id(), height=500),
+                self._sc.plot("Quandl Plot", id=['spot-fig', 'vol-fig'], prefix_id=self.page_id(), height=500),
             ]
         )
 

@@ -1770,12 +1770,30 @@ class EnginePlotly(EngineTemplate):
         #### Plotted all the lines
 
         # Create subplots if more than one figure
-        if len(fig_list) > 1 and style.animate_figure == False:
-            fig = cf.subplots(fig_list, base_layout=fig_list[0].to_dict()['layout'], shape=(1, len(fig_list)),
-                              shared_xaxes=False, shared_yaxes=False)
+        if len(fig_list) > 1 and style.animate_figure == False and style.subplots == True:
+            from plotly.subplots import make_subplots
+
+            fig = make_subplots(rows=len(fig_list), cols=1)
+
+            # layout = fig_list[0]['layout']
+
+            # fig.layout = fig_list[0].layout
+
+            # for k, v in list(layout.items()):
+            #     if 'xaxis' not in k and 'yaxis' not in k:
+            #         fig['layout'].update({k: v})
+
+            for i, f in enumerate(fig_list):
+                fig.append_trace(f.data[0], row=i+1, col=1)
+
+            #fig = cf.subplots(fig_list, base_layout=fig_list[0].to_dict()['layout'], shape=(len(fig_list), 1),
+            #                  shared_xaxes=False, shared_yaxes=False)
 
             if not(isinstance(style.title, list)):
                 fig['layout'].update(title=style.title)
+
+            fig['layout'].update(width=style.width * abs(style.scale_factor))
+            fig['layout'].update(height=style.height * abs(style.scale_factor))
 
         elif style.animate_figure:
 
@@ -1934,7 +1952,7 @@ class EnginePlotly(EngineTemplate):
                     fig['data'][j].line.shape = line_shape
 
         # If candlestick specified add that (needed to be appended on top of the Plotly figure's data
-        if style.candlestick_series is not None and not (style.plotly_webgl):
+        if style.candlestick_series is not None and not(style.plotly_webgl):
 
             # self.logger.debug("About to create candlesticks")
 

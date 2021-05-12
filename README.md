@@ -166,6 +166,8 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 12 May 2021
+  * Fixed display of Dash DataTables for new Dash versions
 * 06 May 2021
   * Fixed subplots with plotly
   * Added realized vol to dashboard example

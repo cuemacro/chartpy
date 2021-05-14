@@ -109,7 +109,7 @@ class SketchComponents(object):
             for id_, d in zip(id, description):
                 div_list.append(html.Div(html.P(d, id=prefix_id + id_),
                                     style={'height': '20px', 'width': '900px', 'float': 'left',
-                                                'font-family': 'Open Sans Light'}))
+                                                'font-family': 'open sans'}))
 
         return html.Div(div_list,
             style={'width': str(width) + 'px', 'marginBottom': 0, 'marginTop': 5, 'marginLeft': 5,
@@ -358,7 +358,7 @@ class SketchComponents(object):
 
 
     def table(self, caption=None, id=None, prefix_id='', element_add=None, columns=None, downloadplot_caption=None,
-             downloadplot_tag=None, download_file=None, width=None, font_size=14, font_family='Open Sans Light'):
+             downloadplot_tag=None, download_file=None, width=None, font_size=14, font_family='open sans'):
         """
 
         Parameters

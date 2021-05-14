@@ -168,6 +168,7 @@ In chartpy/examples you will find several demos
 
 * 14 May 2021
   * Added extra font properties for Dash DataTables
+  * Fixed default font
 * 12 May 2021
   * Fixed display of Dash DataTables for new Dash versions
 * 06 May 2021

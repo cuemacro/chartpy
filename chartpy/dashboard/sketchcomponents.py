@@ -358,7 +358,7 @@ class SketchComponents(object):
 
 
     def table(self, caption=None, id=None, prefix_id='', element_add=None, columns=None, downloadplot_caption=None,
-             downloadplot_tag=None, download_file=None, width=None, font_family='Open Sans Light'):
+             downloadplot_tag=None, download_file=None, width=None, font_size=14, font_family='Open Sans Light'):
         """
 
         Parameters
@@ -432,7 +432,7 @@ class SketchComponents(object):
                         sort_mode="multi",
                         selected_columns=[],
                         selected_rows=[],
-                        style_cell={'font-family': font_family},
+                        style_cell={'fontSize': font_size, 'font-family': font_family},
                         id=prefix_id + id_
                     )
                 else:

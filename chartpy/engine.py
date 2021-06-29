@@ -1498,6 +1498,7 @@ class EnginePlotly(EngineTemplate):
                                                 title=title,
                                                 xTitle=style.x_title,
                                                 yTitle=style.y_title,
+                                                zTitle=style.z_title,
                                                 x=x, y=y, z=z,
                                                 mode=mode,
                                                 size=marker_size,
@@ -1661,6 +1662,17 @@ class EnginePlotly(EngineTemplate):
                                 if fig['data'][k].type == 'scatter':
                                     fig['data'][k].type = 'scattergl'
 
+                        if style.stackgroup is not None:
+
+                            if isinstance(style.stackgroup, list):
+                                stackgroup = style.stackgroup
+                            else:
+                                stackgroup = ['A'] * len(fig['data'])
+
+                            for k in range(0, len(fig['data'])):
+                                fig['data'][k].stackgroup = stackgroup[k]
+
+
                 # Use plotly express (not implemented yet)
                 elif style.plotly_helper == 'plotly_express':
                     # TODO
@@ -1763,6 +1775,10 @@ class EnginePlotly(EngineTemplate):
 
             if style.legend_orientation is not None:
                 try: fig.update_layout(legend=dict(orientation=style.legend_orientation))
+                except: pass
+
+            if style.barmode is not None:
+                try: fig.update_layout(barmode=style.barmode)
                 except: pass
 
             fig_list.append(fig)

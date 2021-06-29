@@ -2,6 +2,8 @@
 
 # [chartpy](https://github.com/cuemacro/chartpy)
 
+[![Downloads](https://pepy.tech/badge/chartpy)](https://pepy.tech/project/chartpy)
+
 chartpy creates a simple easy to use API to plot in a number of great Python chart libraries like plotly (via cufflinks), bokeh and matplotlib,
 with a unified interface. You simply need to change a single keyword to change which chart engine to use (see below), rather than having
 to learn the low level details of each library. I've also created new stylesheets and formating to ensure that the default matplotlib
@@ -167,6 +169,8 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 29 Jun 2021
+  * Add downloads badge
 * 14 May 2021
   * Added extra font properties for Dash DataTables
   * Fixed default font

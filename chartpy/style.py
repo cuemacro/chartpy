@@ -43,6 +43,10 @@ class Style(object):
                  engine=None,
                  chart_type=None,
                  
+                 # Type of bar chart
+                 barmode=None,
+                 stackgroup=None,
+                 
                  # Drop NaN points before plotting
                  drop_na=False,
 
@@ -190,6 +194,10 @@ class Style(object):
 
         # Chart type
         self.chart_type = chart_type
+        
+        # Type of bar mode
+        self.barmode = barmode
+        self.stackgroup = stackgroup
         
         # Drop NaN before plotting
         self.drop_na = drop_na
@@ -423,7 +431,24 @@ class Style(object):
     @chart_type.setter
     def chart_type(self, chart_type):
         self.__chart_type = chart_type
+
+    ###### barmode
+    @property
+    def barmode(self):
+        return self.__barmode
+
+    @barmode.setter
+    def barmode(self, barmode):
+        self.__barmode = barmode
         
+    @property
+    def stackgroup(self):
+        return self.__stackgroup
+
+    @stackgroup.setter
+    def stackgroup(self, stackgroup):
+        self.__stackgroup = stackgroup
+
     ###### drop na
     @property
     def drop_na(self):

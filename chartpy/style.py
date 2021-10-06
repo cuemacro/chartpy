@@ -104,9 +104,9 @@ class Style(object):
                  x_shade_dates=None,
 
                  # Grid
-                 x_axis_showgrid = True,
-                 y_axis_showgrid = True,
-                 y_axis_2_showgrid = True,
+                 x_axis_showgrid=True,
+                 y_axis_showgrid=True,
+                 y_axis_2_showgrid=True,
                  z_axis_showgrid=True,
 
                  # Vertical and horizontal lines from axis

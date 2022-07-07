@@ -159,6 +159,7 @@ In chartpy/examples you will find several demos
 
 # Recent Release Notes
 
+* 07 Jul 2022 - v0.1.12
 * 06 Oct 2021 - v0.1.11
 * 01 Jun 2021 - v0.1.10
 * 04 May 2021 - v0.1.9
@@ -170,6 +171,8 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 07 Jul 2022
+  * Edited SketchComponents to take into account deprecated Dash imports
 * 29 Jun 2021
   * Add downloads badge
 * 14 May 2021

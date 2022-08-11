@@ -437,7 +437,7 @@ class SketchComponents(object):
             prefix_id = prefix_id + '-'
 
         html_tags = []
-        html_tags.append(html.H3(caption))
+        html_tags.append(html.H4(caption))
 
         if element_add is not None:
             html_tags.append(element_add)

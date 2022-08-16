@@ -14,6 +14,7 @@ __author__ = 'saeedamen'  # Saeed Amen
 
 """
 This example generates several Brownian paths with millions of time steps. It then plots these using two different backends
+- Plotly with webgl
 - VisPy (GPU accelerated) backend
 - matplotlib backend
 
@@ -96,11 +97,14 @@ def brownian(x0, n, dt, delta, out=None):
 
 if __name__ == '__main__':
 
-    print('Generate paths')
+    from findatapy.util import LoggerManager
+    logger = LoggerManager().getLogger(__name__)
+
+    logger.info('Generate paths')
 
     delta = 2       # The Wiener process parameter.
     T = 10.0        # Total time.
-    N = 10 * 1000000    # Number of steps.
+    N = 10 * 20000  # Number of steps.
     dt = T/N        # Time step size
     m = 5           # Number of realizations to generate.
 
@@ -108,20 +112,26 @@ if __name__ == '__main__':
 
     x[:, 0] = 50    # Initial values of x.
 
-    brownian(x[:,0], N, dt, delta, out=x[:,1:])
+    brownian(x[:, 0], N, dt, delta, out=x[:, 1:])
 
     t = numpy.linspace(0.0, N*dt, N+1)
 
     df = pandas.DataFrame(index=t, data=x.T)
 
     style = Style(save_fig=True)
+    
+    logger.info('About to plot plotly without webgl...')
+    Chart().plot(df, engine='plotly', style=Style(save_fig=True, plotly_webgl=False))
 
-    print('About to plot vispy...')
+    logger.info('About to plot plotly webgl...')
+    Chart().plot(df, engine='plotly', style=Style(save_fig=True, plotly_webgl=True))
+
+    logger.info('About to plot vispy...')
     # try vispy, which will work (uses GPU)
-    Chart().plot(df, engine='vispy', style=style)
+    # Chart().plot(df, engine='vispy', style=style)
 
-    print('About to plot matplotlib...')
+    logger.info('About to plot matplotlib...')
     # try matplotlib, which will likely be very slow or crash...
-    Chart().plot(df, engine='matplotlib', style=style)
+    # Chart().plot(df, engine='matplotlib', style=style)
 
 

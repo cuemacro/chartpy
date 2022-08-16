@@ -73,6 +73,7 @@ class Style(object):
 
                  # Subplot
                  subplots=False,
+                 subplot_titles=None,
                  share_subplot_x=False,
 
                  # Display sizes
@@ -225,6 +226,7 @@ class Style(object):
         
         # Subplots
         self.subplots = subplots
+        self.subplot_titles = subplot_titles
         self.share_subplot_x = share_subplot_x
 
         # Display sizes
@@ -575,6 +577,15 @@ class Style(object):
     @subplots.setter
     def subplots(self, subplots):
         self.__subplots = subplots
+        
+    @property
+    def subplot_titles(self):
+        return self.__subplot_titles
+
+    @subplot_titles.setter
+    def subplot_titles(self, subplot_titles):
+        self.__subplot_titles = subplot_titles
+
 
     @property
     def share_subplot_x(self):

@@ -44,7 +44,9 @@ class EngineTemplate(ABC):
         return
 
     def get_time_stamp(self):
-        return str(datetime.datetime.now()).replace(':', '-').replace(' ', '-').replace(".", "-")
+        return str(datetime.datetime.now()).replace(':', '-').replace(' ',
+                                                                      '-').replace(
+            ".", "-")
 
     def get_bar_indices(self, data_frame, style, chart_type, bar_ind):
         has_bar = 'no-bar'
@@ -88,7 +90,8 @@ class EngineTemplate(ABC):
 
         return list
 
-    def get_linewidth(self, label, linewidth_1, linewidth_2, linewidth_2_series):
+    def get_linewidth(self, label, linewidth_1, linewidth_2,
+                      linewidth_2_series):
         if label in linewidth_2_series:
             return linewidth_2
 
@@ -103,25 +106,30 @@ class EngineTemplate(ABC):
         if isinstance(data_frame, list):
             data_frame_list = data_frame
         else:
-            if style.subplots == True and isinstance(data_frame, pandas.DataFrame):
+            if style.subplots == True and isinstance(data_frame,
+                                                     pandas.DataFrame):
 
                 for col in data_frame.columns:
                     data_frame_list.append(
-                        pandas.DataFrame(index=data_frame.index, columns=[col], data=data_frame[col]))
+                        pandas.DataFrame(index=data_frame.index, columns=[col],
+                                         data=data_frame[col]))
             else:
                 data_frame_list.append(data_frame)
 
         return data_frame_list
 
     def generate_file_names(self, style, engine):
-        if style.html_file_output is not None and not (style.auto_generate_html_filename):
+        if style.html_file_output is not None and not (
+        style.auto_generate_html_filename):
             pass
         else:
             import time
-            style.html_file_output = (self.get_time_stamp() + "-" + engine + ".html")
+            style.html_file_output = (
+                        self.get_time_stamp() + "-" + engine + ".html")
             style.auto_generate_html_filename = True
 
-        if style.file_output is not None and not (style.auto_generate_filename):
+        if style.file_output is not None and not (
+        style.auto_generate_filename):
             pass
         else:
             import time
@@ -245,7 +253,10 @@ class EngineBokeh(EngineTemplate):
         for data_frame in data_frame_list:
             bar_ind = numpy.arange(1, len(data_frame.index) + 1)
 
-            xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame, style, chart_type, bar_ind)
+            xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame,
+                                                                    style,
+                                                                    chart_type,
+                                                                    bar_ind)
 
             separate_chart = False
 
@@ -253,7 +264,8 @@ class EngineBokeh(EngineTemplate):
                 # TODO
 
                 p1 = HeatMap(data_frame,
-                             title='Random', plot_width=plot_width, plot_height=plot_height)
+                             title='Random', plot_width=plot_width,
+                             plot_height=plot_height)
 
                 separate_chart = True
 
@@ -262,13 +274,15 @@ class EngineBokeh(EngineTemplate):
                 p1 = figure(
                     plot_width=plot_width,
                     plot_height=plot_height,
-                    x_range=[str(x).replace(':', '.') for x in data_frame.index]
+                    x_range=[str(x).replace(':', '.') for x in
+                             data_frame.index]
                 )
 
                 from math import pi
                 p1.xaxis.major_label_orientation = pi / 2
             elif type(data_frame.index) == pandas.Timestamp or (
-                    type(xd[0]) == pandas.Timestamp and type(xd[-1]) == pandas.Timestamp) \
+                    type(xd[0]) == pandas.Timestamp and type(
+                xd[-1]) == pandas.Timestamp) \
                     or type(data_frame.index) == pandas.DatetimeIndex:
                 p1 = figure(
                     x_axis_type="datetime",
@@ -349,7 +363,8 @@ class EngineBokeh(EngineTemplate):
                         color_spec[i] = self.get_color_list(i)
 
                     try:
-                        color_spec[i] = matplotlib.colors.rgb2hex(color_spec[i])
+                        color_spec[i] = matplotlib.colors.rgb2hex(
+                            color_spec[i])
                     except:
                         pass
 
@@ -358,27 +373,36 @@ class EngineBokeh(EngineTemplate):
                     # plot each time series as appropriate line, scatter etc.
                     if chart_type_ord == 'line':
                         linewidth_t = self.get_linewidth(label,
-                                                         style.linewidth, style.linewidth_2, style.linewidth_2_series)
+                                                         style.linewidth,
+                                                         style.linewidth_2,
+                                                         style.linewidth_2_series)
 
                         if linewidth_t is None: linewidth_t = 1
 
                         if style.display_legend:
-                            p1.line(xd, yd, color=color_spec[i], line_width=linewidth_t, name=glyph_name,
+                            p1.line(xd, yd, color=color_spec[i],
+                                    line_width=linewidth_t, name=glyph_name,
                                     legend=label,
                                     )
                         else:
-                            p1.line(xd, data_frame.iloc[:, i], color=color_spec[i], line_width=linewidth_t,
+                            p1.line(xd, data_frame.iloc[:, i],
+                                    color=color_spec[i],
+                                    line_width=linewidth_t,
                                     name=glyph_name)
 
                     elif (chart_type_ord == 'bar'):
-                        bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(1, len(bar_ind) + 1)]
+                        bar_pos = [
+                            k - (1 - bar_space) / 2. + bar_index * bar_width
+                            for k in range(1, len(bar_ind) + 1)]
                         bar_pos_right = [x + bar_width for x in bar_pos]
 
                         if style.display_legend:
-                            p1.quad(top=yd, bottom=0 * yd, left=bar_pos, right=bar_pos_right, color=color_spec[i],
+                            p1.quad(top=yd, bottom=0 * yd, left=bar_pos,
+                                    right=bar_pos_right, color=color_spec[i],
                                     legend=label)
                         else:
-                            p1.quad(top=yd, bottom=0 * yd, left=bar_pos, right=bar_pos_right, color=color_spec[i])
+                            p1.quad(top=yd, bottom=0 * yd, left=bar_pos,
+                                    right=bar_pos_right, color=color_spec[i])
 
                         bar_index = bar_index + 1
                         bar_ind = bar_ind + bar_width
@@ -388,16 +412,20 @@ class EngineBokeh(EngineTemplate):
 
                     elif chart_type_ord == 'scatter':
                         linewidth_t = self.get_linewidth(label,
-                                                         style.linewidth, style.linewidth_2, style.linewidth_2_series)
+                                                         style.linewidth,
+                                                         style.linewidth_2,
+                                                         style.linewidth_2_series)
 
                         if linewidth_t is None: linewidth_t = 1
 
                         if style.display_legend:
-                            p1.circle(xd, yd, color=color_spec[i], line_width=linewidth_t, name=glyph_name,
+                            p1.circle(xd, yd, color=color_spec[i],
+                                      line_width=linewidth_t, name=glyph_name,
                                       legend=label,
                                       )
                         else:
-                            p1.circle(xd, yd, color=color_spec[i], line_width=linewidth_t, name=glyph_name)
+                            p1.circle(xd, yd, color=color_spec[i],
+                                      line_width=linewidth_t, name=glyph_name)
 
                 p1.grid.grid_line_alpha = 0.3
 
@@ -465,6 +493,7 @@ try:
 except:
     pass
 
+
 class EngineVisPy(EngineTemplate):
     def plot_chart(self, data_frame, style, chart_type):
 
@@ -490,7 +519,8 @@ class EngineVisPy(EngineTemplate):
         plot_width = int((style.width * scale_factor))
         plot_height = int((style.height * scale_factor) / len(data_frame_list))
 
-        fig = vp.Fig(size=(plot_width, plot_height), show=False, title=style.title)
+        fig = vp.Fig(size=(plot_width, plot_height), show=False,
+                     title=style.title)
 
         min_x, max_x = self.get_max_min_x_axis(data_frame_list=data_frame_list)
 
@@ -502,7 +532,10 @@ class EngineVisPy(EngineTemplate):
                 data_frame = data_frame.reset_index()
                 data_frame = data_frame.drop(['Date'], axis=1)
 
-            xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame, style, chart_type, bar_ind)
+            xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame,
+                                                                    style,
+                                                                    chart_type,
+                                                                    bar_ind)
             xd = data_frame.index
             # make the x-axis float as a temporary fix, vispy can't handle Date labels
             separate_chart = False
@@ -543,7 +576,8 @@ class EngineVisPy(EngineTemplate):
                         color_spec[i] = self.get_color_list(i)
 
                     try:
-                        color_spec[i] = matplotlib.colors.rgb2hex(color_spec[i])
+                        color_spec[i] = matplotlib.colors.rgb2hex(
+                            color_spec[i])
                     except:
                         pass
 
@@ -551,7 +585,8 @@ class EngineVisPy(EngineTemplate):
 
                     # plot each time series as appropriate line, scatter etc.
                     if chart_type_ord == 'line':
-                        fig[0, 0].plot(np.array((xd, yd)).T, marker_size=0, color=color_spec[i])
+                        fig[0, 0].plot(np.array((xd, yd)).T, marker_size=0,
+                                       color=color_spec[i])
 
                         # fig[0, 0].view.camera.set_range(x=(min_x, max_x))
                         # TODO
@@ -603,22 +638,26 @@ except:
     pass
 
 try:
-    from mpl_toolkits.mplot3d import Axes3D  # need to import in order to do 3D plots (even if not called)
+    from mpl_toolkits.mplot3d import \
+        Axes3D  # need to import in order to do 3D plots (even if not called)
 except:
     pass
 
 # Later version of Pandas will need to register converters
 try:
     from pandas.plotting import register_matplotlib_converters
+
     register_matplotlib_converters()
 except:
     pass
 
 try:
-    from matplotlib.dates import YearLocator, MonthLocator, DayLocator, HourLocator, MinuteLocator
+    from matplotlib.dates import YearLocator, MonthLocator, DayLocator, \
+        HourLocator, MinuteLocator
     from matplotlib.ticker import MultipleLocator
 except:
     pass
+
 
 class EngineMatplotlib(EngineTemplate):
 
@@ -630,8 +669,10 @@ class EngineMatplotlib(EngineTemplate):
             plt.xkcd()
 
         # create figure & add a subplot
-        fig = plt.figure(figsize=((style.width * abs(style.scale_factor)) / style.dpi,
-                                  (style.height * abs(style.scale_factor)) / style.dpi), dpi=style.dpi)
+        fig = plt.figure(
+            figsize=((style.width * abs(style.scale_factor)) / style.dpi,
+                     (style.height * abs(style.scale_factor)) / style.dpi),
+            dpi=style.dpi)
 
         # matplotlib 1.5
         try:
@@ -654,24 +695,35 @@ class EngineMatplotlib(EngineTemplate):
 
         ordinal = 0
 
-        minz, maxz = self.get_max_min_dataframes(data_frame_list=data_frame_list)
+        minz, maxz = self.get_max_min_dataframes(
+            data_frame_list=data_frame_list)
 
         for data_frame in data_frame_list:
             bar_ind = np.arange(0, len(data_frame.index))
 
             # for bar charts, create a proxy x-axis (then relabel)
-            xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame, style, chart_type, bar_ind)
+            xd, bar_ind, has_bar, no_of_bars = self.get_bar_indices(data_frame,
+                                                                    style,
+                                                                    chart_type,
+                                                                    bar_ind)
 
             try:
                 xd = xd.to_pydatetime()
             except:
                 pass
 
-            ax, ax2, subplot_no, ordinal = self._create_subplot(fig, chart_type, style, subplot_no, first_ax, ordinal)
+            ax, ax2, subplot_no, ordinal = self._create_subplot(fig,
+                                                                chart_type,
+                                                                style,
+                                                                subplot_no,
+                                                                first_ax,
+                                                                ordinal)
 
             # for stacked bar
-            yoff_pos = np.zeros(len(data_frame.index.values))  # the bottom values for stacked bar chart
-            yoff_neg = np.zeros(len(data_frame.index.values))  # the bottom values for stacked bar chart
+            yoff_pos = np.zeros(
+                len(data_frame.index.values))  # the bottom values for stacked bar chart
+            yoff_neg = np.zeros(
+                len(data_frame.index.values))  # the bottom values for stacked bar chart
 
             zeros = np.zeros(len(data_frame.index.values))
 
@@ -704,22 +756,31 @@ class EngineMatplotlib(EngineTemplate):
 
                         if style.normalize_colormap:
                             movie_frame.append(
-                                ax_temp.pcolor(data_frame.values, cmap=color, alpha=0.8, vmax=maxz, vmin=minz))
+                                ax_temp.pcolor(data_frame.values, cmap=color,
+                                               alpha=0.8, vmax=maxz,
+                                               vmin=minz))
                         else:
-                            movie_frame.append(ax_temp.pcolor(data_frame.values, cmap=color, alpha=0.8))
+                            movie_frame.append(
+                                ax_temp.pcolor(data_frame.values, cmap=color,
+                                               alpha=0.8))
 
                         has_matrix = '2d-matrix'
                     elif chart_type == 'surface':
 
                         # TODO still very early alpha
-                        X, Y = np.meshgrid(range(0, len(data_frame.columns)), range(0, len(data_frame.index)))
+                        X, Y = np.meshgrid(range(0, len(data_frame.columns)),
+                                           range(0, len(data_frame.index)))
                         Z = data_frame.values
 
                         if style.normalize_colormap:
-                            movie_frame.append(ax_temp.plot_surface(X, Y, Z, cmap=color, rstride=1, cstride=1,
-                                                                    vmax=maxz, vmin=minz))
+                            movie_frame.append(
+                                ax_temp.plot_surface(X, Y, Z, cmap=color,
+                                                     rstride=1, cstride=1,
+                                                     vmax=maxz, vmin=minz))
                         else:
-                            movie_frame.append(ax_temp.plot_surface(X, Y, Z, cmap=color, rstride=1, cstride=1))
+                            movie_frame.append(
+                                ax_temp.plot_surface(X, Y, Z, cmap=color,
+                                                     rstride=1, cstride=1))
 
                         has_matrix = '3d-matrix'
 
@@ -737,7 +798,8 @@ class EngineMatplotlib(EngineTemplate):
 
                         label = str(data_frame.columns[i])
 
-                        ax_temp = self.get_axis(ax, ax2, label, style.y_axis_2_series)
+                        ax_temp = self.get_axis(ax, ax2, label,
+                                                style.y_axis_2_series)
 
                         yd = data_frame.iloc[:, i]
 
@@ -746,36 +808,52 @@ class EngineMatplotlib(EngineTemplate):
 
                         if (chart_type_ord == 'line'):
                             linewidth_t = self.get_linewidth(label,
-                                                             style.linewidth, style.linewidth_2,
+                                                             style.linewidth,
+                                                             style.linewidth_2,
                                                              style.linewidth_2_series)
 
-                            if linewidth_t is None: linewidth_t = matplotlib.rcParams['axes.linewidth']
+                            if linewidth_t is None: linewidth_t = \
+                            matplotlib.rcParams['axes.linewidth']
 
-                            movie_frame.append(ax_temp.plot(xd, yd, label=label, color=color_spec[i],
-                                                            linewidth=linewidth_t), )
+                            movie_frame.append(
+                                ax_temp.plot(xd, yd, label=label,
+                                             color=color_spec[i],
+                                             linewidth=linewidth_t), )
 
                         elif (chart_type_ord == 'bar'):
                             # for multiple bars we need to allocate space properly
-                            bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0, len(bar_ind))]
+                            bar_pos = [k - (
+                                        1 - bar_space) / 2. + bar_index * bar_width
+                                       for k in range(0, len(bar_ind))]
 
-                            movie_frame.append(ax_temp.bar(bar_pos, yd, bar_width, label=label, color=color_spec[i]))
+                            movie_frame.append(
+                                ax_temp.bar(bar_pos, yd, bar_width,
+                                            label=label, color=color_spec[i]))
 
                             bar_index = bar_index + 1
 
                         elif (chart_type_ord == 'barh'):
                             # for multiple bars we need to allocate space properly
-                            bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0, len(bar_ind))]
+                            bar_pos = [k - (
+                                        1 - bar_space) / 2. + bar_index * bar_width
+                                       for k in range(0, len(bar_ind))]
 
-                            movie_frame.append(ax_temp.barh(bar_pos, yd, bar_width, label=label, color=color_spec[i]))
+                            movie_frame.append(
+                                ax_temp.barh(bar_pos, yd, bar_width,
+                                             label=label, color=color_spec[i]))
 
                             bar_index = bar_index + 1
 
                         elif (chart_type_ord == 'stacked'):
-                            bar_pos = [k - (1 - bar_space) / 2. + bar_index * bar_width for k in range(0, len(bar_ind))]
+                            bar_pos = [k - (
+                                        1 - bar_space) / 2. + bar_index * bar_width
+                                       for k in range(0, len(bar_ind))]
 
                             yoff = np.where(yd > 0, yoff_pos, yoff_neg)
 
-                            movie_frame.append(ax_temp.bar(bar_pos, yd, label=label, color=color_spec[i], bottom=yoff))
+                            movie_frame.append(
+                                ax_temp.bar(bar_pos, yd, label=label,
+                                            color=color_spec[i], bottom=yoff))
 
                             yoff_pos = yoff_pos + np.maximum(yd, zeros)
                             yoff_neg = yoff_neg + np.minimum(yd, zeros)
@@ -783,14 +861,20 @@ class EngineMatplotlib(EngineTemplate):
                             # bar_index = bar_index + 1
 
                         elif (chart_type_ord == 'scatter'):
-                            movie_frame.append(ax_temp.scatter(xd, yd, label=label, color=color_spec[i]))
+                            movie_frame.append(
+                                ax_temp.scatter(xd, yd, label=label,
+                                                color=color_spec[i]))
 
                             if style.line_of_best_fit is True:
-                                self.trendline(ax_temp, xd.values, yd.values, order=1, color=color_spec[i], alpha=1,
-                                               scale_factor=abs(style.scale_factor))
+                                self.trendline(ax_temp, xd.values, yd.values,
+                                               order=1, color=color_spec[i],
+                                               alpha=1,
+                                               scale_factor=abs(
+                                                   style.scale_factor))
 
                 # format X axis
-                self.format_x_axis(ax_temp, data_frame, style, has_bar, bar_ind, bar_width, has_matrix)
+                self.format_x_axis(ax_temp, data_frame, style, has_bar,
+                                   bar_ind, bar_width, has_matrix)
 
             except Exception as e:
                 pass
@@ -825,7 +909,9 @@ class EngineMatplotlib(EngineTemplate):
             import matplotlib.animation as animation
 
             try:
-                anim = animation.FuncAnimation(plt.gcf(), update, interval=style.animate_frame_ms, blit=True,
+                anim = animation.FuncAnimation(plt.gcf(), update,
+                                               interval=style.animate_frame_ms,
+                                               blit=True,
                                                frames=len(data_frame_list),
                                                init_func=init, repeat=True)
 
@@ -893,8 +979,9 @@ class EngineMatplotlib(EngineTemplate):
             import plotly.tools as tls
 
             if style.convert_matplotlib_to_plotly == True:
-                plotly.tools.set_credentials_file(username=style.plotly_username,
-                                                  api_key=style.plotly_api_key)
+                plotly.tools.set_credentials_file(
+                    username=style.plotly_username,
+                    api_key=style.plotly_api_key)
 
                 py_fig = tls.mpl_to_plotly(fig, strip_style=True)
                 plot_url = py.plot_mpl(py_fig, filename=style.plotly_url)
@@ -931,12 +1018,15 @@ class EngineMatplotlib(EngineTemplate):
             plt.style.use(style.style_sheet)
 
         # adjust font size for scale factor
-        matplotlib.rcParams.update({'font.size': matplotlib.rcParams['font.size'] * abs(style.scale_factor)})
+        matplotlib.rcParams.update({'font.size': matplotlib.rcParams[
+                                                     'font.size'] * abs(
+            style.scale_factor)})
 
         # do not use offsets/scientific notation
         matplotlib.rcParams.update({'axes.formatter.useoffset': False})
 
-    def format_x_axis(self, ax, data_frame, style, has_bar, bar_ind, bar_width, has_matrix):
+    def format_x_axis(self, ax, data_frame, style, has_bar, bar_ind, bar_width,
+                      has_matrix):
 
         if has_matrix == '2d-matrix' or has_matrix == '3d-matrix':
             x_bar_ind = np.arange(0, len(data_frame.columns))
@@ -957,7 +1047,8 @@ class EngineMatplotlib(EngineTemplate):
 
             for x in range(len(data_frame.index)):
                 for y in range(len(data_frame.columns)):
-                    plt.text(x + offset, y + offset, '%.0f' % data_frame.iloc[x, y],
+                    plt.text(x + offset, y + offset,
+                             '%.0f' % data_frame.iloc[x, y],
                              horizontalalignment='center',
                              verticalalignment='center',
                              )
@@ -1002,7 +1093,8 @@ class EngineMatplotlib(EngineTemplate):
                 import matplotlib.dates as mdates
 
                 if style.date_formatter is not None:
-                    ax.format_ydata = mdates.DateFormatter(style.date_formatter)
+                    ax.format_ydata = mdates.DateFormatter(
+                        style.date_formatter)
 
                 plt.tight_layout()
                 # ax.tick_params(axis='x', labelsize=matplotlib.rcParams['font.size'] * 0.5)
@@ -1012,10 +1104,12 @@ class EngineMatplotlib(EngineTemplate):
         dates = data_frame.index
 
         # scaling for time series plots with hours and minutes only (and no dates)
-        if hasattr(data_frame.index[0], 'hour') and not (hasattr(data_frame.index[0], 'month')):
+        if hasattr(data_frame.index[0], 'hour') and not (
+        hasattr(data_frame.index[0], 'month')):
             ax.xaxis.set_major_locator(MultipleLocator(86400. / 3.))
             ax.xaxis.set_minor_locator(MultipleLocator(86400. / 24.))
-            ax.grid(b=style.x_axis_showgrid, which='minor', color='w', linewidth=0.5)
+            ax.grid(b=style.x_axis_showgrid, which='minor', color='w',
+                    linewidth=0.5)
 
         # TODO have more refined way of formating time series x-axis!
 
@@ -1046,7 +1140,8 @@ class EngineMatplotlib(EngineTemplate):
                     # formatter = MyFormatter(dates)
                     # ax.xaxis.set_major_formatter(formatter)
 
-                    ax.xaxis.set_major_formatter(md.DateFormatter(style.date_formatter))
+                    ax.xaxis.set_major_formatter(
+                        md.DateFormatter(style.date_formatter))
                 elif diff < timedelta(days=4):
 
                     date_formatter = '%H:%M'
@@ -1054,10 +1149,12 @@ class EngineMatplotlib(EngineTemplate):
                     ax.xaxis.set_major_formatter(xfmt)
 
                     if diff < timedelta(minutes=20):
-                        ax.xaxis.set_major_locator(MinuteLocator(byminute=range(60), interval=2))
+                        ax.xaxis.set_major_locator(
+                            MinuteLocator(byminute=range(60), interval=2))
                         ax.xaxis.set_minor_locator(MinuteLocator(interval=1))
                     elif diff < timedelta(hours=1):
-                        ax.xaxis.set_major_locator(MinuteLocator(byminute=range(60), interval=5))
+                        ax.xaxis.set_major_locator(
+                            MinuteLocator(byminute=range(60), interval=5))
                         ax.xaxis.set_minor_locator(MinuteLocator(interval=2))
                     elif diff < timedelta(hours=6):
                         locator = HourLocator(interval=1)
@@ -1139,7 +1236,8 @@ class EngineMatplotlib(EngineTemplate):
 
         return ax
 
-    def trendline(self, ax, xd, yd, order=1, color='red', alpha=1, Rval=False, scale_factor=1):
+    def trendline(self, ax, xd, yd, order=1, color='red', alpha=1, Rval=False,
+                  scale_factor=1):
         """ Make a line of best fit """
 
         # Calculate trendline
@@ -1173,10 +1271,14 @@ class EngineMatplotlib(EngineTemplate):
         Rsqr = ssreg / sstot
 
         if Rval == False:
-            text = 'R^2 = %0.2f, m = %0.4f, c = %0.4f' % (Rsqr, slope, intercept)
+            text = 'R^2 = %0.2f, m = %0.4f, c = %0.4f' % (
+            Rsqr, slope, intercept)
 
-            ax.annotate(text, xy=(1, 1), xycoords='axes fraction', fontsize=8 * abs(scale_factor),
-                        xytext=(-5 * abs(scale_factor), 10 * abs(scale_factor)), textcoords='offset points',
+            ax.annotate(text, xy=(1, 1), xycoords='axes fraction',
+                        fontsize=8 * abs(scale_factor),
+                        xytext=(
+                        -5 * abs(scale_factor), 10 * abs(scale_factor)),
+                        textcoords='offset points',
                         ha='right', va='top')
 
             # Plot R^2 value
@@ -1191,11 +1293,14 @@ class EngineMatplotlib(EngineTemplate):
     def _create_brand_label(self, ax, anno, scale_factor):
         ax.annotate(anno, xy=(1, 1), xycoords='axes fraction',
                     fontsize=10 * abs(scale_factor), color='white',
-                    xytext=(0 * abs(scale_factor), 15 * abs(scale_factor)), textcoords='offset points',
+                    xytext=(0 * abs(scale_factor), 15 * abs(scale_factor)),
+                    textcoords='offset points',
                     va="center", ha="center",
-                    bbox=dict(boxstyle="round,pad=0.0", facecolor=cc.chartfactory_brand_color))
+                    bbox=dict(boxstyle="round,pad=0.0",
+                              facecolor=cc.chartfactory_brand_color))
 
-    def _create_subplot(self, fig, chart_type, style, subplot_no, first_ax, ordinal):
+    def _create_subplot(self, fig, chart_type, style, subplot_no, first_ax,
+                        ordinal):
 
         if style.title is not None:
             fig.suptitle(style.title, fontsize=14 * abs(style.scale_factor))
@@ -1213,7 +1318,8 @@ class EngineMatplotlib(EngineTemplate):
         else:
             if first_ax is None:
                 if chart_projection == '3d':
-                    ax = fig.add_subplot(2, 1, subplot_no, projection=chart_projection)
+                    ax = fig.add_subplot(2, 1, subplot_no,
+                                         projection=chart_projection)
                 else:
                     ax = fig.add_subplot(2, 1, subplot_no)
 
@@ -1221,12 +1327,14 @@ class EngineMatplotlib(EngineTemplate):
 
             if style.share_subplot_x:
                 if chart_projection == '3d':
-                    ax = fig.add_subplot(2, 1, subplot_no, sharex=first_ax, projection=chart_projection)
+                    ax = fig.add_subplot(2, 1, subplot_no, sharex=first_ax,
+                                         projection=chart_projection)
                 else:
                     ax = fig.add_subplot(2, 1, subplot_no, sharex=first_ax)
             else:
                 if chart_projection == '3d':
-                    ax = fig.add_subplot(2, 1, subplot_no, projection=chart_projection)
+                    ax = fig.add_subplot(2, 1, subplot_no,
+                                         projection=chart_projection)
                 else:
                     ax = fig.add_subplot(2, 1, subplot_no)
 
@@ -1258,13 +1366,17 @@ class EngineMatplotlib(EngineTemplate):
 
     def _create_legend(self, ax, ax2, style):
         if style.display_source_label == True and style.source is not None:
-            ax.annotate('Source: ' + style.source, xy=(1, 0), xycoords='axes fraction',
+            ax.annotate('Source: ' + style.source, xy=(1, 0),
+                        xycoords='axes fraction',
                         fontsize=7 * abs(style.scale_factor),
-                        xytext=(-5 * abs(style.scale_factor), 10 * abs(style.scale_factor)), textcoords='offset points',
+                        xytext=(-5 * abs(style.scale_factor),
+                                10 * abs(style.scale_factor)),
+                        textcoords='offset points',
                         ha='right', va='top', color=style.source_color)
 
         if style.display_brand_label == True:
-            self._create_brand_label(ax, anno=style.brand_label, scale_factor=abs(style.scale_factor))
+            self._create_brand_label(ax, anno=style.brand_label,
+                                     scale_factor=abs(style.scale_factor))
 
         leg = []
         leg2 = []
@@ -1275,12 +1387,14 @@ class EngineMatplotlib(EngineTemplate):
         if ax2 != []: loc = 2
 
         try:
-            leg = ax.legend(loc=loc, prop={'size': 10 * abs(style.scale_factor)})
+            leg = ax.legend(loc=loc,
+                            prop={'size': 10 * abs(style.scale_factor)})
             leg.get_frame().set_linewidth(0.0)
             leg.get_frame().set_alpha(0)
 
             if ax2 != []:
-                leg2 = ax2.legend(loc=1, prop={'size': 10 * abs(style.scale_factor)})
+                leg2 = ax2.legend(loc=1,
+                                  prop={'size': 10 * abs(style.scale_factor)})
                 leg2.get_frame().set_linewidth(0.0)
                 leg2.get_frame().set_alpha(0)
         except:
@@ -1360,10 +1474,14 @@ class EnginePlotly(EngineTemplate):
 
         try:
             # Adjust sizing if offline_html format
-            if (style.plotly_plot_mode == 'offline_html' and style.scale_factor > 0):
+            if (
+                    style.plotly_plot_mode == 'offline_html' and style.scale_factor > 0):
                 scale = float(2.0 / 3.0)
         except:
             pass
+
+        if style.plotly_webgl:
+            plotly.graph_objs.Scatter = plotly.graph_objs.Scattergl
 
         # Check other plots implemented by Cufflinks
         cm = ColorMaster()
@@ -1396,7 +1514,8 @@ class EnginePlotly(EngineTemplate):
                         color_spec[i] = self.get_color_list(i)
 
                     try:
-                        color_spec[i] = matplotlib.colors.rgb2hex(color_spec[i])
+                        color_spec[i] = matplotlib.colors.rgb2hex(
+                            color_spec[i])
                     except:
                         pass
 
@@ -1412,7 +1531,7 @@ class EnginePlotly(EngineTemplate):
 
         title_list = style.title
 
-        if not(isinstance(title_list, list)):
+        if not (isinstance(title_list, list)):
             title_list = [style.title] * len(data_frame_list)
 
         # Go through each data_frame in the list and plot
@@ -1450,8 +1569,12 @@ class EnginePlotly(EngineTemplate):
                     if style.color != []:
                         color = style.color
                     else:
-                        color = [[0.0, 'rgb(242,240,247)'], [0.2, 'rgb(218,218,235)'], [0.4, 'rgb(188,189,220)'], \
-                                 [0.6, 'rgb(158,154,200)'], [0.8, 'rgb(117,107,177)'], [1.0, 'rgb(84,39,143)']]
+                        color = [[0.0, 'rgb(242,240,247)'],
+                                 [0.2, 'rgb(218,218,235)'],
+                                 [0.4, 'rgb(188,189,220)'], \
+                                 [0.6, 'rgb(158,154,200)'],
+                                 [0.8, 'rgb(117,107,177)'],
+                                 [1.0, 'rgb(84,39,143)']]
 
                     text = ''
 
@@ -1463,7 +1586,8 @@ class EnginePlotly(EngineTemplate):
                         colorscale=color,
                         autocolorscale=False,
                         locations=data_frame['Code'],
-                        z=data_frame[style.plotly_choropleth_field].astype(float),
+                        z=data_frame[style.plotly_choropleth_field].astype(
+                            float),
                         locationmode=style.plotly_location_mode,
                         text=text,
                         marker=dict(
@@ -1495,31 +1619,36 @@ class EnginePlotly(EngineTemplate):
                     # NOTE: we use cufflinks library, which simplifies plotting DataFrames in plotly
                     if chart_type_ord == 'surface':
                         fig = data_frame.iplot(kind=chart_type,
-                                                title=title,
-                                                xTitle=style.x_title,
-                                                yTitle=style.y_title,
-                                                zTitle=style.z_title,
-                                                x=x, y=y, z=z,
-                                                mode=mode,
-                                                size=marker_size,
-                                                sharing=style.plotly_sharing,
-                                                theme=style.plotly_theme,
-                                                bestfit=style.line_of_best_fit,
-                                                legend=style.display_legend,
-                                                colorscale=style.color,
-                                                dimensions=(style.width * abs(style.scale_factor) * scale,
-                                                               style.height * abs(style.scale_factor) * scale),
-                                                asFigure=True)
+                                               title=title,
+                                               xTitle=style.x_title,
+                                               yTitle=style.y_title,
+                                               zTitle=style.z_title,
+                                               x=x, y=y, z=z,
+                                               mode=mode,
+                                               size=marker_size,
+                                               sharing=style.plotly_sharing,
+                                               theme=style.plotly_theme,
+                                               bestfit=style.line_of_best_fit,
+                                               legend=style.display_legend,
+                                               colorscale=style.color,
+                                               dimensions=(style.width * abs(
+                                                   style.scale_factor) * scale,
+                                                           style.height * abs(
+                                                               style.scale_factor) * scale),
+                                               asFigure=True)
 
                         # Setting axis is different with a surface
                         if style.x_axis_range is not None:
-                            fig.update_layout(scene=dict(xaxis=dict(range=style.x_axis_range)))
+                            fig.update_layout(scene=dict(
+                                xaxis=dict(range=style.x_axis_range)))
 
                         if style.y_axis_range is not None:
-                            fig.update_layout(scene=dict(xaxis=dict(range=style.y_axis_range)))
+                            fig.update_layout(scene=dict(
+                                xaxis=dict(range=style.y_axis_range)))
 
                         if style.z_axis_range is not None:
-                            fig.update_layout(scene=dict(xaxis=dict(range=style.z_axis_range)))
+                            fig.update_layout(scene=dict(
+                                xaxis=dict(range=style.z_axis_range)))
 
                     elif chart_type_ord == 'heatmap':
                         fig = data_frame.iplot(kind=chart_type,
@@ -1534,8 +1663,10 @@ class EnginePlotly(EngineTemplate):
                                                bestfit=style.line_of_best_fit,
                                                legend=style.display_legend,
                                                colorscale=style.color,
-                                               dimensions=(style.width * abs(style.scale_factor) * scale,
-                                                           style.height * abs(style.scale_factor) * scale),
+                                               dimensions=(style.width * abs(
+                                                   style.scale_factor) * scale,
+                                                           style.height * abs(
+                                                               style.scale_factor) * scale),
                                                asFigure=True)
 
                     # Otherwise we have a line plot (or similar such as a scatter plot, or bar chart etc)
@@ -1574,14 +1705,17 @@ class EnginePlotly(EngineTemplate):
 
                         m = 0
 
-                        y_axis_2_series = [x for x in style.y_axis_2_series if x in data_frame.columns]
+                        y_axis_2_series = [x for x in style.y_axis_2_series if
+                                           x in data_frame.columns]
 
                         vspan = None
 
                         if style.x_shade_dates is not None:
-                            vspan = {'x0': data_frame.index[0].strftime("%Y-%m-%d"),
-                                     'x1': data_frame.index[-1].strftime("%Y-%m-%d"), 'color': 'rgba(30,30,30,0.3)',
-                                     'fill': True, 'opacity': .4}
+                            vspan = {
+                                'x0': data_frame.index[0].strftime("%Y-%m-%d"),
+                                'x1': data_frame.index[-1].strftime(
+                                    "%Y-%m-%d"), 'color': 'rgba(30,30,30,0.3)',
+                                'fill': True, 'opacity': .4}
 
                         # Sometimes Plotly has issues generating figures in dash, so if fails first, try again
                         while m < 10:
@@ -1604,8 +1738,11 @@ class EnginePlotly(EngineTemplate):
                                                            legend=style.display_legend,
                                                            width=style.linewidth,
                                                            color=color_spec1,
-                                                           dimensions=(style.width * abs(style.scale_factor) * scale,
-                                                                       style.height * abs(style.scale_factor) * scale),
+                                                           dimensions=(
+                                                           style.width * abs(
+                                                               style.scale_factor) * scale,
+                                                           style.height * abs(
+                                                               style.scale_factor) * scale),
                                                            asFigure=True)
                                 else:
                                     fig = data_frame.iplot(kind=chart_type_ord,
@@ -1624,14 +1761,17 @@ class EnginePlotly(EngineTemplate):
                                                            legend=style.display_legend,
                                                            width=style.linewidth,
                                                            color=color_spec1,
-                                                           dimensions=(style.width * abs(style.scale_factor) * scale,
-                                                                       style.height * abs(style.scale_factor) * scale),
+                                                           dimensions=(
+                                                           style.width * abs(
+                                                               style.scale_factor) * scale,
+                                                           style.height * abs(
+                                                               style.scale_factor) * scale),
                                                            vspan=vspan,
                                                            asFigure=True)
 
                                 m = 10;
                                 break
-                            #except Exception as e:
+                                # except Exception as e:
                                 print("Will attempt to re-render: " + str(e))
 
                                 import time
@@ -1642,25 +1782,30 @@ class EnginePlotly(EngineTemplate):
                         # For lines set the property of connectgaps (cannot specify directly in cufflinks)
                         if full_line:
                             for z in range(0, len(fig['data'])):
-                                fig['data'][z].connectgaps = style.connect_line_gaps
+                                fig['data'][
+                                    z].connectgaps = style.connect_line_gaps
 
                                 for k in range(0, len(fig['data'])):
                                     if full_line:
-                                        fig['data'][k].connectgaps = style.connect_line_gaps
+                                        fig['data'][
+                                            k].connectgaps = style.connect_line_gaps
 
                         if style.line_shape != None:
                             if isinstance(style.line_shape, str):
-                                line_shape = [style.line_shape] * len(fig['data'])
+                                line_shape = [style.line_shape] * len(
+                                    fig['data'])
                             else:
                                 line_shape = style.line_shape
 
                             for k in range(0, len(fig['data'])):
                                 fig['data'][k].line.shape = line_shape[k]
 
-                        if style.plotly_webgl:
-                            for k in range(0, len(fig['data'])):
-                                if fig['data'][k].type == 'scatter':
-                                    fig['data'][k].type = 'scattergl'
+                        #if style.plotly_webgl:
+                        #    for k in range(0, len(fig['data'])):
+                        #        if fig['data'][k].type == 'scatter':
+                        #            fig.update_traces(type="scattergl")
+                                        #selector=dict(type="bar"))
+                                    #fig['data'][k].type = 'scattergl'
 
                         if style.stackgroup is not None:
 
@@ -1690,32 +1835,38 @@ class EnginePlotly(EngineTemplate):
             if style.y_2_title is not None:
                 if style.y_2_title != '':
                     try:
-                        fig['layout'].update(yaxis2=dict(title=style.y_2_title))
+                        fig['layout'].update(
+                            yaxis2=dict(title=style.y_2_title))
                     except:
                         pass
 
             if style.x_axis_range is not None:
                 try:
-                    fig['layout'].update(xaxis=dict(range=style.x_axis_range, autorange=False))
+                    fig['layout'].update(
+                        xaxis=dict(range=style.x_axis_range, autorange=False))
                 except:
                     pass
 
             if style.y_axis_range is not None:
 
                 try:
-                    fig['layout'].update(yaxis=dict(range=style.y_axis_range, autorange=False))
+                    fig['layout'].update(
+                        yaxis=dict(range=style.y_axis_range, autorange=False))
                 except:
                     pass
 
             if style.y_axis_2_range is not None:
                 try:
-                    fig['layout'].update(yaxis2=dict(range=style.y_axis_2_range, autorange=False))
+                    fig['layout'].update(
+                        yaxis2=dict(range=style.y_axis_2_range,
+                                    autorange=False))
                 except:
                     pass
 
             if style.z_axis_range is not None:
                 try:
-                    fig['layout'].update(zaxis=dict(range=style.z_axis_range, autorange=False))
+                    fig['layout'].update(
+                        zaxis=dict(range=style.z_axis_range, autorange=False))
                 except:
                     pass
 
@@ -1739,13 +1890,15 @@ class EnginePlotly(EngineTemplate):
 
             if style.x_dtick is not None:
                 try:
-                    fig.update_layout(xaxis=dict(tickmode='linear', dtick=style.x_dtick))
+                    fig.update_layout(
+                        xaxis=dict(tickmode='linear', dtick=style.x_dtick))
                 except:
                     pass
 
             if style.y_dtick is not None:
                 try:
-                    fig.update_layout(yaxis=dict(tickmode='linear', dtick=style.y_dtick))
+                    fig.update_layout(
+                        yaxis=dict(tickmode='linear', dtick=style.y_dtick))
                 except:
                     pass
 
@@ -1754,42 +1907,65 @@ class EnginePlotly(EngineTemplate):
 
             # Legend Properties
             if style.legend_x_anchor is not None:
-                try: fig.update_layout(legend=dict(xanchor=style.legend_x_anchor))
-                except: pass
+                try:
+                    fig.update_layout(
+                        legend=dict(xanchor=style.legend_x_anchor))
+                except:
+                    pass
 
             if style.legend_y_anchor is not None:
-                try: fig.update_layout(legend=dict(yanchor=style.legend_y_anchor))
-                except: pass
-                
+                try:
+                    fig.update_layout(
+                        legend=dict(yanchor=style.legend_y_anchor))
+                except:
+                    pass
+
             if style.legend_x_pos is not None:
-                try: fig.update_layout(legend=dict(x=style.legend_x_pos))
-                except: pass
+                try:
+                    fig.update_layout(legend=dict(x=style.legend_x_pos))
+                except:
+                    pass
 
             if style.legend_y_pos is not None:
-                try: fig.update_layout(legend=dict(y=style.legend_y_pos))
-                except: pass
+                try:
+                    fig.update_layout(legend=dict(y=style.legend_y_pos))
+                except:
+                    pass
 
             if style.legend_bgcolor is not None:
-                try: fig.update_layout(legend=dict(bgcolor=style.legend_bgcolor))
-                except: pass
+                try:
+                    fig.update_layout(
+                        legend=dict(bgcolor=style.legend_bgcolor))
+                except:
+                    pass
 
             if style.legend_orientation is not None:
-                try: fig.update_layout(legend=dict(orientation=style.legend_orientation))
-                except: pass
+                try:
+                    fig.update_layout(
+                        legend=dict(orientation=style.legend_orientation))
+                except:
+                    pass
 
             if style.barmode is not None:
-                try: fig.update_layout(barmode=style.barmode)
-                except: pass
+                try:
+                    fig.update_layout(barmode=style.barmode)
+                except:
+                    pass
 
             fig_list.append(fig)
 
         #### Plotted all the lines
 
         # Create subplots if more than one figure
-        if len(fig_list) > 1 and style.animate_figure == False and style.subplots == True:
+        if len(fig_list) > 1 and style.animate_figure == False \
+                and style.subplots == True:
             from plotly.subplots import make_subplots
 
-            fig = make_subplots(rows=len(fig_list), cols=1)
+            if style.subplot_titles:
+                fig = make_subplots(rows=len(fig_list), cols=1,
+                                    subplot_titles=style.subplot_titles)
+            else:
+                fig = make_subplots(rows=len(fig_list), cols=1)
 
             # layout = fig_list[0]['layout']
 
@@ -1800,16 +1976,20 @@ class EnginePlotly(EngineTemplate):
             #         fig['layout'].update({k: v})
 
             for i, f in enumerate(fig_list):
-                fig.append_trace(f.data[0], row=i+1, col=1)
+                f = f.data[0]
+                f.update(legendgroup=i)
+                fig.add_trace(f, row=i + 1, col=1)
 
-            #fig = cf.subplots(fig_list, base_layout=fig_list[0].to_dict()['layout'], shape=(len(fig_list), 1),
+            # fig = cf.subplots(fig_list, base_layout=fig_list[0].to_dict()['layout'], shape=(len(fig_list), 1),
             #                  shared_xaxes=False, shared_yaxes=False)
 
-            if not(isinstance(style.title, list)):
+            if not (isinstance(style.title, list)):
                 fig['layout'].update(title=style.title)
 
-            fig['layout'].update(width=style.width * abs(style.scale_factor))
-            fig['layout'].update(height=style.height * abs(style.scale_factor))
+            fig.update_layout(
+                height=style.height * abs(style.scale_factor),
+                width=style.width * abs(style.scale_factor),
+            )
 
         elif style.animate_figure:
 
@@ -1820,16 +2000,20 @@ class EnginePlotly(EngineTemplate):
                 {
                     "buttons": [
                         {
-                            "args": [None, {"frame": {"duration": style.animate_frame_ms, "redraw": True},
-                                            "fromcurrent": True, "transition": {"duration": style.animate_frame_ms,
-                                                                                "easing": "quadratic-in-out"}}],
+                            "args": [None, {
+                                "frame": {"duration": style.animate_frame_ms,
+                                          "redraw": True},
+                                "fromcurrent": True, "transition": {
+                                    "duration": style.animate_frame_ms,
+                                    "easing": "quadratic-in-out"}}],
                             "label": "Play",
                             "method": "animate"
                         },
                         {
-                            "args": [[None], {"frame": {"duration": 0, "redraw": True},
-                                              "mode": "immediate",
-                                              "transition": {"duration": 0}}],
+                            "args": [[None],
+                                     {"frame": {"duration": 0, "redraw": True},
+                                      "mode": "immediate",
+                                      "transition": {"duration": 0}}],
                             "label": "Pause",
                             "method": "animate"
                         }
@@ -1855,73 +2039,78 @@ class EnginePlotly(EngineTemplate):
 
             for fig_temp, title_temp in zip(fig_list, animate_titles):
                 frames.append(go.Frame(data=fig_temp['data'],
-                                           name=str(title_temp),
-                                           layout=go.Layout(title=str(title_temp))))
+                                       name=str(title_temp),
+                                       layout=go.Layout(
+                                           title=str(title_temp))))
 
             fig.update(frames=frames)
 
             # Add a slider, with the frame labels
             sliders_dict = {
-                    "active": 0,
-                    "yanchor": "top",
-                    "xanchor": "left",
-                    "currentvalue": {
-                        "visible": True,
-                        "xanchor": "right"
-                    },
-                    "transition": {"duration": style.animate_frame_ms, "easing": "cubic-in-out"},
-                    "pad": {"b": 10, "t": 50},
-                    "len": 0.9,
-                    "x": 0.1,
-                    "y": 0,
-                    "steps": []
+                "active": 0,
+                "yanchor": "top",
+                "xanchor": "left",
+                "currentvalue": {
+                    "visible": True,
+                    "xanchor": "right"
+                },
+                "transition": {"duration": style.animate_frame_ms,
+                               "easing": "cubic-in-out"},
+                "pad": {"b": 10, "t": 50},
+                "len": 0.9,
+                "x": 0.1,
+                "y": 0,
+                "steps": []
             }
 
             for i in range(0, len(fig_list)):
                 slider_step = {"args": [
                     [animate_titles[i]],
-                    {"frame" : {"duration": style.animate_frame_ms, "redraw": True},
-                    "mode" : "immediate",
-                    "transition" : {"duration": style.animate_frame_ms}}
+                    {"frame": {"duration": style.animate_frame_ms,
+                               "redraw": True},
+                     "mode": "immediate",
+                     "transition": {"duration": style.animate_frame_ms}}
                 ],
-                    "label" : str(animate_titles[i]),
-                    "method" : "animate"}
+                    "label": str(animate_titles[i]),
+                    "method": "animate"}
 
                 sliders_dict["steps"].append(slider_step)
 
             fig["layout"]["sliders"] = [sliders_dict]
 
-            #else:
-                # Add an animation frame for each data frame
+            # else:
+            # Add an animation frame for each data frame
             #    fig.update(frames=[go.Frame(data=fig_temp['data']) for fig_temp in fig_list])
 
         else:
             fig = fig_list[0]
 
         fig.update(dict(layout=dict(legend=dict(
-                x=0.05,
-                y=1
-            ))))
+            x=0.05,
+            y=1
+        ))))
 
         # Adjust margins
         if style.thin_margin:
-                fig.update(dict(layout=dict(margin=go.layout.Margin(
-                    l=20,
-                    r=20,
-                    b=40,
-                    t=40,
-                    pad=0
-                ))))
+            fig.update(dict(layout=dict(margin=go.layout.Margin(
+                l=20,
+                r=20,
+                b=40,
+                t=40,
+                pad=0
+            ))))
 
         # Change background color
         fig.update(dict(layout=dict(paper_bgcolor='rgba(0,0,0,0)')))
         fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))
 
         # Deal with grids
-        if (not(style.x_axis_showgrid)): fig.update(dict(layout=dict(xaxis=dict(showgrid=style.x_axis_showgrid))))
-        if (not(style.y_axis_showgrid)): fig.update(dict(layout=dict(yaxis=dict(showgrid=style.y_axis_showgrid))))
-        if (not(style.y_axis_2_showgrid)): fig.update(
-                dict(layout=dict(yaxis2=dict(showgrid=style.y_axis_2_showgrid))))
+        if (not (style.x_axis_showgrid)): fig.update(
+            dict(layout=dict(xaxis=dict(showgrid=style.x_axis_showgrid))))
+        if (not (style.y_axis_showgrid)): fig.update(
+            dict(layout=dict(yaxis=dict(showgrid=style.y_axis_showgrid))))
+        if (not (style.y_axis_2_showgrid)): fig.update(
+            dict(layout=dict(yaxis2=dict(showgrid=style.y_axis_2_showgrid))))
 
         # Override properties, which cannot be set directly by cufflinks
 
@@ -1956,7 +2145,8 @@ class EnginePlotly(EngineTemplate):
                     scale = float(bubble_series.max())
 
                     fig['data'][j].marker.size = \
-                        (style.bubble_size_scalar * (bubble_series.values / scale)).tolist()
+                        (style.bubble_size_scalar * (
+                                    bubble_series.values / scale)).tolist()
 
                 if mode is not None:
                     fig['data'][j].mode = mode
@@ -1968,7 +2158,7 @@ class EnginePlotly(EngineTemplate):
                     fig['data'][j].line.shape = line_shape
 
         # If candlestick specified add that (needed to be appended on top of the Plotly figure's data
-        if style.candlestick_series is not None and not(style.plotly_webgl):
+        if style.candlestick_series is not None and not (style.plotly_webgl):
 
             # self.logger.debug("About to create candlesticks")
 
@@ -1976,22 +2166,27 @@ class EnginePlotly(EngineTemplate):
                 fig_candle = style.candlestick_series
             else:
                 # from plotly.tools import FigureFactory as FF
-                fig_candle = create_candlestick(style.candlestick_series['open'],
-                                                style.candlestick_series['high'],
-                                                style.candlestick_series['low'],
-                                                style.candlestick_series['close'],
-                                                dates=style.candlestick_series['close'].index
-                                                )
+                fig_candle = create_candlestick(
+                    style.candlestick_series['open'],
+                    style.candlestick_series['high'],
+                    style.candlestick_series['low'],
+                    style.candlestick_series['close'],
+                    dates=style.candlestick_series['close'].index
+                    )
 
             if style.candlestick_increasing_color is not None:
                 # Increasing
-                fig_candle['data'][0].fillcolor = cm.get_color_code(style.candlestick_increasing_color)
-                fig_candle['data'][0].line.color = cm.get_color_code(style.candlestick_increasing_line_color)
+                fig_candle['data'][0].fillcolor = cm.get_color_code(
+                    style.candlestick_increasing_color)
+                fig_candle['data'][0].line.color = cm.get_color_code(
+                    style.candlestick_increasing_line_color)
 
             if style.candlestick_decreasing_color is not None:
                 # Decreasing
-                fig_candle['data'][1].fillcolor = cm.get_color_code(style.candlestick_decreasing_color)
-                fig_candle['data'][1].line.color = cm.get_color_code(style.candlestick_decreasing_line_color)
+                fig_candle['data'][1].fillcolor = cm.get_color_code(
+                    style.candlestick_decreasing_color)
+                fig_candle['data'][1].line.color = cm.get_color_code(
+                    style.candlestick_decreasing_line_color)
 
             try:
                 # Append the data to the existing Plotly figure, plotted earlier
@@ -2074,14 +2269,14 @@ class EnginePlotly(EngineTemplate):
 
         # Make dicts according to x0 and X1
         # and edit elements of those dicts
-        for i in range(0,len(x0)):
+        for i in range(0, len(x0)):
             shp_lst.append(copy.deepcopy(x_elem))
             shp_lst[i]['x0'] = x0[i]
             shp_lst[i]['x1'] = x1[i]
             shp_lst[i]['line']['color'] = 'rgba(0,0,0,0)'
 
         # Replace shape in fig with multiple new shapes
-        fig['layout']['shapes']= tuple(shp_lst)
+        fig['layout']['shapes'] = tuple(shp_lst)
 
         return fig
 
@@ -2098,7 +2293,8 @@ class EnginePlotly(EngineTemplate):
             pass
 
         elif style.plotly_plot_mode == 'online':
-            plotly.tools.set_credentials_file(username=style.plotly_username, api_key=style.plotly_api_key)
+            plotly.tools.set_credentials_file(username=style.plotly_username,
+                                              api_key=style.plotly_api_key)
 
             py_online.plot(fig, filename=style.plotly_url,
                            world_readable=style.plotly_world_readable,
@@ -2106,27 +2302,32 @@ class EnginePlotly(EngineTemplate):
                            asImage=style.plotly_as_image)
 
         elif style.plotly_plot_mode == 'offline_html':
-            py_offline.plot(fig, filename=style.html_file_output, auto_open=not(style.silent_display))
+            py_offline.plot(fig, filename=style.html_file_output,
+                            auto_open=not (style.silent_display))
         elif style.plotly_plot_mode == 'offline_png':
             # Needs orca
             fig.write_image(style.file_output)
 
         elif style.plotly_plot_mode == 'offline_embed_js_div':
-            return py_offline.plot(fig, include_plotlyjs=True, output_type='div')  # HTML string
+            return py_offline.plot(fig, include_plotlyjs=True,
+                                   output_type='div')  # HTML string
 
         elif style.plotly_plot_mode == 'offline_div':
-            return py_offline.plot(fig, include_plotlyjs=False, output_type='div')  # HTML string
+            return py_offline.plot(fig, include_plotlyjs=False,
+                                   output_type='div')  # HTML string
 
         elif style.plotly_plot_mode == 'offline_image_png_bytes':
             return plotly.io.to_image(fig, format='png')  # PNG as bytes
 
         elif style.plotly_plot_mode == 'offline_image_png_in_html':
             return '<img src="data:image/png;base64,' + \
-                   base64.b64encode(plotly.io.to_image(fig, format='png')).decode(
+                   base64.b64encode(
+                       plotly.io.to_image(fig, format='png')).decode(
                        'utf8') + '">'  # PNG as bytes in HTML image
         elif style.plotly_plot_mode == 'offline_image_svg_in_html':
             return '<img src="data:image/svg;base64,' + \
-                   base64.b64encode(plotly.io.to_image(fig, format='svg')).decode(
+                   base64.b64encode(
+                       plotly.io.to_image(fig, format='svg')).decode(
                        'utf8') + '">'  # SVG as bytes in HTML image
 
             # can display in HTML as <img src="data:image/png;base64,[ENCODED STRING GOES HERE]">
@@ -2147,9 +2348,12 @@ class EnginePlotly(EngineTemplate):
         #         width=style.width * style.scale_factor, height=style.height * style.scale_factor)
         elif style.plotly_plot_mode != 'dash':
             try:
-                py_online.image.save_as(fig, filename=style.file_output, format='png',
-                                        width=style.width * abs(style.scale_factor),
-                                        height=style.height * abs(style.scale_factor))
+                py_online.image.save_as(fig, filename=style.file_output,
+                                        format='png',
+                                        width=style.width * abs(
+                                            style.scale_factor),
+                                        height=style.height * abs(
+                                            style.scale_factor))
             except:
                 pass
 
@@ -2172,11 +2376,14 @@ class ColorMaster(object):
             cols = data_frame.columns
 
         # Get all the correct colors (and construct gradients if necessary eg. from 'blues')
-        color = self.construct_color(style, 'color', len(cols) - len(style.color_2_series))
-        color_2 = self.construct_color(style, 'color_2', len(style.color_2_series))
+        color = self.construct_color(style, 'color',
+                                     len(cols) - len(style.color_2_series))
+        color_2 = self.construct_color(style, 'color_2',
+                                       len(style.color_2_series))
 
         return self.assign_color(cols, color, color_2,
-                                 style.exclude_from_color, style.color_2_series)
+                                 style.exclude_from_color,
+                                 style.color_2_series)
 
     def construct_color(self, style, color_field_name, no_of_entries):
         color = []
@@ -2186,7 +2393,8 @@ class ColorMaster(object):
                 color = getattr(style, color_field_name, color)
             else:
                 try:
-                    color = self.create_colormap(no_of_entries, getattr(style, color_field_name))
+                    color = self.create_colormap(no_of_entries, getattr(style,
+                                                                        color_field_name))
                 except:
                     pass
 
@@ -2220,7 +2428,8 @@ class ColorMaster(object):
 
             elif label in color_2_series:
                 if color_2 != []:
-                    color_spec = self.get_color_code(color_2[axis_2_color_index])
+                    color_spec = self.get_color_code(
+                        color_2[axis_2_color_index])
                     axis_2_color_index = axis_2_color_index + 1
 
             else:
@@ -2229,7 +2438,8 @@ class ColorMaster(object):
                     axis_1_color_index = axis_1_color_index + 1
 
             try:
-                color_spec = matplotlib.colors.colorConverter.to_rgba(color_spec)
+                color_spec = matplotlib.colors.colorConverter.to_rgba(
+                    color_spec)
             except:
                 pass
 
@@ -2261,6 +2471,7 @@ from plotly.figure_factory import utils
 from plotly.figure_factory._ohlc import (_DEFAULT_INCREASING_COLOR,
                                          _DEFAULT_DECREASING_COLOR,
                                          validate_ohlc)
+
 
 def make_increasing_candle(open, high, low, close, dates, **kwargs):
     """

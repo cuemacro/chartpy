@@ -1989,6 +1989,7 @@ class EnginePlotly(EngineTemplate):
             fig.update_layout(
                 height=style.height * abs(style.scale_factor),
                 width=style.width * abs(style.scale_factor),
+                showlegend=style.display_legend
             )
 
         elif style.animate_figure:

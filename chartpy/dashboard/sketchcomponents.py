@@ -492,7 +492,7 @@ class SketchComponents(object):
                         # data=[{}],
                         # row_selectable='single',
                         # columns=[{"name": i, "id": i} for i in col],
-                        filtering=True,
+                        # filtering=True,
                         sorting=True,
                         selected_rows=[],
                         id=prefix_id + id_

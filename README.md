@@ -171,6 +171,8 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 01 Sep 2022
+  * Fix for latest Dash datatable
 * 15 Aug 2022
   * Added subplot parameters for Plotly
 * 11 Aug 2022

@@ -396,6 +396,7 @@ class SketchComponents(object):
         return html_tags
 
     def table(self, caption=None, id=None, prefix_id='', element_add=None,
+              data=None,
               columns=None, downloadplot_caption=None,
               downloadplot_tag=None, download_file=None, width=None,
               font_size=14, font_family='open sans'):
@@ -414,6 +415,9 @@ class SketchComponents(object):
 
         element_add : HTML component (default: None)
             Add this HTML component at the start
+
+        data : Dict
+            Initial data to display
 
         columns : str (list)
             Column headers
@@ -464,18 +468,32 @@ class SketchComponents(object):
             if columns is None:
 
                 if is_dash_table:
-                    data_table = dt.DataTable(
-                        # data=[{}],
-                        # row_selectable='single',
-                        # columns=[{"name": [], "id": []}],
-                        sort_action="native",
-                        sort_mode="multi",
-                        selected_columns=[],
-                        selected_rows=[],
-                        style_cell={'fontSize': font_size,
-                                    'font-family': font_family},
-                        id=prefix_id + id_
-                    )
+                    if data:
+                        data_table = dt.DataTable(
+                            data=data,
+                            # row_selectable='single',
+                            # columns=[{"name": [], "id": []}],
+                            sort_action="native",
+                            sort_mode="multi",
+                            selected_columns=[],
+                            selected_rows=[],
+                            style_cell={'fontSize': font_size,
+                                        'font-family': font_family},
+                            id=prefix_id + id_
+                        )
+                    else:
+                        data_table = dt.DataTable(
+                            # data=[{}],
+                            # row_selectable='single',
+                            # columns=[{"name": [], "id": []}],
+                            sort_action="native",
+                            sort_mode="multi",
+                            selected_columns=[],
+                            selected_rows=[],
+                            style_cell={'fontSize': font_size,
+                                        'font-family': font_family},
+                            id=prefix_id + id_
+                        )
                 else:
                     data_table = html.Div([
                         html.Div(id=prefix_id + id_)

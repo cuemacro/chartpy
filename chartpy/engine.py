@@ -1427,6 +1427,7 @@ except:
 try:
     from plotly.graph_objects import Figure
     import plotly.graph_objects as go
+    import plotly.express as px
 except:
     pass
 
@@ -1668,6 +1669,21 @@ class EnginePlotly(EngineTemplate):
                                                            style.height * abs(
                                                                style.scale_factor) * scale),
                                                asFigure=True)
+
+                    elif chart_type_ord == "annotated-heatmap":
+
+                        if style.color == []:
+                            color = None
+                        else:
+                            color = style.color
+
+                        fig = px.imshow(data_frame, text_auto=True,
+                                        title=style.title,
+                                        color_continuous_scale=color,
+                                        width=(style.width *
+                                               abs(style.scale_factor) * scale),
+                                        height= style.height *
+                                                abs(style.scale_factor) * scale)
 
                     # Otherwise we have a line plot (or similar such as a scatter plot, or bar chart etc)
                     else:

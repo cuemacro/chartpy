@@ -171,6 +171,8 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 02 Nov 2022
+  * Added data parameter for creation of Dash table
 * 01 Sep 2022
   * Fix for latest Dash datatable
 * 15 Aug 2022

@@ -123,7 +123,7 @@ class SketchComponents(object):
                                          style={'height': '20px',
                                                 'width': '900px',
                                                 'float': 'left',
-                                                'font-family': font_family}))
+                                                'fontFamily': font_family}))
 
         return html.Div(div_list,
                         style={'width': str(width) + 'px', 'marginBottom': 0,
@@ -478,7 +478,7 @@ class SketchComponents(object):
                             selected_columns=[],
                             selected_rows=[],
                             style_cell={'fontSize': font_size,
-                                        'font-family': font_family},
+                                        'fontFamily': font_family},
                             id=prefix_id + id_
                         )
                     else:
@@ -491,7 +491,7 @@ class SketchComponents(object):
                             selected_columns=[],
                             selected_rows=[],
                             style_cell={'fontSize': font_size,
-                                        'font-family': font_family},
+                                        'fontFamily': font_family},
                             id=prefix_id + id_
                         )
                 else:

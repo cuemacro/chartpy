@@ -159,6 +159,7 @@ In chartpy/examples you will find several demos
 
 # Recent Release Notes
 
+* 12 Oct 2023 - v0.1.13
 * 07 Jul 2022 - v0.1.12
 * 06 Oct 2021 - v0.1.11
 * 01 Jun 2021 - v0.1.10

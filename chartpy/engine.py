@@ -1733,67 +1733,54 @@ class EnginePlotly(EngineTemplate):
                                     "%Y-%m-%d"), 'color': 'rgba(30,30,30,0.3)',
                                 'fill': True, 'opacity': .4}
 
-                        # Sometimes Plotly has issues generating figures in dash, so if fails first, try again
-                        while m < 10:
-
-                            if True:
-                                if vspan is None:
-                                    fig = data_frame.iplot(kind=chart_type_ord,
-                                                           title=title,
-                                                           xTitle=style.x_title,
-                                                           yTitle=style.y_title,
-                                                           x=x, y=y, z=z,
-                                                           subplots=False,
-                                                           sharing=style.plotly_sharing,
-                                                           mode=mode,
-                                                           secondary_y=y_axis_2_series,
-                                                           size=marker_size,
-                                                           theme=plotly_theme,
-                                                           colorscale='dflt',
-                                                           bestfit=style.line_of_best_fit,
-                                                           legend=style.display_legend,
-                                                           width=style.linewidth,
-                                                           color=color_spec1,
-                                                           dimensions=(
-                                                           style.width * abs(
-                                                               style.scale_factor) * scale,
-                                                           style.height * abs(
-                                                               style.scale_factor) * scale),
-                                                           asFigure=True)
-                                else:
-                                    fig = data_frame.iplot(kind=chart_type_ord,
-                                                           title=title,
-                                                           xTitle=style.x_title,
-                                                           yTitle=style.y_title,
-                                                           x=x, y=y, z=z,
-                                                           subplots=False,
-                                                           sharing=style.plotly_sharing,
-                                                           mode=mode,
-                                                           secondary_y=y_axis_2_series,
-                                                           size=marker_size,
-                                                           theme=plotly_theme,
-                                                           colorscale='dflt',
-                                                           bestfit=style.line_of_best_fit,
-                                                           legend=style.display_legend,
-                                                           width=style.linewidth,
-                                                           color=color_spec1,
-                                                           dimensions=(
-                                                           style.width * abs(
-                                                               style.scale_factor) * scale,
-                                                           style.height * abs(
-                                                               style.scale_factor) * scale),
-                                                           vspan=vspan,
-                                                           asFigure=True)
-
-                                m = 10;
-                                break
-                                # except Exception as e:
-                                print("Will attempt to re-render: " + str(e))
-
-                                import time
-                                time.sleep(0.3)
-
-                            m = m + 1
+                        if True:
+                            if vspan is None:
+                                fig = data_frame.iplot(kind=chart_type_ord,
+                                                       title=title,
+                                                       xTitle=style.x_title,
+                                                       yTitle=style.y_title,
+                                                       x=x, y=y, z=z,
+                                                       subplots=False,
+                                                       sharing=style.plotly_sharing,
+                                                       mode=mode,
+                                                       secondary_y=y_axis_2_series,
+                                                       size=marker_size,
+                                                       theme=plotly_theme,
+                                                       colorscale='dflt',
+                                                       bestfit=style.line_of_best_fit,
+                                                       legend=style.display_legend,
+                                                       width=style.linewidth,
+                                                       color=color_spec1,
+                                                       dimensions=(
+                                                       style.width * abs(
+                                                           style.scale_factor) * scale,
+                                                       style.height * abs(
+                                                           style.scale_factor) * scale),
+                                                       asFigure=True)
+                            else:
+                                fig = data_frame.iplot(kind=chart_type_ord,
+                                                       title=title,
+                                                       xTitle=style.x_title,
+                                                       yTitle=style.y_title,
+                                                       x=x, y=y, z=z,
+                                                       subplots=False,
+                                                       sharing=style.plotly_sharing,
+                                                       mode=mode,
+                                                       secondary_y=y_axis_2_series,
+                                                       size=marker_size,
+                                                       theme=plotly_theme,
+                                                       colorscale='dflt',
+                                                       bestfit=style.line_of_best_fit,
+                                                       legend=style.display_legend,
+                                                       width=style.linewidth,
+                                                       color=color_spec1,
+                                                       dimensions=(
+                                                       style.width * abs(
+                                                           style.scale_factor) * scale,
+                                                       style.height * abs(
+                                                           style.scale_factor) * scale),
+                                                       vspan=vspan,
+                                                       asFigure=True)
 
                         # For lines set the property of connectgaps (cannot specify directly in cufflinks)
                         if full_line:
@@ -2321,6 +2308,10 @@ class EnginePlotly(EngineTemplate):
         elif style.plotly_plot_mode == 'offline_html':
             py_offline.plot(fig, filename=style.html_file_output,
                             auto_open=not (style.silent_display))
+        elif style.plotly_plot_mode == 'offline_html_exc_embed_js':
+            py_offline.plot(fig, filename=style.html_file_output,
+                            include_plotlyjs="cdn",
+                            auto_open=not(style.silent_display))
         elif style.plotly_plot_mode == 'offline_png':
             # Needs orca
             fig.write_image(style.file_output)

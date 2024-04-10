@@ -41,8 +41,8 @@ if run_example == 1 or run_example == 0:
     df.columns = ["Real QoQ"]
 
     # Chart object is initialised with the dataframe and our chart style
-    chart_bokeh = Chart(df=df, chart_type='line', engine='bokeh',
-                        style=Style(title="US GDP", source="Quandl/Fred", scale_factor=-2, width=500, height=300, silent_display=True))
+    # chart_bokeh = Chart(df=df, chart_type='line', engine='bokeh',
+    #                     style=Style(title="US GDP", source="Quandl/Fred", scale_factor=-2, width=500, height=300, silent_display=True))
 
     chart_plotly = Chart(df=df, chart_type='line', engine='plotly',
                          style=Style(title="US GDP", source="Quandl/Fred", scale_factor=-2, width=500, height=300, silent_display=True))
@@ -53,11 +53,11 @@ if run_example == 1 or run_example == 0:
     text = "A demo of chartpy canvas!!"
 
     # using plain template
-    canvas = Canvas([[text, chart_bokeh], [chart_plotly, df.tail(n=5)]])
+    canvas = Canvas([[text, chart_plotly], [chart_plotly, df.tail(n=5)]])
 
     canvas.generate_canvas(silent_display=False, canvas_plotter='plain')
 
     # using the Keen template (needs static folder in the same place as final HTML file)
-    canvas = Canvas([[chart_bokeh, chart_plotly], [chart_plotly, chart_matplotlib]])
+    canvas = Canvas([[chart_plotly, chart_plotly], [chart_plotly, chart_matplotlib]])
 
     canvas.generate_canvas(silent_display=False, canvas_plotter='keen')

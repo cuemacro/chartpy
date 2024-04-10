@@ -159,6 +159,7 @@ In chartpy/examples you will find several demos
 
 # Recent Release Notes
 
+* 10 Apr 2024 - v0.1.14
 * 12 Oct 2023 - v0.1.13
 * 07 Jul 2022 - v0.1.12
 * 06 Oct 2021 - v0.1.11
@@ -172,6 +173,8 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 10 Apr 2024
+  * Added option to create Plotly charts without JavaScript embedding (smaller file sizes)
 * 02 Nov 2022
   * Added data parameter for creation of Dash table
 * 01 Sep 2022

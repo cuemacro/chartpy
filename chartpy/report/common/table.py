@@ -191,7 +191,7 @@ class DataFrameToTableComponent(TableComponent):
         """
         row_height = (
             self.get_df_columns(df)
-            .map(lambda x: self.row_height * len(x.split()))
+            .applymap(lambda x: self.row_height * len(x.split()))
             .max(axis=1)
             .values.tolist()
         )
@@ -211,7 +211,7 @@ class DataFrameToTableComponent(TableComponent):
             List of the column width for each column
         """
         return (
-            df.map(lambda x: self.font.measure(str(x)) + self.font_size)
+            df.applymap(lambda x: self.font.measure(str(x)) + self.font_size)
             .max()
             .values.tolist()
         )
@@ -234,7 +234,7 @@ class DataFrameToTableComponent(TableComponent):
         df_col_width = (
             self.get_df_columns(df)
             # Using 'A' as a standard character size
-            .map(
+            .applymap(
                 lambda x: "A"
                 * (max([len(w) for w in x.split()]) if x != "" else 0)
             ).pipe(lambda x: self.measure_df_width(x))
@@ -264,7 +264,7 @@ class DataFrameToTableComponent(TableComponent):
         pandas.DataFrame
             Dataframe with values replaced by reportlab paragraph objects
         """
-        return df.map(
+        return df.applymap(
             lambda x: Paragraph(
                 f"<b>{x}</b>", stylesheet["ReportTableEntries"]
             )
@@ -284,7 +284,7 @@ class DataFrameToTableComponent(TableComponent):
         pandas.DataFrame
             Dataframe with values replaced by reportlab paragraph objects
         """
-        return df.map(
+        return df.applymap(
             lambda x: Paragraph(f"{x}", stylesheet["ReportValueTableEntries"])
         )
 

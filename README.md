@@ -173,6 +173,9 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 09 Nov 2024
+  * Added PDF reports
+  * Fixed deprecation issue with matplotlib.cm => matplotlib.colormaps
 * 10 Apr 2024
   * Added option to create Plotly charts without JavaScript embedding (smaller file sizes)
 * 02 Nov 2022

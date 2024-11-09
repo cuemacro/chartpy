@@ -2466,7 +2466,7 @@ class ColorMaster(object):
     def create_colormap(self, num_colors, map_name):
         ## matplotlib ref for colors: http://matplotlib.org/examples/color/colormaps_reference.html
 
-        cm = matplotlib.cm.get_cmap(name=map_name)
+        cm = matplotlib.colormaps.get_cmap(name=map_name)
 
         return [cm(1. * i / num_colors) for i in range(num_colors)]
 

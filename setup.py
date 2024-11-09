@@ -28,5 +28,6 @@ setup(name='chartpy',
                         'chart-studio',
                         'cufflinks',
                         'bokeh',
-                        'vispy'],
+                        'vispy',
+                        'reportlab'],
       zip_safe=False)

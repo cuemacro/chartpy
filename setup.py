@@ -29,5 +29,6 @@ setup(name='chartpy',
                         'cufflinks',
                         'bokeh',
                         'vispy',
-                        'reportlab'],
+                        'reportlab',
+                        'dataframe_image'],
       zip_safe=False)

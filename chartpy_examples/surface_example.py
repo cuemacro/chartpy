@@ -19,19 +19,19 @@ from chartpy import Chart, Style
 run_example = 0
 
 if run_example == 1 or run_example == 0:
-    import pandas
+    import pandas as pd
 
     # get sample volatility surface for GBP/USD (and make sure columns are in reasonable order)
-    df = pandas.read_csv('volsurface.csv', index_col='Exp')
+    df = pd.read_csv('volsurface.csv', index_col='Exp')
     df = df[['10D Put GBP', '25D Put GBP', 'ATM', '25D Call GBP', '10D Call GBP']]
 
     # set the style of the plot
-    style = Style(title="GBP/USD vol surface", source="chartpy", color='Blues')
+    style = Style(title="GBP/USD vol surface",
+                  source="chartpy", color='Blues', auto_scale=True)
     style.file_output = 'volsurface.png'
 
     # Chart object is initialised with the dataframe and our chart style
     chart = Chart(df=df, chart_type='surface', style=style)
 
     chart.plot(engine='matplotlib')
-    # chart.plot(engine='bokeh')        # TODO bokeh surface implementation
     chart.plot(engine='plotly')

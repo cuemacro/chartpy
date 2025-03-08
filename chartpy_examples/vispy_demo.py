@@ -127,11 +127,12 @@ if __name__ == '__main__':
     Chart().plot(df, engine='plotly', style=Style(save_fig=True, plotly_webgl=True))
 
     logger.info('About to plot vispy...')
-    # try vispy, which will work (uses GPU)
-    # Chart().plot(df, engine='vispy', style=style)
+    # Try vispy, which will work (uses GPU)
+    # You will likely to install a backend (eg. pip install PyQ6)
+    Chart().plot(df, engine='vispy', style=style)
 
     logger.info('About to plot matplotlib...')
-    # try matplotlib, which will likely be very slow or crash...
-    # Chart().plot(df, engine='matplotlib', style=style)
+    # Try matplotlib, which will likely be very slow or crash...
+    Chart().plot(df, engine='matplotlib', style=style)
 
 

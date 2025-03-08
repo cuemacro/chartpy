@@ -735,7 +735,7 @@ class EngineMatplotlib(EngineTemplate):
             try:
                 has_matrix = 'no'
 
-                if not (isinstance(chart_type, list)):
+                if not isinstance(chart_type, list):
 
                     ax_temp = ax
 
@@ -784,7 +784,7 @@ class EngineMatplotlib(EngineTemplate):
 
                         has_matrix = '3d-matrix'
 
-                if (has_matrix == 'no'):
+                if has_matrix == 'no':
                     # Plot the lines (using custom palettes as appropriate)
                     color_spec = cm.create_color_list(style, data_frame)
 
@@ -806,7 +806,7 @@ class EngineMatplotlib(EngineTemplate):
                         if color_spec[i] is None:
                             color_spec[i] = color_cycle[i % len(color_cycle)]
 
-                        if (chart_type_ord == 'line'):
+                        if chart_type_ord == 'line':
                             linewidth_t = self.get_linewidth(label,
                                                              style.linewidth,
                                                              style.linewidth_2,
@@ -820,7 +820,7 @@ class EngineMatplotlib(EngineTemplate):
                                              color=color_spec[i],
                                              linewidth=linewidth_t), )
 
-                        elif (chart_type_ord == 'bar'):
+                        elif chart_type_ord == 'bar':
                             # for multiple bars we need to allocate space properly
                             bar_pos = [k - (
                                         1 - bar_space) / 2. + bar_index * bar_width
@@ -832,7 +832,7 @@ class EngineMatplotlib(EngineTemplate):
 
                             bar_index = bar_index + 1
 
-                        elif (chart_type_ord == 'barh'):
+                        elif chart_type_ord == 'barh':
                             # for multiple bars we need to allocate space properly
                             bar_pos = [k - (
                                         1 - bar_space) / 2. + bar_index * bar_width
@@ -844,7 +844,7 @@ class EngineMatplotlib(EngineTemplate):
 
                             bar_index = bar_index + 1
 
-                        elif (chart_type_ord == 'stacked'):
+                        elif chart_type_ord == 'stacked':
                             bar_pos = [k - (
                                         1 - bar_space) / 2. + bar_index * bar_width
                                        for k in range(0, len(bar_ind))]
@@ -860,7 +860,7 @@ class EngineMatplotlib(EngineTemplate):
 
                             # bar_index = bar_index + 1
 
-                        elif (chart_type_ord == 'scatter'):
+                        elif chart_type_ord == 'scatter':
                             movie_frame.append(
                                 ax_temp.scatter(xd, yd, label=label,
                                                 color=color_spec[i]))
@@ -1415,7 +1415,7 @@ try:
     import plotly  # JavaScript based plotting library with Python connector
     import plotly.offline as py_offline
 
-    import cufflinks as cf
+    # import cufflinks as cf
 
     plotly.tools.set_config_file(plotly_domain='https://type-here.com',
                                  world_readable=cc.plotly_world_readable,
@@ -1467,19 +1467,19 @@ class EnginePlotly(EngineTemplate):
 
         marker_size = 1
 
-        x = '';
-        y = '';
-        z = ''
+        #x = '';
+        #y = '';
+        #z = ''
 
         scale = 1
 
-        try:
-            # Adjust sizing if offline_html format
-            if (
-                    style.plotly_plot_mode == 'offline_html' and style.scale_factor > 0):
-                scale = float(2.0 / 3.0)
-        except:
-            pass
+        # try:
+        #     # Adjust sizing if offline_html format
+        #     if (
+        #             style.plotly_plot_mode == 'offline_html' and style.scale_factor > 0):
+        #         scale = float(2.0 / 3.0)
+        # except:
+        #     pass
 
         if style.plotly_webgl:
             plotly.graph_objs.Scatter = plotly.graph_objs.Scattergl
@@ -1535,6 +1535,13 @@ class EnginePlotly(EngineTemplate):
         if not (isinstance(title_list, list)):
             title_list = [style.title] * len(data_frame_list)
 
+        if style.auto_scale:
+            width = None
+            height = None
+        else:
+            width = style.width * abs(style.scale_factor) * scale
+            height = style.height * abs(style.scale_factor) * scale
+
         # Go through each data_frame in the list and plot
         for i in range(0, len(data_frame_list)):
             data_frame = data_frame_list[i]
@@ -1572,7 +1579,7 @@ class EnginePlotly(EngineTemplate):
                     else:
                         color = [[0.0, 'rgb(242,240,247)'],
                                  [0.2, 'rgb(218,218,235)'],
-                                 [0.4, 'rgb(188,189,220)'], \
+                                 [0.4, 'rgb(188,189,220)'],
                                  [0.6, 'rgb(158,154,200)'],
                                  [0.8, 'rgb(117,107,177)'],
                                  [1.0, 'rgb(84,39,143)']]
@@ -1614,29 +1621,29 @@ class EnginePlotly(EngineTemplate):
 
                     fig = dict(data=data, layout=layout)
 
-                # Otherwise underlying Cufflinks library underneath
-                elif style.plotly_helper == 'cufflinks':
+                # Otherwise underlying Plotly Express library underneath
+                elif style.plotly_helper == 'plotly_express':
 
                     # NOTE: we use cufflinks library, which simplifies plotting DataFrames in plotly
                     if chart_type_ord == 'surface':
-                        fig = data_frame.iplot(kind=chart_type,
-                                               title=title,
-                                               xTitle=style.x_title,
-                                               yTitle=style.y_title,
-                                               zTitle=style.z_title,
-                                               x=x, y=y, z=z,
-                                               mode=mode,
-                                               size=marker_size,
-                                               sharing=style.plotly_sharing,
-                                               theme=style.plotly_theme,
-                                               bestfit=style.line_of_best_fit,
-                                               legend=style.display_legend,
-                                               colorscale=style.color,
-                                               dimensions=(style.width * abs(
-                                                   style.scale_factor) * scale,
-                                                           style.height * abs(
-                                                               style.scale_factor) * scale),
-                                               asFigure=True)
+                        # Create a surface plot using graph_objects instead of px
+                        fig = go.Figure(data=[go.Surface(
+                            z=data_frame.values,
+                            x=data_frame.index,
+                            y=data_frame.columns,
+                            colorscale=style.color if style.color else None
+                        )])
+
+                        fig.update_layout(
+                            title=title,
+                            width=width,
+                            height=height,
+                            scene=dict(
+                                xaxis_title=style.x_title,
+                                yaxis_title=style.y_title,
+                                zaxis_title=style.z_title
+                            )
+                        )
 
                         # Setting axis is different with a surface
                         if style.x_axis_range is not None:
@@ -1651,78 +1658,73 @@ class EnginePlotly(EngineTemplate):
                             fig.update_layout(scene=dict(
                                 xaxis=dict(range=style.z_axis_range)))
 
-                    elif chart_type_ord == 'heatmap':
-                        fig = data_frame.iplot(kind=chart_type,
-                                               title=title,
-                                               xTitle=style.x_title,
-                                               yTitle=style.y_title,
-                                               x=x, y=y,
-                                               mode=mode,
-                                               size=marker_size,
-                                               sharing=style.plotly_sharing,
-                                               theme=style.plotly_theme,
-                                               bestfit=style.line_of_best_fit,
-                                               legend=style.display_legend,
-                                               colorscale=style.color,
-                                               dimensions=(style.width * abs(
-                                                   style.scale_factor) * scale,
-                                                           style.height * abs(
-                                                               style.scale_factor) * scale),
-                                               asFigure=True)
+                    elif chart_type_ord in ['bar', 'barh']:
+                        fig = px.bar(
+                            data_frame,
+                            x=data_frame.columns.tolist()
+                                if chart_type_ord == 'barh' else data_frame.index,
+                            y=data_frame.index
+                                if chart_type_ord == 'barh' else data_frame.columns.tolist(),
+                            title=title,
+                            labels={"x": style.x_title, "y": style.y_title},
+                            width=width,
+                            height=height,
+                            color_discrete_sequence=color_spec1,
+                            orientation='h' if chart_type_ord == 'barh' else 'v'
+                        )
 
-                    elif chart_type_ord == "annotated-heatmap":
+                    elif 'heatmap' in chart_type_ord:
+                        fig = px.imshow(
+                            data_frame,
+                            title=title,
+                            labels={"x": style.x_title, "y": style.y_title,
+                                    "color": style.z_title},
+                            width=width,
+                            height=height,
+                            color_continuous_scale=style.color if style.color else None
+                        )
 
-                        if style.color == []:
-                            color = None
-                        else:
-                            color = style.color
+                        annotations = []
+                        for i, row in enumerate(data_frame.index):
+                            for j, col in enumerate(data_frame.columns):
+                                annotations.append(
+                                    dict(
+                                        x=j,
+                                        y=i,
+                                        text=str(data_frame.iloc[i, j]),
+                                        showarrow=False,
+                                        font=dict(color="white")
+                                    )
+                                )
 
-                        fig = px.imshow(data_frame, text_auto=True,
-                                        title=style.title,
-                                        color_continuous_scale=color,
-                                        width=(style.width *
-                                               abs(style.scale_factor) * scale),
-                                        height= style.height *
-                                                abs(style.scale_factor) * scale)
+                        fig.update_layout(
+                            annotations=annotations
+                        )
 
                     # Otherwise we have a line plot (or similar such as a scatter plot, or bar chart etc)
                     else:
 
                         full_line = style.connect_line_gaps
 
-                        if chart_type_ord == 'line':
+                        if chart_type_ord == "line":
                             full_line = True
-
-                            # chart_type_ord = 'scatter'
-                            mode = 'lines'
-                        elif chart_type_ord in ['dash', 'dashdot', 'dot']:
-                            chart_type_ord = 'scatter'
-
+                            mode = "lines"
+                        elif chart_type_ord in ["dash", "dashdot", "dot"]:
+                            mode = "lines"
                         elif chart_type_ord == 'line+markers':
                             full_line = True
 
                             chart_type_ord = 'line'
-                            mode = 'lines+markers'
-                            marker_size = 5
-                        elif chart_type_ord == 'scatter':
+                            mode = "lines+markers"
+
+                            marker_size = style.marker_size
+                        elif chart_type_ord == "scatter":
                             mode = 'markers'
-                            marker_size = 5
+                            marker_size = style.market_size
                         elif chart_type_ord == 'bubble':
                             chart_type_ord = 'scatter'
 
                             mode = 'markers'
-
-                        # TODO check this!
-                        # Can have issues calling cufflinks with a theme which is None, so split up the cases
-                        if style.plotly_theme is None:
-                            plotly_theme = 'pearl'
-                        else:
-                            plotly_theme = style.plotly_theme
-
-                        m = 0
-
-                        y_axis_2_series = [x for x in style.y_axis_2_series if
-                                           x in data_frame.columns]
 
                         vspan = None
 
@@ -1733,54 +1735,41 @@ class EnginePlotly(EngineTemplate):
                                     "%Y-%m-%d"), 'color': 'rgba(30,30,30,0.3)',
                                 'fill': True, 'opacity': .4}
 
-                        if True:
-                            if vspan is None:
-                                fig = data_frame.iplot(kind=chart_type_ord,
-                                                       title=title,
-                                                       xTitle=style.x_title,
-                                                       yTitle=style.y_title,
-                                                       x=x, y=y, z=z,
-                                                       subplots=False,
-                                                       sharing=style.plotly_sharing,
-                                                       mode=mode,
-                                                       secondary_y=y_axis_2_series,
-                                                       size=marker_size,
-                                                       theme=plotly_theme,
-                                                       colorscale='dflt',
-                                                       bestfit=style.line_of_best_fit,
-                                                       legend=style.display_legend,
-                                                       width=style.linewidth,
-                                                       color=color_spec1,
-                                                       dimensions=(
-                                                       style.width * abs(
-                                                           style.scale_factor) * scale,
-                                                       style.height * abs(
-                                                           style.scale_factor) * scale),
-                                                       asFigure=True)
-                            else:
-                                fig = data_frame.iplot(kind=chart_type_ord,
-                                                       title=title,
-                                                       xTitle=style.x_title,
-                                                       yTitle=style.y_title,
-                                                       x=x, y=y, z=z,
-                                                       subplots=False,
-                                                       sharing=style.plotly_sharing,
-                                                       mode=mode,
-                                                       secondary_y=y_axis_2_series,
-                                                       size=marker_size,
-                                                       theme=plotly_theme,
-                                                       colorscale='dflt',
-                                                       bestfit=style.line_of_best_fit,
-                                                       legend=style.display_legend,
-                                                       width=style.linewidth,
-                                                       color=color_spec1,
-                                                       dimensions=(
-                                                       style.width * abs(
-                                                           style.scale_factor) * scale,
-                                                       style.height * abs(
-                                                           style.scale_factor) * scale),
-                                                       vspan=vspan,
-                                                       asFigure=True)
+
+                        if chart_type_ord == 'scatter':
+                            fig = px.scatter(
+                                data_frame,
+                                x=data_frame.index if x == '' else x,
+                                y=data_frame.columns.tolist(),
+                                title=title,
+                                labels={"x": style.x_title,
+                                        "y": style.y_title},
+                                width=width,
+                                height=height,
+                                color_discrete_sequence=color_spec1,
+                                size=marker_size if marker_size > 1 else None
+                            )
+                        else:
+                            # Otherwise it's a line chart
+                            fig = px.line(
+                                data_frame,
+                                x=data_frame.index,
+                                y=data_frame.columns.tolist(),
+                                title=title,
+                                labels={"x": style.x_title,
+                                        "y": style.y_title},
+                                width=width,
+                                height=height,
+                                color_discrete_sequence=color_spec1,
+                                line_shape='linear' if style.line_shape is None else style.line_shape
+                            )
+
+                            dash = chart_type_ord
+
+                            if chart_type_ord == 'line':
+                                dash = "solid"
+
+                            fig.update_traces(line=dict(dash=dash))
 
                         # For lines set the property of connectgaps (cannot specify directly in cufflinks)
                         if full_line:
@@ -1820,19 +1809,54 @@ class EnginePlotly(EngineTemplate):
                             for k in range(0, len(fig['data'])):
                                 fig['data'][k].stackgroup = stackgroup[k]
 
+                        if vspan is not None:
+                            # Add the vertical shaded region
+                            fig.add_shape(
+                                type="rect",
+                                x0=vspan['x0'],
+                                x1=vspan['x1'],
+                                y0=0,
+                                y1=1,
+                                yref="paper",
+                                fillcolor=vspan['color'],
+                                opacity=vspan['opacity'],
+                                layer="below",
+                                line_width=0,
+                            )
 
-                # Use plotly express (not implemented yet)
-                elif style.plotly_helper == 'plotly_express':
-                    # TODO
-                    pass
+                        # Lines/markers
+                        if hasattr(style,
+                                   'mode') and style.mode and mode is None:
+                            mode = style.mode
+
+                        if mode is not None:
+                            fig.update_traces(mode=mode, marker=dict(
+                                size=style.marker_size or marker_size))
 
             # Common properties
-            # Override other properties, which cannot be set directly by cufflinks/or you want to reset later
+            # Override other properties, which cannot be set directly by plotly express/or you want to reset later
             if style.title is not None:
                 try:
                     fig.update_layout(title=style.title)
                 except:
                     pass
+
+
+            # For Plotly Express, we need to explicitly update traces for secondary y-axis
+            for trace in fig.select_traces():
+                if trace.name in style.y_axis_2_series:
+                    trace.update(yaxis="y2")
+
+            # Make sure y2 axis is configured
+            fig.update_layout(
+                yaxis2=dict(
+                    title=style.y_2_title,
+                    overlaying="y",
+                    side="right",
+                    showgrid=style.y_axis_2_showgrid if hasattr(
+                        style, 'y_axis_2_showgrid') else True
+                )
+            )
 
             # Add second y axis title
             if style.y_2_title is not None:
@@ -1907,6 +1931,9 @@ class EnginePlotly(EngineTemplate):
 
             # Add shaded regions
             fig = self._multi_shade(fig, style)
+
+            if style.display_legend is not None:
+                fig.update_layout(showlegend=style.display_legend)
 
             # Legend Properties
             if style.legend_x_anchor is not None:
@@ -2109,11 +2136,11 @@ class EnginePlotly(EngineTemplate):
         fig.update(dict(layout=dict(plot_bgcolor='rgba(0,0,0,0)')))
 
         # Deal with grids
-        if (not (style.x_axis_showgrid)): fig.update(
+        if not (style.x_axis_showgrid): fig.update(
             dict(layout=dict(xaxis=dict(showgrid=style.x_axis_showgrid))))
-        if (not (style.y_axis_showgrid)): fig.update(
+        if not (style.y_axis_showgrid): fig.update(
             dict(layout=dict(yaxis=dict(showgrid=style.y_axis_showgrid))))
-        if (not (style.y_axis_2_showgrid)): fig.update(
+        if not (style.y_axis_2_showgrid): fig.update(
             dict(layout=dict(yaxis2=dict(showgrid=style.y_axis_2_showgrid))))
 
         # Override properties, which cannot be set directly by cufflinks
@@ -2152,14 +2179,18 @@ class EnginePlotly(EngineTemplate):
                         (style.bubble_size_scalar * (
                                     bubble_series.values / scale)).tolist()
 
-                if mode is not None:
-                    fig['data'][j].mode = mode
+                # Will fail if not line
+                try:
+                    if mode is not None:
+                        fig['data'][j].mode = mode
 
-                if dash is not None:
-                    fig['data'][j].line.dash = dash
+                    if dash is not None:
+                        fig['data'][j].line.dash = dash
 
-                if line_shape is not None:
-                    fig['data'][j].line.shape = line_shape
+                    if line_shape is not None:
+                        fig['data'][j].line.shape = line_shape
+                except:
+                    pass
 
         # If candlestick specified add that (needed to be appended on top of the Plotly figure's data
         if style.candlestick_series is not None and not (style.plotly_webgl):
@@ -2245,6 +2276,9 @@ class EnginePlotly(EngineTemplate):
         if len(x_y_line_list) > 0:
             fig.layout.shapes = x_y_line_list
 
+        if style.plotly_theme is not None:
+            fig.update_layout(template=style.plotly_theme)
+
         # publish the plot (depending on the output mode eg. to HTML file/Jupyter notebook)
         # also return as a Figure object for plotting by a web server app (eg. Flask/Dash)
         return self.publish_plot(fig, style)
@@ -2281,6 +2315,7 @@ class EnginePlotly(EngineTemplate):
 
         # Replace shape in fig with multiple new shapes
         fig['layout']['shapes'] = tuple(shp_lst)
+
 
         return fig
 

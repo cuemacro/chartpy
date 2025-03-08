@@ -43,11 +43,15 @@ class Canvas(object):
         elif canvas_plotter == 'keen':
             canvas_plotter = CanvasPlotterKeen()
 
-        return canvas_plotter.render_canvas(self.elements_to_render, page_title=page_title, jupyter_notebook=jupyter_notebook,
-                                     silent_display=silent_display,
-                                     output_filename=output_filename, render_pdf=render_pdf,
-                                     return_html_binary=return_html_binary,
-                                     return_pdf_binary=return_pdf_binary, extra_head_code=extra_head_code)
+        return canvas_plotter.render_canvas(
+            self.elements_to_render,
+            page_title=page_title,
+            jupyter_notebook=jupyter_notebook,
+            silent_display=silent_display,
+            output_filename=output_filename, render_pdf=render_pdf,
+            return_html_binary=return_html_binary,
+            return_pdf_binary=return_pdf_binary,
+            extra_head_code=extra_head_code)
 
 
 #########################################
@@ -207,7 +211,7 @@ class CanvasPlotterPlain(CanvasPlotterTemplate):
                             # print(chart)
                         elif isinstance(object, pandas.DataFrame):
                             old_width = pandas.get_option('display.max_colwidth')
-                            pandas.set_option('display.max_colwidth', -1)
+                            pandas.set_option('display.max_colwidth', None)
 
                             html_table = object.to_html(escape=False).replace('border="1"', 'border="0"')
                             html_table = html_table.replace("text-align: right;",
@@ -252,7 +256,7 @@ class CanvasPlotterKeen(CanvasPlotterTemplate):
                   <!-- For slider -->
                   <link rel="stylesheet" type="text/css" href="static/css/iThing.css" />''')
         html.append(extra_head_code)
-        html.append('''</head>
+        html.append(f'''</head>
                 <body class="application">
 
                 <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -268,7 +272,7 @@ class CanvasPlotterKeen(CanvasPlotterTemplate):
                           <!-- <img src="logo.png" alt="Smiley face" height="23" width="23"> -->
                           <span class="glyphicon glyphicon-chevron-left"></span>
                         </a>
-                        <a class="navbar-brand" href="http://www.cuemacro.com">chartpy dashboard </a>
+                        <a class="navbar-brand" href="http://www.cuemacro.com">{page_title}</a>
                       </div>
                     </div>
                 </div>
@@ -289,6 +293,8 @@ class CanvasPlotterKeen(CanvasPlotterTemplate):
                     if not (isinstance(row, list)):
                         row = [row]
 
+                    last_width = str(700)
+
                     html.append('<div class="row">')  # open row
 
                     for j in range(0, len(row)):
@@ -302,6 +308,9 @@ class CanvasPlotterKeen(CanvasPlotterTemplate):
 
                             html.append('<div style="display:inline-block; width: ' + str(
                                 chart.style.width * abs(chart.style.scale_factor) + padding) + 'px">')
+
+                            last_width = str(
+                                chart.style.width * abs(chart.style.scale_factor) + padding)
 
                             html.append('<div class="chart-wrapper">')
                             html.append('<div class="chart-title">' + chart.style.title + '</div>')
@@ -360,12 +369,32 @@ class CanvasPlotterKeen(CanvasPlotterTemplate):
                             # print(chart.style.html_file_output)
                             # print(chart)
                         elif isinstance(object, pandas.DataFrame):
-                            html.append('<div style="display:inline-block;>')
-                            html.append(object.to_html())
-                            html.append('</div>')
+
+                            old_width = pandas.get_option(
+                                'display.max_colwidth')
+                            pandas.set_option('display.max_colwidth', None)
+
+                            html_table = object.to_html(escape=False).replace(
+                                'border="1"', 'border="0"')
+                            html_table = html_table.replace(
+                                "text-align: right;",
+                                "text-align: center; vertical-align: text-top; padding: 20px")
+
+                            pandas.set_option('display.max_colwidth',
+                                              old_width)
+
+                            html.append('<div style="display:inline-block; width: ' + last_width + 'px">')
+                            html.append('<div class="chart-wrapper">')
+                            html.append(
+                                '<div class="chart-title">Table</div>')
+                            html.append(html_table)
+                            # html.append('</div>')
+                            html.append(
+                                '<div class="chart-notes">Source</div>')
+                            html.append("</div>")
                         else:
                             # assume it's a string otherwise
-                            html.append('<div style="display:inline-block;>')
+                            html.append('<div style="display:inline-block; class="chart-stage">')
                             html.append(object)
                             html.append('</div>')
 

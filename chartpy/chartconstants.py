@@ -61,6 +61,7 @@ class ChartConstants(object):
     chartfactory_width = 600
     chartfactory_height = 400
     chartfactory_bubble_size_scalar = 35
+    chartfactory_font_family = 'open sans'
 
     ########## BOKEH SETTINGS
     bokeh_font       = 'open sans'
@@ -71,22 +72,37 @@ class ChartConstants(object):
                        '#777777',
                        '#FBC15E',
                        '#8EBA42',
-                       '#FFB5B8']
+                       '#FFB5B8',
+                       '#ee538b']
 
     bokeh_plot_mode = 'offline_html'  # 'offline_jupyter'
 
     ########## PLOTLY SETTINGS
     plotly_world_readable = False
-    plotly_plot_mode = 'offline_html' # 'online', 'offline_jupyter'
-    plotly_palette = ['#E24A33',
+    plotly_plot_mode = 'offline_html_exc_embed_js' # 'online', 'offline_jupyter', 'offline_html_exc_embed_js', 'offline_html'
+    plotly_palette = [ '#E24A33',
                        '#348ABD',
                        '#988ED5',
                        '#777777',
                        '#FBC15E',
                        '#8EBA42',
-                       '#FFB5B8']
+                       '#FFB5B8',
+                       '#ee538b']
     plotly_webgl = False
-    plotly_helper = 'cufflinks' # cufflinks or plotly_express
+    plotly_helper = 'plotly_express' # plotly_express
+
+    # 'plotly' - Default Plotly theme
+    # 'plotly_white' - White background with light gray grid lines
+    # 'plotly_dark' - Dark background
+    # 'ggplot2' - Similar to R's ggplot2 styling
+    # 'seaborn' - Based on Seaborn's styling
+    # 'simple_white' - Minimalist white background
+    # 'none' - No styling
+    plotly_theme = "plotly"
+
+    auto_scale = False
+
+    barmode = "group" # "stack", "group", "relative", "overlay"
 
     ########## API KEYS
 

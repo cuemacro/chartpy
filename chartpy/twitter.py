@@ -21,7 +21,11 @@ Tweet from Python using Twython library
 
 """
 
-from twython import Twython
+try:
+    from twython import Twython
+except:
+    pass
+
 from chartpy.chartconstants import ChartConstants
 
 cc = ChartConstants()

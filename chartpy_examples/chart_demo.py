@@ -12,91 +12,71 @@ __author__ = 'saeedamen'  # Saeed Amen
 # See the License for the specific language governing permissions and limitations under the License.
 #
 
-
-import pandas
-
-# support Quandl 3.x.x - note you will need to install quandl separately as it isn't a dependency
-try:
-    import quandl as Quandl
-except:
-    # if import fails use Quandl 2.x.x
-    import Quandl
+import pandas as pd
 
 from chartpy import Chart, Style
 
-# get your own free Quandl API key from https://www.quandl.com/
-try:
-    from chartpy.chartcred import ChartCred
-    cred = ChartCred()
-    quandl_api_key = cred.quandl_api_key
-except:
-    quandl_api_key = "x"
+df_fx = pd.read_csv("https://raw.githubusercontent.com/cuemacro/teaching/refs/heads/master/pythoncourse/data/daily_fx_spot_data.csv", index_col=0)
+df_fx.index = pd.to_datetime(df_fx.index, format='%Y-%m-%d')
 
-# choose run_example = 0 for everything
-# run_example = 1 - plot US GDP with multiple libraries
-# run_example = 2 - plot US and UK unemployment demonstrating multiple line types
-# run_example = 3 - correlations of a few different stocks in USA
-run_example = 0
+run_example = 3
 
 if run_example == 1 or run_example == 0:
-    df = Quandl.get("FRED/GDP", authtoken=quandl_api_key)
 
-    # we can use the charting tools in several ways
-    chart = Chart()
-    df.index = pandas.to_datetime(df.index, format='%Y-%m-%d')
+    # We can use the charting tools in several ways
 
-    # set the style of the plot
-    style = Style(title="US GDP", source="Quandl/Fred")
+    # Set the style of the plot
+    style = Style(title="EURUSD", source="FRED", auto_scale=True, chart_type="line")
+
+    chart = Chart(engine="plotly")
 
     # Chart object is initialised with the dataframe and our chart style
-    chart = Chart(df=df, chart_type='line', style=style)
+    chart.plot(df=df_fx["EURUSD.close"], style=style)
 
-    # we now plot using multiple plotting libraries, with the same dataframe
-    chart.plot(engine='bokeh')
-    chart.plot(engine='plotly')
-    chart.plot(engine='matplotlib')
+    style.mode = "markers"
+    style.chart_type = "dot"
+    chart.plot(df=df_fx["EURUSD.close"], style=style)
+
+    # We now plot using multiple plotting libraries, with the same dataframe
+    chart.plot(engine='matplotlib', df=df_fx["EURUSD.close"], style=style)
+
+    style.subplots = True
+    style.subplot_titles = ["EURUSD", "GBPUSD"]
+    chart.plot(df=[df_fx["EURUSD.close"], df_fx["GBPUSD.close"]], style=style)
 
 if run_example == 2 or run_example == 0:
-    # download US and Texas unemployment rate
-    df = Quandl.get(["FRED/UNRATE", "FRED/TXUR"], authtoken=quandl_api_key, trim_start="2015-12-01")
-
-    df.index = pandas.to_datetime(df.index, format='%Y-%m-%d')
 
     # first plot without any parameters (will use defaults) - note how we can it assign the dataframe to either Chart
     # or the plot method
-    Chart(df).plot()
-    Chart().plot(df)
 
-    # we can also specify the engine within the Style object if we choose
-    style = Style(title="US & Texas unemployment rate", chart_type=['bar', 'line'], engine='matplotlib')
+    df_month_end = df_fx[["EURUSD.close", "GBPUSD.close"]].resample('M').last()
+    df_month_end = (df_month_end / df_month_end.shift(1) - 1.0) * 100
 
-    style.engine = 'bokeh'
-    Chart(df, style=style).plot()
+    df_month_end  = df_month_end.tail(12)
 
-    # Bokeh wrapper doesn't yet support horizontal bars, but matplotlib and plotly/cufflink wrappers do
-    style.engine = 'plotly'
+    # We can also specify the engine within the Style object if we choose
+    style = Style(title="FX charts", chart_type=['bar', 'line'])
+
+    Chart(df=df_month_end, engine='plotly', style=style).plot()
+
     style.chart_type = 'barh'
-    Chart(df, engine='plotly', style=style).plot()
-    Chart(df, engine='matplotlib', style=style).plot()
+    Chart(df=df_month_end, engine='plotly', style=style).plot()
+    Chart(df=df_month_end, engine='matplotlib', style=style).plot()
 
 if run_example == 3 or run_example == 0:
-    df = Quandl.get(["WIKI/ABBV", "WIKI/TRIP", "WIKI/HPQ"], authtoken=quandl_api_key, trim_start="2016-06-01")
+    df = df_fx[["EURUSD.close", "GBPUSD.close"]].resample('M').last()
 
     # get only adjusted close field, calculate returns and create correlation matrix
-    columns = [item for item in df.columns if " - Adj. Close" in item]
-    df = df[columns]
-    df.columns = [a.replace(' - Adj. Close', '') for a in df.columns]
     df = df / df.shift(1) - 1
     corr = df.corr() * 100
 
     print(corr)
 
-    # set the style of the plot
-    style = Style(title="Stock Correlations", source="Quandl/Fred", color='Blues')
+    # Set the style of the plot
+    style = Style(title="FX Correlations", source="FRED", color='Blues')
 
     # Chart object is initialised with the dataframe and our chart style
     chart = Chart(df=corr, chart_type='heatmap', style=style)
 
     chart.plot(engine='matplotlib')
-    # chart.plot(engine='bokeh')    # TODO
     chart.plot(engine='plotly')

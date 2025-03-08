@@ -110,12 +110,6 @@ You can also install chartpy from PyPI (but this will usually be a slightly olde
 pip install chartpy
 ```
 
-Note that chartpy now supports Plotly 4, because Cufflinks 0.17 now works with Plotly 4!
-
-```
-pip install cufflinks==0.17 plotly==4.2.1
-```
-
 # Why did I write chartpy?
 
 There are many good charting libraries. However, they all have different APIs. It took me a lot of time to learn a new API,
@@ -136,14 +130,15 @@ to quickly create Dash components/HTML components, with relatively few lines of 
 Hence, it's a lot quicker to create Dash based dashboards in chartpy! In the future, we want
 to also support other Python dashboards like [H2O Wave](https://www.h2o.ai/products/h2o-wave/).
 
-You'll need to install Dash as an extra
-to use them as they aren't part of the default installation, which we can see below (Linux at top, Windows on bottom):
+You'll need to install Dash as an extra 
+to use them as they aren't part of the default installation, which we can see below (Linux at top, Windows on bottom) 
+although it does work with later versions too:
 
-    pip install cufflinks==0.17.3 plotly==4.14.3 kaleido dash==1.20.0 \
+    pip install plotly==4.14.3 kaleido dash==1.20.0 \
       dash-html-components==1.1.3 dash-core-components==1.16.0 dash-table==4.11.3 \
       jupyter-dash==0.4.0 chart_studio==1.1.0
 
-    pip install cufflinks==0.17.3 plotly==4.14.3 kaleido dash==1.20.0 ^
+    pip install plotly==4.14.3 kaleido dash==1.20.0 ^
       dash-html-components==1.1.3 dash-core-components==1.16.0 dash-table==4.11.3 ^
       jupyter-dash==0.4.0 chart_studio==1.1.0
 
@@ -159,6 +154,7 @@ In chartpy/examples you will find several demos
 
 # Recent Release Notes
 
+* 03 Mar 2025 - v0.1.15
 * 10 Apr 2024 - v0.1.14
 * 12 Oct 2023 - v0.1.13
 * 07 Jul 2022 - v0.1.12
@@ -173,6 +169,9 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 08 Mar 2025
+  * Removed dependency on cufflinks, and now uses Plotly Express
+  * Added autoscaling for Plotly charts
 * 09 Nov 2024
   * Added PDF reports
   * Fixed deprecation issue with matplotlib.cm => matplotlib.colormaps

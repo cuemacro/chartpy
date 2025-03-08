@@ -37,14 +37,14 @@ class Style(object):
                  z_title='',
                  units='',
 
-                 font_family=None,
+                 font_family=cc.chartfactory_font_family,
 
                  # Type of plot (can be defined as list)
                  engine=None,
                  chart_type=None,
                  
                  # Type of bar chart
-                 barmode=None,
+                 barmode=cc.barmode,
                  stackgroup=None,
                  
                  # Drop NaN points before plotting
@@ -83,6 +83,7 @@ class Style(object):
                  height=cc.chartfactory_height,
                  resample=None,
                  thin_margin=False,
+                 auto_scale=cc.auto_scale,
 
                  # Should we block display of new screens?
                  block_new_plots=False,
@@ -165,7 +166,7 @@ class Style(object):
                  plotly_api_key=None,
                  plotly_world_readable=cc.plotly_world_readable,
                  plotly_sharing=cc.plotly_sharing,
-                 plotly_theme=None,
+                 plotly_theme=cc.plotly_theme,
                  plotly_plot_mode=cc.plotly_plot_mode,
                  plotly_webgl=cc.plotly_webgl,
                  plotly_helper=cc.plotly_helper,
@@ -236,6 +237,7 @@ class Style(object):
         self.height = height
         self.resample = resample
         self.thin_margin = thin_margin
+        self.auto_scale = auto_scale
 
         # Block display
         self.block_new_plots = block_new_plots
@@ -603,6 +605,14 @@ class Style(object):
     @scale_factor.setter
     def scale_factor(self, scale_factor):
         self.__scale_factor = scale_factor
+
+    @property
+    def auto_scale(self):
+        return self.__auto_scale
+
+    @auto_scale.setter
+    def auto_scale(self, auto_scale):
+        self.__auto_scale = auto_scale
 
     @property
     def dpi(self):

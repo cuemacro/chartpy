@@ -20,7 +20,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install toml
           python -c "import toml; data = toml.load('pyproject.toml'); deps = data.get('tool', {}).get('poetry', {}).get('dependencies', {}); print('\n'.join(deps.keys()))" > dependencies.txt
-          pip install -r <(python -c "import toml; data = toml.load('pyproject.toml'); deps = data.get('tool', {}).get('poetry', {}).get('dependencies', {}); print('\n'.join(f'{pkg}' for pkg in deps.keys()))")
+          pip install -r <(python -c "import toml; data = toml.load('pyproject.toml'); deps = data.get('project', {}).get('dependencies', {}); print('\n'.join(f'{pkg}' for pkg in deps.keys()))")
 
       - name: Check dependency ages
         run: |

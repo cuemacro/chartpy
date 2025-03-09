@@ -45,7 +45,7 @@ jobs:
                   releases = data.get("releases", {})
 
                   # Filter only stable versions (no alpha, beta, rc)
-                  stable_versions = [v for v in releases.keys() if not parse(v).is_prerelease]
+                  stable_versions = [v for v in releases.keys()] # if not parse(v).is_prerelease]
                   stable_versions.sort(key=parse, reverse=True)  # Sort versions properly
 
                   if stable_versions:

@@ -42,11 +42,11 @@ class Style(object):
                  # Type of plot (can be defined as list)
                  engine=None,
                  chart_type=None,
-                 
+
                  # Type of bar chart
                  barmode=cc.barmode,
                  stackgroup=None,
-                 
+
                  # Drop NaN points before plotting
                  drop_na=False,
 
@@ -67,7 +67,7 @@ class Style(object):
                  candlestick_increasing_line_color=None,
                  candlestick_decreasing_color=None,
                  candlestick_decreasing_line_color=None,
-                 
+
                  # Overlay figures
                  overlay_fig=None,
 
@@ -196,11 +196,11 @@ class Style(object):
 
         # Chart type
         self.chart_type = chart_type
-        
+
         # Type of bar mode
         self.barmode = barmode
         self.stackgroup = stackgroup
-        
+
         # Drop NaN before plotting
         self.drop_na = drop_na
 
@@ -221,10 +221,10 @@ class Style(object):
         self.candlestick_increasing_line_color = candlestick_increasing_line_color
         self.candlestick_decreasing_color = candlestick_decreasing_color
         self.candlestick_decreasing_line_color = candlestick_decreasing_line_color
-        
+
         # Overlay plots
         self.overlay_fig = overlay_fig
-        
+
         # Subplots
         self.subplots = subplots
         self.subplot_titles = subplot_titles
@@ -241,7 +241,7 @@ class Style(object):
 
         # Block display
         self.block_new_plots = block_new_plots
-        
+
         # Animation parameters
         self.animate_figure = animate_figure
         self.animate_titles = animate_titles
@@ -275,7 +275,7 @@ class Style(object):
         # x and y axis type (eg. category)
         self.x_axis_type = x_axis_type
         self.y_axis_type = y_axis_type
-        
+
         # Gaps between tick labels
         self.x_dtick = x_dtick
         self.y_dtick = y_dtick
@@ -394,7 +394,7 @@ class Style(object):
     @y_title.setter
     def y_title(self, y_title):
         self.__y_title = y_title
-        
+
     @property
     def y_2_title(self):
         return self.__y_2_title
@@ -418,7 +418,7 @@ class Style(object):
     @units.setter
     def units(self, units):
         self.__units = units
-        
+
     @property
     def font_family(self):
         return self.__font_family
@@ -444,7 +444,7 @@ class Style(object):
     @barmode.setter
     def barmode(self, barmode):
         self.__barmode = barmode
-        
+
     @property
     def stackgroup(self):
         return self.__stackgroup
@@ -512,7 +512,7 @@ class Style(object):
     @bubble_series.setter
     def bubble_series(self, bubble_series):
         self.__bubble_series = self.str_list(bubble_series)
-        
+
     @property
     def bubble_size_scalar(self):
         return self.__bubble_size_scalar
@@ -561,7 +561,7 @@ class Style(object):
     @candlestick_decreasing_line_color.setter
     def candlestick_decreasing_line_color(self, candlestick_decreasing_line_color):
         self.__candlestick_decreasing_line_color = candlestick_decreasing_line_color
-    
+
     ###### Overlay figures
     @property
     def overlay_fig(self):
@@ -570,7 +570,7 @@ class Style(object):
     @overlay_fig.setter
     def overlay_fig(self, overlay_fig):
         self.__overlay_fig = overlay_fig
-    
+
     ###### Subplots
     @property
     def subplots(self):
@@ -579,7 +579,7 @@ class Style(object):
     @subplots.setter
     def subplots(self, subplots):
         self.__subplots = subplots
-        
+
     @property
     def subplot_titles(self):
         return self.__subplot_titles
@@ -653,7 +653,7 @@ class Style(object):
     @block_new_plots.setter
     def block_new_plots(self, block_new_plots):
         self.__block_new_plots = block_new_plots
-        
+
     @property
     def animate_figure(self):
         return self.__animate_figure
@@ -669,7 +669,7 @@ class Style(object):
     @animate_titles.setter
     def animate_titles(self, animate_titles):
         self.__animate_titles = animate_titles
-        
+
     @property
     def animate_frame_ms(self):
         return self.__animate_frame_ms
@@ -744,10 +744,10 @@ class Style(object):
     @line_shape.setter
     def line_shape(self, line_shape):
         self.__line_shape = line_shape
-        
-    
+
+
     ###### Shaded regions
-    
+
     @property
     def x_shade_dates(self):
         return self.__x_shade_dates
@@ -755,7 +755,7 @@ class Style(object):
     @x_shade_dates.setter
     def x_shade_dates(self, x_shade_dates):
         self.__x_shade_dates = x_shade_dates
-        
+
     ###### Grids
     @property
     def x_axis_showgrid(self):
@@ -772,7 +772,7 @@ class Style(object):
     @y_axis_showgrid.setter
     def y_axis_showgrid(self, y_axis_showgrid):
         self.__y_axis_showgrid = y_axis_showgrid
-        
+
     @property
     def z_axis_showgrid(self):
         return self.__z_axis_showgrid
@@ -813,7 +813,7 @@ class Style(object):
     @y_axis_range.setter
     def y_axis_range(self, y_axis_range):
         self.__y_axis_range = y_axis_range
-        
+
     @property
     def y_axis_2_range(self):
         return self.__y_axis_2_range
@@ -829,7 +829,7 @@ class Style(object):
     @z_axis_range.setter
     def z_axis_range(self, z_axis_range):
         self.__z_axis_range = z_axis_range
-        
+
     ###### axis type
 
     @property
@@ -847,7 +847,7 @@ class Style(object):
     @y_axis_type.setter
     def y_axis_type(self, y_axis_type):
         self.__y_axis_type = y_axis_type
-    
+
     ###### gaps between tick labels
     @property
     def x_dtick(self):
@@ -923,9 +923,9 @@ class Style(object):
     @display_legend.setter
     def display_legend(self, display_legend):
         self.__display_legend = display_legend
-    
+
     ###### Legend properties
-    
+
     @property
     def legend_x_anchor(self):
         return self.__legend_x_anchor
@@ -933,7 +933,7 @@ class Style(object):
     @legend_x_anchor.setter
     def legend_x_anchor(self, legend_x_anchor):
         self.__legend_x_anchor = legend_x_anchor
-        
+
     @property
     def legend_y_anchor(self):
         return self.__legend_y_anchor
@@ -957,7 +957,7 @@ class Style(object):
     @legend_y_pos.setter
     def legend_y_pos(self, legend_y_pos):
         self.__legend_y_pos = legend_y_pos
-        
+
     @property
     def legend_bgcolor(self):
         return self.__legend_bgcolor
@@ -973,7 +973,7 @@ class Style(object):
     @legend_orientation.setter
     def legend_orientation(self, legend_orientation):
         self.__legend_orientation = legend_orientation
-        
+
     ###### matplotlib only
     @property
     def xkcd(self):
@@ -999,7 +999,7 @@ class Style(object):
     @file_output.setter
     def file_output(self, file_output):
         self.__file_output = file_output
-        
+
     @property
     def save_fig(self):
         return self.__save_fig
@@ -1093,7 +1093,7 @@ class Style(object):
     @plotly_world_readable.setter
     def plotly_world_readable(self, plotly_world_readable):
         self.__plotly_world_readable = plotly_world_readable
-        
+
     @property
     def plotly_sharing(self):
         return self.__plotly_sharing
@@ -1125,7 +1125,7 @@ class Style(object):
     @plotly_webgl.setter
     def plotly_webgl(self, plotly_webgl):
         self.__plotly_webgl = plotly_webgl
-        
+
     @property
     def plotly_helper(self):
         return self.__plotly_helper

@@ -55,7 +55,7 @@ class TitlePage(ReportBlock):
         story.append(Spacer(1, 250))
 
         metadata = f"""
-            <b>Report Generated:</b> 
+            <b>Report Generated:</b>
             {pandas.Timestamp('today'):%Y-%m-%d %H:%M:%S}
         """
 

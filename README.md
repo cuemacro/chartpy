@@ -22,7 +22,7 @@ chart.plot(engine='plotly')
 
 I had previously written the open source PyThalesians financial library. This new chartpy library has some similar functionality to the chart
 part of that library. However, I've totally rewritten the API to make it much cleaner and easier to use. It is also now a fully
-standalone package, so it'll be easier to use for both non-financial and financial applications. It also has many more features including subplots 
+standalone package, so it'll be easier to use for both non-financial and financial applications. It also has many more features including subplots
 and much more.
 
 At present chartpy supports several types of plots
@@ -45,7 +45,7 @@ matplotlib seems quicker). Installation instructions for VisPy are [here](http:/
 chartpy will install the latest release version, but you find it necessary to use the most up to date development version of VisPy
 
 Other points to note
-* Please bear in mind at present chartpy is currently a highly experimental alpha project and isn't yet fully 
+* Please bear in mind at present chartpy is currently a highly experimental alpha project and isn't yet fully
 documented
 * Uses Apache 2.0 licence
 
@@ -97,7 +97,7 @@ on your computer
 # Installation
 
 You can install the library using the below (latest version). After installation:
-* Make sure you edit the chartconstants.py file for the correct Plotly API and Twitter API keys 
+* Make sure you edit the chartconstants.py file for the correct Plotly API and Twitter API keys
 (or create a chartcred.py file)
 
 ```
@@ -130,8 +130,8 @@ to quickly create Dash components/HTML components, with relatively few lines of 
 Hence, it's a lot quicker to create Dash based dashboards in chartpy! In the future, we want
 to also support other Python dashboards like [H2O Wave](https://www.h2o.ai/products/h2o-wave/).
 
-You'll need to install Dash as an extra 
-to use them as they aren't part of the default installation, which we can see below (Linux at top, Windows on bottom) 
+You'll need to install Dash as an extra
+to use them as they aren't part of the default installation, which we can see below (Linux at top, Windows on bottom)
 although it does work with later versions too:
 
     pip install plotly==4.14.3 kaleido dash==1.20.0 \
@@ -145,7 +145,7 @@ although it does work with later versions too:
 # Contributors
 
 Contributors are always welcome for finmarketpy, findatapy and chartpy. If you'd like to contribute, have a look at
-[Planned Features](https://github.com/cuemacro/finmarketpy/blob/master/PLANNED_FEATURES.md) for areas we're looking for help on. 
+[Planned Features](https://github.com/cuemacro/finmarketpy/blob/master/PLANNED_FEATURES.md) for areas we're looking for help on.
 Or if you have any ideas for improvements to the libriares please let us know too!
 
 # chartpy examples
@@ -165,7 +165,7 @@ In chartpy/examples you will find several demos
 * 06 May 2020 - v0.1.7
 * 06 Apr 2020 - v0.1.6
 * 02 Apr 2020 - v0.1.5
-* 23 Oct 2019 - v0.1.4 
+* 23 Oct 2019 - v0.1.4
 
 # Coding log
 

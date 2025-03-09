@@ -38,4 +38,3 @@ grid.linestyle: -    # solid line
 
 figure.facecolor: white
 figure.edgecolor: 0.50
-

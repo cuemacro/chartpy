@@ -37,6 +37,8 @@ jobs:
 
           def get_latest_stable_version(package_name):
               """Fetches the latest stable version of a package from PyPI."""
+              print(package_name)
+
               url = f"https://pypi.org/pypi/{package_name}/json"
               response = requests.get(url)
 
@@ -46,6 +48,7 @@ jobs:
 
                   stable_versions = []
                   for version in releases.keys():
+                      print(version)
                       try:
                           parsed_version = parse(version)
                           if not parsed_version.is_prerelease:  # Ignore pre-releases

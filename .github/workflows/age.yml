@@ -32,22 +32,21 @@ jobs:
 
           data = toml.load('pyproject.toml')
           deps = data.get('project', {}).get('dependencies', [])
-          print(deps)
-
 
           with open("dependency-age.txt", "w") as f:
               f.write("Dependency Age Report:\n")
               for dep in deps:
-                  print(dep)
                   pkg = extract_package_name(dep)
-                  print(pkg)
                   response = requests.get(f"https://pypi.org/pypi/{pkg}/json")
                   if response.status_code == 200:
                       releases = response.json().get("releases", {})
                       latest_version = sorted(releases.keys(), reverse=True)[0]
                       release_date = releases[latest_version][-1]["upload_time"]
                       f.write(f"{pkg} (latest: {latest_version}) - Last updated: {release_date}\n")
+
           EOF
+
+          cat dependency-age.txt
 
       - name: Upload Dependency Age Report
         uses: actions/upload-artifact@v4

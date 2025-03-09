@@ -30,6 +30,7 @@ jobs:
           import re
           import pandas as pd
           from packaging.version import parse, InvalidVersion
+          from datetime import datetime
 
           def extract_package_name(dep):
               """Extracts the package name from a dependency string."""
@@ -38,56 +39,90 @@ jobs:
 
           def get_latest_stable_version(package_name):
               """Fetches the latest stable version of a package from PyPI."""
-              print(package_name)
+              print(f"Checking {package_name}...")
 
               url = f"https://pypi.org/pypi/{package_name}/json"
-              response = requests.get(url)
+              try:
+                  response = requests.get(url, timeout=10)
 
-              if response.status_code == 200:
-                  data = response.json()
-                  releases = data.get("releases", {})
+                  if response.status_code == 200:
+                      data = response.json()
+                      releases = data.get("releases", {})
 
-                  stable_versions = []
-                  r = {}
-                  for version in releases.keys():
-                      #print(version)
-                      try:
-                          parsed_version = parse(version)
-                          print(parsed_version)
-                          if not parsed_version.is_prerelease:  # Ignore pre-releases
-                              stable_versions.append(parsed_version)
-                              r[parsed_version] = version
+                      # Filter to stable versions and track original version strings
+                      stable_versions = []
+                      for version_str in releases.keys():
+                          try:
+                              parsed_version = parse(version_str)
+                              if not parsed_version.is_prerelease:  # Ignore pre-releases
+                                  stable_versions.append((parsed_version, version_str))
+                          except InvalidVersion:
+                              continue  # Ignore invalid versions
 
-                      except InvalidVersion:
-                          continue  # Ignore invalid versions
+                      # Sort by parsed version (which handles semantics correctly)
+                      stable_versions.sort(reverse=True, key=lambda x: x[0])
 
-                  stable_versions.sort(reverse=True)
+                      if stable_versions:
+                          latest_parsed, latest_version_str = stable_versions[0]
+                          release_info = releases[latest_version_str][-1]
+                          release_date = release_info.get("upload_time")
+                          return str(latest_parsed), release_date
 
-                  if stable_versions:
-                      latest_version = stable_versions[0]
-                      #print(dir(latest_version))
-
-                      release_date = releases[r[latest_version]][-1]["upload_time"]
-                      return latest_version, release_date
+              except requests.exceptions.RequestException as e:
+                  print(f"Error fetching data for {package_name}: {e}")
 
               return None, None  # Return None if the request fails or no stable versions
 
-          # Read dependencies from pyproject.toml
-          data = toml.load("pyproject.toml")
-          deps = data.get("project", {}).get("dependencies", [])
+          try:
+              # Read dependencies from pyproject.toml
+              data = toml.load("pyproject.toml")
+              deps = data.get("project", {}).get("dependencies", [])
 
-          # Generate the dependency age report
-          x = {}
-          with open("dependency-age.txt", "w") as f:
-              f.write("Dependency Age Report:\n")
-              for dep in deps:
-                  pkg = extract_package_name(dep)
-                  latest_version, release_date = get_latest_stable_version(pkg)
-                  if latest_version:
-                      f.write(f"{pkg} (latest: {latest_version}) - Last updated: {release_date}\n")
-                      x[pkg] = {"Latest version": latest_version, "Last update": release_date}
+              if not deps:
+                  print("No dependencies found in pyproject.toml")
+                  return
 
-          print(pd.DataFrame(x).sort(by="Last update", ascending=True))
+              # Generate the dependency age report
+              package_data = []
+
+              with open("dependency-age.txt", "w") as f:
+                  f.write("Dependency Age Report:\n")
+                  for dep in deps:
+                      pkg = extract_package_name(dep)
+                      latest_version, release_date = get_latest_stable_version(pkg)
+
+                      if latest_version:
+                          f.write(f"{pkg} (latest: {latest_version}) - Last updated: {release_date}\n")
+
+                          # Add to our list for DataFrame creation
+                          package_data.append({
+                              "Package": pkg,
+                              "Latest Version": latest_version,
+                              "Last Update": release_date
+                          })
+
+              # Create DataFrame with packages as rows (not columns)
+              if package_data:
+                  df = pd.DataFrame(package_data)
+
+                  # Convert dates to datetime for proper sorting
+                  df["Last Update"] = pd.to_datetime(df["Last Update"])
+
+                  # Sort by date
+                  sorted_df = df.sort_values(by="Last Update", ascending=False)
+
+                  print("\nDependencies sorted by update date (most recent first):")
+                  print(sorted_df.to_string(index=False))
+
+                  # Save sorted data to file
+                  with open("dependency-age-sorted.txt", "w") as f:
+                      f.write("Dependency Age Report (sorted by date, newest first):\n")
+                      for _, row in sorted_df.iterrows():
+                          date_str = row["Last Update"].strftime("%Y-%m-%d")
+                          f.write(f"{row['Package']} (latest: {row['Latest Version']}) - Last updated: {date_str}\n")
+
+          except Exception as e:
+              print(f"Error: {e}")
 
           EOF
 

@@ -28,6 +28,7 @@ jobs:
           import requests, toml
           data = toml.load('pyproject.toml')
           deps = data.get('project', {}).get('dependencies', [])
+          print(deps)
           with open("dependency-age.txt", "w") as f:
               f.write("Dependency Age Report:\n")
               for dep in deps:

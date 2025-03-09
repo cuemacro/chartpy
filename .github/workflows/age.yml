@@ -61,6 +61,8 @@ jobs:
 
                   if stable_versions:
                       latest_version = stable_versions[0]
+                      print(dir(latest_version))
+
                       release_date = releases[latest_version][-1]["upload_time"]
                       return latest_version, release_date
 

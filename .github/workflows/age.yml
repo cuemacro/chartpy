@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install toml requests packaging
+          pip install toml requests packaging pandas
       #    python -c "import toml; data = toml.load('pyproject.toml'); deps = data.get('project', {}).get('dependencies', []); print('\n'.join(deps))" > dependencies.txt
       #    pip install -r <(python -c "import toml; data = toml.load('pyproject.toml'); deps = data.get('project', {}).get('dependencies', []); print('\n'.join(f'{pkg}' for pkg in deps))")
 
@@ -28,6 +28,7 @@ jobs:
           import requests
           import toml
           import re
+          import pandas as pd
           from packaging.version import parse, InvalidVersion
 
           def extract_package_name(dep):
@@ -76,6 +77,7 @@ jobs:
           deps = data.get("project", {}).get("dependencies", [])
 
           # Generate the dependency age report
+          x = {}
           with open("dependency-age.txt", "w") as f:
               f.write("Dependency Age Report:\n")
               for dep in deps:
@@ -83,6 +85,10 @@ jobs:
                   latest_version, release_date = get_latest_stable_version(pkg)
                   if latest_version:
                       f.write(f"{pkg} (latest: {latest_version}) - Last updated: {release_date}\n")
+                      x[pkg] = {"Latest version": latest_version, "Last update": release_date}
+
+          print(pd.DataFrame(x).sort(by="Last update", ascending=True))
+
           EOF
 
           cat dependency-age.txt

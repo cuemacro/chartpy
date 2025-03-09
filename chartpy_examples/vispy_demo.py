@@ -119,7 +119,7 @@ if __name__ == '__main__':
     df = pandas.DataFrame(index=t, data=x.T)
 
     style = Style(save_fig=True)
-    
+
     logger.info('About to plot plotly without webgl...')
     Chart().plot(df, engine='plotly', style=Style(save_fig=True, plotly_webgl=False))
 
@@ -134,5 +134,3 @@ if __name__ == '__main__':
     logger.info('About to plot matplotlib...')
     # Try matplotlib, which will likely be very slow or crash...
     Chart().plot(df, engine='matplotlib', style=style)
-
-

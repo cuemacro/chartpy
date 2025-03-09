@@ -1,5 +1,5 @@
 define([
-	"../core"
+    "../core"
 ], function( jQuery ) {
 
 // Register as a named AMD module, since jQuery can be concatenated with other
@@ -16,9 +16,9 @@ define([
 // https://github.com/jrburke/requirejs/wiki/Updating-existing-libraries#wiki-anon
 
 if ( typeof define === "function" && define.amd ) {
-	define( "jquery", [], function() {
-		return jQuery;
-	});
+    define( "jquery", [], function() {
+        return jQuery;
+    });
 }
 
 });

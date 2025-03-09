@@ -8,112 +8,112 @@
 
 (function($, undefined){
 
-	"use strict";
+    "use strict";
 
-	$.widget("ui.rangeSliderMouseTouch", $.ui.mouse, {
-		enabled: true,
+    $.widget("ui.rangeSliderMouseTouch", $.ui.mouse, {
+        enabled: true,
 
-		_mouseInit: function(){
-			var that = this;
-			$.ui.mouse.prototype._mouseInit.apply(this);
-			this._mouseDownEvent = false;
+        _mouseInit: function(){
+            var that = this;
+            $.ui.mouse.prototype._mouseInit.apply(this);
+            this._mouseDownEvent = false;
 
-			this.element.bind('touchstart.' + this.widgetName, function(event) {
-				return that._touchStart(event);
-			});
-		},
+            this.element.bind('touchstart.' + this.widgetName, function(event) {
+                return that._touchStart(event);
+            });
+        },
 
-		_mouseDestroy: function(){
-			$(document)
-				.unbind('touchmove.' + this.widgetName, this._touchMoveDelegate)
-				.unbind('touchend.' + this.widgetName, this._touchEndDelegate);
-			
-			$.ui.mouse.prototype._mouseDestroy.apply(this);
-		},
+        _mouseDestroy: function(){
+            $(document)
+                .unbind('touchmove.' + this.widgetName, this._touchMoveDelegate)
+                .unbind('touchend.' + this.widgetName, this._touchEndDelegate);
 
-		enable: function(){
-			this.enabled = true;
-		},
+            $.ui.mouse.prototype._mouseDestroy.apply(this);
+        },
 
-		disable: function(){
-			this.enabled = false;
-		},
+        enable: function(){
+            this.enabled = true;
+        },
 
-		destroy: function(){
-			this._mouseDestroy();
-			
-			$.ui.mouse.prototype.destroy.apply(this);
+        disable: function(){
+            this.enabled = false;
+        },
 
-			this._mouseInit = null;
-		},
+        destroy: function(){
+            this._mouseDestroy();
 
-		_touchStart: function(event){
-			if (!this.enabled) return false;
+            $.ui.mouse.prototype.destroy.apply(this);
 
-			event.which = 1;
-			event.preventDefault();
+            this._mouseInit = null;
+        },
 
-			this._fillTouchEvent(event);
+        _touchStart: function(event){
+            if (!this.enabled) return false;
 
-			var that = this,
-				downEvent = this._mouseDownEvent;
+            event.which = 1;
+            event.preventDefault();
 
-			this._mouseDown(event);
+            this._fillTouchEvent(event);
 
-			if (downEvent !== this._mouseDownEvent){
+            var that = this,
+                downEvent = this._mouseDownEvent;
 
-				this._touchEndDelegate = function(event){
-					that._touchEnd(event);
-				}
+            this._mouseDown(event);
 
-				this._touchMoveDelegate = function(event){
-					that._touchMove(event);
-				}
+            if (downEvent !== this._mouseDownEvent){
 
-				$(document)
-				.bind('touchmove.' + this.widgetName, this._touchMoveDelegate)
-				.bind('touchend.' + this.widgetName, this._touchEndDelegate);
-			}
-		},
+                this._touchEndDelegate = function(event){
+                    that._touchEnd(event);
+                }
 
-		_mouseDown: function(event){
-			if (!this.enabled) return false;
+                this._touchMoveDelegate = function(event){
+                    that._touchMove(event);
+                }
 
-			return $.ui.mouse.prototype._mouseDown.apply(this, [event]);
-		},
+                $(document)
+                .bind('touchmove.' + this.widgetName, this._touchMoveDelegate)
+                .bind('touchend.' + this.widgetName, this._touchEndDelegate);
+            }
+        },
 
-		_touchEnd: function(event){
-			this._fillTouchEvent(event);
-			this._mouseUp(event);
+        _mouseDown: function(event){
+            if (!this.enabled) return false;
 
-			$(document)
-			.unbind('touchmove.' + this.widgetName, this._touchMoveDelegate)
-			.unbind('touchend.' + this.widgetName, this._touchEndDelegate);
+            return $.ui.mouse.prototype._mouseDown.apply(this, [event]);
+        },
 
-		this._mouseDownEvent = false;
+        _touchEnd: function(event){
+            this._fillTouchEvent(event);
+            this._mouseUp(event);
 
-		// No other choice to reinitialize mouseHandled
-		$(document).trigger("mouseup");
-		},
+            $(document)
+            .unbind('touchmove.' + this.widgetName, this._touchMoveDelegate)
+            .unbind('touchend.' + this.widgetName, this._touchEndDelegate);
 
-		_touchMove: function(event){
-			event.preventDefault();
-			this._fillTouchEvent(event);
+        this._mouseDownEvent = false;
 
-			return this._mouseMove(event);
-		},
+        // No other choice to reinitialize mouseHandled
+        $(document).trigger("mouseup");
+        },
 
-		_fillTouchEvent: function(event){
-			var touch;
+        _touchMove: function(event){
+            event.preventDefault();
+            this._fillTouchEvent(event);
 
-			if (typeof event.targetTouches === "undefined" && typeof event.changedTouches === "undefined"){
-				touch = event.originalEvent.targetTouches[0] || event.originalEvent.changedTouches[0];
-			} else {
-				touch = event.targetTouches[0] || event.changedTouches[0];
-			}
+            return this._mouseMove(event);
+        },
 
-			event.pageX = touch.pageX;
-			event.pageY = touch.pageY;
-		}
-	});
+        _fillTouchEvent: function(event){
+            var touch;
+
+            if (typeof event.targetTouches === "undefined" && typeof event.changedTouches === "undefined"){
+                touch = event.originalEvent.targetTouches[0] || event.originalEvent.changedTouches[0];
+            } else {
+                touch = event.targetTouches[0] || event.changedTouches[0];
+            }
+
+            event.pageX = touch.pageX;
+            event.pageY = touch.pageY;
+        }
+    });
 }(jQuery));

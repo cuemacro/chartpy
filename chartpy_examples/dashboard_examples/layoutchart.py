@@ -103,4 +103,3 @@ class LayoutChart(LayoutCanvas):
                 self._sc.plot("Quandl Plot", id=['spot-fig', 'vol-fig'], prefix_id=self.page_id(), height=500),
             ]
         )
-

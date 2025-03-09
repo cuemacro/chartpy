@@ -25,15 +25,21 @@ jobs:
       - name: Check dependency ages
         run: |
           python - <<EOF
-          import requests, toml
+          import requests, toml, re
+
+          def extract_package_name(dep):
+            return re.split(r"[<=>]", dep, 1)[0].strip()
+
           data = toml.load('pyproject.toml')
           deps = data.get('project', {}).get('dependencies', [])
           print(deps)
+
+
           with open("dependency-age.txt", "w") as f:
               f.write("Dependency Age Report:\n")
               for dep in deps:
                   print(dep)
-                  pkg = dep.split()[0]
+                  pkg = extract_package_name(dep)
                   print(pkg)
                   response = requests.get(f"https://pypi.org/pypi/{pkg}/json")
                   if response.status_code == 200:

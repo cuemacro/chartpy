@@ -25,25 +25,48 @@ jobs:
       - name: Check dependency ages
         run: |
           python - <<EOF
-          import requests, toml, re
+          import requests
+          import toml
+          import re
+          from packaging.version import parse
 
           def extract_package_name(dep):
-            return re.split(r"[<=>]", dep, 1)[0].strip()
+              """Extracts the package name from a dependency string."""
+              match = re.match(r"^[a-zA-Z0-9_.-]+", dep)
+              return match.group(0) if match else dep  # Fallback to full dep if no match
 
-          data = toml.load('pyproject.toml')
-          deps = data.get('project', {}).get('dependencies', [])
+          def get_latest_stable_version(package_name):
+              """Fetches the latest stable version of a package from PyPI."""
+              url = f"https://pypi.org/pypi/{package_name}/json"
+              response = requests.get(url)
 
+              if response.status_code == 200:
+                  data = response.json()
+                  releases = data.get("releases", {})
+
+                  # Filter only stable versions (no alpha, beta, rc)
+                  stable_versions = [v for v in releases.keys() if not parse(v).is_prerelease]
+                  stable_versions.sort(key=parse, reverse=True)  # Sort versions properly
+
+                  if stable_versions:
+                      latest_version = stable_versions[0]
+                      release_date = releases[latest_version][-1]["upload_time"]
+                      return latest_version, release_date
+
+              return None, None  # Return None if the request fails or no stable versions
+
+          # Read dependencies from pyproject.toml
+          data = toml.load("pyproject.toml")
+          deps = data.get("project", {}).get("dependencies", [])
+
+          # Generate the dependency age report
           with open("dependency-age.txt", "w") as f:
               f.write("Dependency Age Report:\n")
               for dep in deps:
                   pkg = extract_package_name(dep)
-                  response = requests.get(f"https://pypi.org/pypi/{pkg}/json")
-                  if response.status_code == 200:
-                      releases = response.json().get("releases", {})
-                      latest_version = sorted(releases.keys(), reverse=True)[0]
-                      release_date = releases[latest_version][-1]["upload_time"]
+                  latest_version, release_date = get_latest_stable_version(pkg)
+                  if latest_version:
                       f.write(f"{pkg} (latest: {latest_version}) - Last updated: {release_date}\n")
-
           EOF
 
           cat dependency-age.txt

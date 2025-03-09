@@ -15,21 +15,30 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install toml
-          python -c "import toml; data = toml.load('pyproject.toml'); deps = data.get('project', {}).get('dependencies', {}); print('\n'.join(deps))" > dependencies.txt
-          pip install -r <(python -c "import toml; data = toml.load('pyproject.toml'); deps = data.get('project', {}).get('dependencies', {}); print('\n'.join(f'{pkg}' for pkg in deps))")
+      #- name: Install dependencies
+      #  run: |
+      #    python -m pip install --upgrade pip
+      #    pip install toml
+      #    python -c "import toml; data = toml.load('pyproject.toml'); deps = data.get('project', {}).get('dependencies', []); print('\n'.join(deps))" > dependencies.txt
+      #    pip install -r <(python -c "import toml; data = toml.load('pyproject.toml'); deps = data.get('project', {}).get('dependencies', []); print('\n'.join(f'{pkg}' for pkg in deps))")
 
       - name: Check dependency ages
         run: |
-          echo "Dependency Age Report:" > dependency-age.txt
-          while IFS= read -r package; do
-            latest_version=$(pip index versions $package | grep -oP '(?<=Available versions: )[\d., ]+' | awk '{print $1}')
-            release_date=$(pip show $package | grep -i "release-date" | awk '{print $2}')
-            echo "$package (latest: $latest_version) - Last updated: $release_date" | tee -a dependency-age.txt
-          done < dependencies.txt
+          python - <<EOF
+          import requests, toml
+          data = toml.load('pyproject.toml')
+          deps = data.get('project', {}).get('dependencies', [])
+          with open("dependency-age.txt", "w") as f:
+              f.write("Dependency Age Report:\n")
+              for dep in deps:
+                  pkg = dep.split()[0]
+                  response = requests.get(f"https://pypi.org/pypi/{pkg}/json")
+                  if response.status_code == 200:
+                      releases = response.json().get("releases", {})
+                      latest_version = sorted(releases.keys(), reverse=True)[0]
+                      release_date = releases[latest_version][-1]["upload_time"]
+                      f.write(f"{pkg} (latest: {latest_version}) - Last updated: {release_date}\n")
+          EOF
 
       - name: Upload Dependency Age Report
         uses: actions/upload-artifact@v4

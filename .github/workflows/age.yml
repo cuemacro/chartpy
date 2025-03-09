@@ -80,7 +80,7 @@ jobs:
 
               if not deps:
                   print("No dependencies found in pyproject.toml")
-                  return
+                  sys.exit(1)
 
               # Generate the dependency age report
               package_data = []

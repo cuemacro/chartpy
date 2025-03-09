@@ -51,16 +51,13 @@ jobs:
                       print(version)
                       try:
                           parsed_version = parse(version)
+                          print(parsed_version)
                           if not parsed_version.is_prerelease:  # Ignore pre-releases
                               stable_versions.append(parsed_version)
                       except InvalidVersion:
                           continue  # Ignore invalid versions
 
                   stable_versions.sort(reverse=True)
-
-                  # Filter only stable versions (no alpha, beta, rc)
-                  #stable_versions = [v for v in releases.keys()] # if not parse(v).is_prerelease]
-                  #stable_versions.sort(key=parse, reverse=True)  # Sort versions properly
 
                   if stable_versions:
                       latest_version = stable_versions[0]

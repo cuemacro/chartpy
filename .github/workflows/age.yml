@@ -47,6 +47,7 @@ jobs:
                   releases = data.get("releases", {})
 
                   stable_versions = []
+                  r = {}
                   for version in releases.keys():
                       print(version)
                       try:
@@ -54,6 +55,8 @@ jobs:
                           print(parsed_version)
                           if not parsed_version.is_prerelease:  # Ignore pre-releases
                               stable_versions.append(parsed_version)
+                              r[parsed_version] = version
+
                       except InvalidVersion:
                           continue  # Ignore invalid versions
 
@@ -61,9 +64,9 @@ jobs:
 
                   if stable_versions:
                       latest_version = stable_versions[0]
-                      print(dir(latest_version))
+                      #print(dir(latest_version))
 
-                      release_date = releases[latest_version][-1]["upload_time"]
+                      release_date = releases[r[latest_version]][-1]["upload_time"]
                       return latest_version, release_date
 
               return None, None  # Return None if the request fails or no stable versions

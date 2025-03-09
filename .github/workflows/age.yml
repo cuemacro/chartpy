@@ -32,7 +32,9 @@ jobs:
           with open("dependency-age.txt", "w") as f:
               f.write("Dependency Age Report:\n")
               for dep in deps:
+                  print(dep)
                   pkg = dep.split()[0]
+                  print(pkg)
                   response = requests.get(f"https://pypi.org/pypi/{pkg}/json")
                   if response.status_code == 200:
                       releases = response.json().get("releases", {})

@@ -8,7 +8,26 @@ authors = [{name='Saeed Aman', email= 'saeed@cuemacro.com'}]
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-
+    "bokeh>=3.4.3",
+    "bqplot>=0.12.44",
+    "bs4>=0.0.2",
+    "chart-studio>=1.1.0",
+    "dash>=2.9.3",
+    "dash-core-components>=2.0.0",
+    "dash-html-components>=2.0.0",
+    "dash-table>=5.0.0",
+    "dataframe-image>=0.2.7",
+    "flask>=3.1.0",
+    "ipython>=8.18.1",
+    "matplotlib>=3.9.4",
+    "mpld3>=0.5.10",
+    "numpy>=2.0.2",
+    "pandas>=2.2.3",
+    "pdfkit>=1.0.0",
+    "plotly>=6.0.0",
+    "reportlab>=4.3.1",
+    "twython>=3.9.1",
+    "vispy>=0.14.3",
 ]
 #dependencies = [
 #    "blosc>=1.11.2",
@@ -70,6 +89,6 @@ exclude_dirs = ["tests"]
 #chartpy = { git = "https://github.com/cuemacro/chartpy.git" }
 #findatapy = { git = "https://github.com/cuemacro/findatapy.git" }
 
-#[tool.deptry.per_rule_ignores]
+[tool.deptry.per_rule_ignores]
 #DEP001 = ["pyfolio"]       # very dated dependency!
-#DEP003 = ["finmarketpy"]
+DEP003 = ["chartpy"]

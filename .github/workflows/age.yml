@@ -28,8 +28,7 @@ jobs:
           import requests
           import toml
           import re
-          from packaging import InvalidVersion
-          from packaging.version import parse
+          from packaging.version import parse, InvalidVersion
 
           def extract_package_name(dep):
               """Extracts the package name from a dependency string."""

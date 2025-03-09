@@ -28,6 +28,7 @@ jobs:
           import requests
           import toml
           import re
+          from packaging import InvalidVersion
           from packaging.version import parse
 
           def extract_package_name(dep):
@@ -49,7 +50,7 @@ jobs:
                   stable_versions = []
                   r = {}
                   for version in releases.keys():
-                      print(version)
+                      #print(version)
                       try:
                           parsed_version = parse(version)
                           print(parsed_version)

@@ -1560,7 +1560,12 @@ class EnginePlotly(EngineTemplate):
                     chart_type_ord = chart_type
 
                 end = start + len(data_frame.columns)
-                color_spec1 = color_spec[start:start + end]
+
+                try:
+                    color_spec1 = color_spec[start:start + end]
+                except:
+                    color_spec1 = None
+
                 start = end
 
                 # Special call for choropleth (uses Plotly API directly)

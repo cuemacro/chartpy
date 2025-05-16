@@ -154,6 +154,7 @@ In chartpy/examples you will find several demos
 
 # Recent Release Notes
 
+* 16 May 2025 - v0.1.16
 * 03 Mar 2025 - v0.1.15
 * 10 Apr 2024 - v0.1.14
 * 12 Oct 2023 - v0.1.13
@@ -169,6 +170,8 @@ In chartpy/examples you will find several demos
 
 # Coding log
 
+* 16 May 2025
+  * Removed cufflinks in install
 * 08 Mar 2025
   * Removed dependency on cufflinks, and now uses Plotly Express
   * Added autoscaling for Plotly charts

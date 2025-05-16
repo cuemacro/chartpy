@@ -7,7 +7,7 @@ and formatting to ensure that the default matplotlib styling looks more modern u
 also works well with Dash, plotly's web server library built on top of Flask."""
 
 setup(name='chartpy',
-      version='0.1.15',
+      version='0.1.16',
       description='chartpy creates a simple easy to use API to plot in a number of great Python chart libraries',
       author='Saeed Amen',
       author_email='saeed@cuemacro.com',
@@ -25,7 +25,6 @@ setup(name='chartpy',
                         'requests',
                         'numpy',
                         'plotly>=4.5.1',
-                        'cufflinks',
                         'bokeh',
                         'vispy',
                         'reportlab',

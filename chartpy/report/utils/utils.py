@@ -34,4 +34,3 @@ def check_folder(folder_path: AnyStr) -> None:
 
 def get_report_folder_path():
     return os.path.abspath(os.path.join(__file__, "../.."))
-

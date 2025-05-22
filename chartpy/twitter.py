@@ -60,8 +60,3 @@ class Twitter:
             photo = open(picture, 'rb')
             response = self.twitter.upload_media(media=photo)
             self.twitter.update_status(status=msg, media_ids=[response['media_id']])
-
-
-
-
-

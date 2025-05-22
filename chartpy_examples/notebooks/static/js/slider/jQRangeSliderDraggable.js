@@ -7,172 +7,172 @@
  */
 
 (function($, undefined){
-	"use strict";
+    "use strict";
 
-	$.widget("ui.rangeSliderDraggable", $.ui.rangeSliderMouseTouch, {
-		cache: null,
+    $.widget("ui.rangeSliderDraggable", $.ui.rangeSliderMouseTouch, {
+        cache: null,
 
-		options: {
-			containment: null
-		},
+        options: {
+            containment: null
+        },
 
-		_create: function(){
-			$.ui.rangeSliderMouseTouch.prototype._create.apply(this);
+        _create: function(){
+            $.ui.rangeSliderMouseTouch.prototype._create.apply(this);
 
-			setTimeout($.proxy(this._initElementIfNotDestroyed, this), 10);
-		},
+            setTimeout($.proxy(this._initElementIfNotDestroyed, this), 10);
+        },
 
-		destroy: function(){
-			this.cache = null;
-			
-			$.ui.rangeSliderMouseTouch.prototype.destroy.apply(this);
-		},
+        destroy: function(){
+            this.cache = null;
 
-		_initElementIfNotDestroyed: function(){
-			if (this._mouseInit){
-				this._initElement();
-			}
-		},
+            $.ui.rangeSliderMouseTouch.prototype.destroy.apply(this);
+        },
 
-		_initElement: function(){
-			this._mouseInit();
-			this._cache();
-		},
+        _initElementIfNotDestroyed: function(){
+            if (this._mouseInit){
+                this._initElement();
+            }
+        },
 
-		_setOption: function(key, value){
-			if (key === "containment"){
-				if (value === null || $(value).length === 0){
-					this.options.containment = null
-				}else{
-					this.options.containment = $(value);
-				}
-			}
-		},
+        _initElement: function(){
+            this._mouseInit();
+            this._cache();
+        },
 
-		/*
-		 * UI mouse widget
-		 */
+        _setOption: function(key, value){
+            if (key === "containment"){
+                if (value === null || $(value).length === 0){
+                    this.options.containment = null
+                }else{
+                    this.options.containment = $(value);
+                }
+            }
+        },
 
-		_mouseStart: function(event){
-			this._cache();
-			this.cache.click = {
-					left: event.pageX,
-					top: event.pageY
-			};
+        /*
+         * UI mouse widget
+         */
 
-			this.cache.initialOffset = this.element.offset();
+        _mouseStart: function(event){
+            this._cache();
+            this.cache.click = {
+                    left: event.pageX,
+                    top: event.pageY
+            };
 
-			this._triggerMouseEvent("mousestart");
+            this.cache.initialOffset = this.element.offset();
 
-			return true;
-		},
+            this._triggerMouseEvent("mousestart");
 
-		_mouseDrag: function(event){
-			var position = event.pageX - this.cache.click.left;
+            return true;
+        },
 
-			position = this._constraintPosition(position + this.cache.initialOffset.left);
+        _mouseDrag: function(event){
+            var position = event.pageX - this.cache.click.left;
 
-			this._applyPosition(position);
+            position = this._constraintPosition(position + this.cache.initialOffset.left);
 
-			this._triggerMouseEvent("sliderDrag");
+            this._applyPosition(position);
 
-			return false;
-		},
+            this._triggerMouseEvent("sliderDrag");
 
-		_mouseStop: function(){
-			this._triggerMouseEvent("stop");
-		},
+            return false;
+        },
 
-		/*
-		 * To be overriden
-		 */
+        _mouseStop: function(){
+            this._triggerMouseEvent("stop");
+        },
 
-		_constraintPosition: function(position){
-			if (this.element.parent().length !== 0 && this.cache.parent.offset !== null){
-				position = Math.min(position, 
-					this.cache.parent.offset.left + this.cache.parent.width - this.cache.width.outer);
-				position = Math.max(position, this.cache.parent.offset.left);
-			}
+        /*
+         * To be overriden
+         */
 
-			return position;
-		},
+        _constraintPosition: function(position){
+            if (this.element.parent().length !== 0 && this.cache.parent.offset !== null){
+                position = Math.min(position,
+                    this.cache.parent.offset.left + this.cache.parent.width - this.cache.width.outer);
+                position = Math.max(position, this.cache.parent.offset.left);
+            }
 
-		_applyPosition: function(position){
-			var offset = {
-				top: this.cache.offset.top,
-				left: position
-			}
+            return position;
+        },
 
-			this.element.offset({left:position});
+        _applyPosition: function(position){
+            var offset = {
+                top: this.cache.offset.top,
+                left: position
+            }
 
-			this.cache.offset = offset;
-		},
+            this.element.offset({left:position});
 
-		/*
-		 * Private utils
-		 */
+            this.cache.offset = offset;
+        },
 
-		_cacheIfNecessary: function(){
-			if (this.cache === null){
-				this._cache();
-			}
-		},
+        /*
+         * Private utils
+         */
 
-		_cache: function(){
-			this.cache = {};
+        _cacheIfNecessary: function(){
+            if (this.cache === null){
+                this._cache();
+            }
+        },
 
-			this._cacheMargins();
-			this._cacheParent();
-			this._cacheDimensions();
+        _cache: function(){
+            this.cache = {};
 
-			this.cache.offset = this.element.offset();
-		},
+            this._cacheMargins();
+            this._cacheParent();
+            this._cacheDimensions();
 
-		_cacheMargins: function(){
-			this.cache.margin = {
-				left: this._parsePixels(this.element, "marginLeft"),
-				right: this._parsePixels(this.element, "marginRight"),
-				top: this._parsePixels(this.element, "marginTop"),
-				bottom: this._parsePixels(this.element, "marginBottom")
-			};
-		},
+            this.cache.offset = this.element.offset();
+        },
 
-		_cacheParent: function(){
-			if (this.options.parent !== null){
-				var container = this.element.parent();
+        _cacheMargins: function(){
+            this.cache.margin = {
+                left: this._parsePixels(this.element, "marginLeft"),
+                right: this._parsePixels(this.element, "marginRight"),
+                top: this._parsePixels(this.element, "marginTop"),
+                bottom: this._parsePixels(this.element, "marginBottom")
+            };
+        },
 
-				this.cache.parent = {
-					offset: container.offset(),
-					width: container.width()
-				}
-			}else{
-				this.cache.parent = null;
-			}
-		},
+        _cacheParent: function(){
+            if (this.options.parent !== null){
+                var container = this.element.parent();
 
-		_cacheDimensions: function(){
-			this.cache.width = {
-				outer: this.element.outerWidth(),
-				inner: this.element.width()
-			}
-		},
+                this.cache.parent = {
+                    offset: container.offset(),
+                    width: container.width()
+                }
+            }else{
+                this.cache.parent = null;
+            }
+        },
 
-		_parsePixels: function(element, string){
-			return parseInt(element.css(string), 10) || 0;
-		},
+        _cacheDimensions: function(){
+            this.cache.width = {
+                outer: this.element.outerWidth(),
+                inner: this.element.width()
+            }
+        },
 
-		_triggerMouseEvent: function(event){
-			var data = this._prepareEventData();
+        _parsePixels: function(element, string){
+            return parseInt(element.css(string), 10) || 0;
+        },
 
-			this.element.trigger(event, data);
-		},
+        _triggerMouseEvent: function(event){
+            var data = this._prepareEventData();
 
-		_prepareEventData: function(){
-			return {
-				element: this.element,
-				offset: this.cache.offset || null
-			};
-		}
-	});
+            this.element.trigger(event, data);
+        },
+
+        _prepareEventData: function(){
+            return {
+                element: this.element,
+                offset: this.cache.offset || null
+            };
+        }
+    });
 
 }(jQuery));

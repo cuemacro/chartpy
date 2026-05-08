@@ -473,12 +473,9 @@ class SessionManager(object):
 
         if lst2 is None:
             return lst
-
-        lst3 = []
-
-        for i in lst2:
-            for j in lst:
-                lst3.append(j + '-' + i)
+        
+        lst3 = [j + '-' + i for i in lst2 for j in lst]
+        
 
         return lst3
 
